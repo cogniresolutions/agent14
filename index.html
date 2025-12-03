@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <title>Agent14 | AI-Powered Restaurant Reservations</title>
     <meta name="description" content="Book, modify, or cancel restaurant reservations instantly with Agent14's intelligent AI concierge. No calls, no waiting—just seamless dining experiences." />
     <meta name="author" content="Agent14" />
@@ -20,5 +20,25 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Salesforce Agentforce Chatbot -->
+    <script type='text/javascript'>
+      function initEmbeddedMessaging() {
+        try {
+          embeddedservice_bootstrap.settings.language = 'en_US';
+          embeddedservice_bootstrap.init(
+            '00Daj00000fu42w',
+            'agent14',
+            'https://orgfarm-1c744615c0.my.site.com/ESWagent141764728558509',
+            {
+              scrt2URL: 'https://orgfarm-1c744615c0.my.salesforce-scrt.com'
+            }
+          );
+        } catch (err) {
+          console.error('Error loading Embedded Messaging: ', err);
+        }
+      };
+    </script>
+    <script type='text/javascript' src='https://orgfarm-1c744615c0.my.site.com/ESWagent141764728558509/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
   </body>
 </html>

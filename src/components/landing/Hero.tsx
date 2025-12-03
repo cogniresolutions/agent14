@@ -1,11 +1,23 @@
 import { ArrowRight, Sparkles, Zap } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo.png';
 
-interface HeroProps {
-  onOpenChat: () => void;
+declare global {
+  interface Window {
+    embeddedservice_bootstrap?: {
+      utilAPI?: {
+        launchChat: () => void;
+      };
+    };
+  }
 }
 
-export const Hero = ({ onOpenChat }: HeroProps) => {
+export const Hero = () => {
+  const handleOpenChat = () => {
+    // Trigger Salesforce Agentforce chat
+    if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
+      window.embeddedservice_bootstrap.utilAPI.launchChat();
+    }
+  };
   return (
     <section className="relative pt-32 pb-24 px-6 overflow-hidden">
       {/* Background effects */}
@@ -59,7 +71,7 @@ export const Hero = ({ onOpenChat }: HeroProps) => {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 animate-slide-up" style={{ animationDelay: '400ms' }}>
             <button
-              onClick={onOpenChat}
+              onClick={handleOpenChat}
               className="group relative inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-full font-semibold text-base shadow-glow hover:shadow-cyber transition-all duration-500 hover:scale-105 overflow-hidden"
             >
               <span className="relative z-10">Start Reservation</span>
