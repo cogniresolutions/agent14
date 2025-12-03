@@ -19,8 +19,8 @@ export const Footer = () => {
             <a href="#" className="hover:text-primary-foreground transition-colors">
               Terms
             </a>
-            <a href="mailto:support@tableflow.com" className="hover:text-primary-foreground transition-colors">
-              support@tableflow.com
+            <a href="mailto:support@agent14.com" className="hover:text-primary-foreground transition-colors">
+              support@agent14.com
             </a>
           </div>
         </div>
