@@ -1,57 +1,84 @@
-import { MessageCircle, Calendar, CheckCircle } from 'lucide-react';
+import { MessageCircle, Bot, CheckCircle, Mail } from 'lucide-react';
 
 const steps = [
   {
     icon: MessageCircle,
     step: '01',
-    title: 'Chat with AI',
-    description: 'Click the chat button and tell our AI what you need—a new booking, modification, or cancellation.',
+    title: 'Start a Chat',
+    description: 'Click the chat button and tell our AI what you need—new reservation, change, or cancellation.',
   },
   {
-    icon: Calendar,
+    icon: Bot,
     step: '02',
-    title: 'Confirm Details',
-    description: 'Review and confirm your reservation details. Our AI handles all the restaurant coordination.',
+    title: 'AI Processes',
+    description: 'Agent14 understands your request and handles everything with the restaurant instantly.',
   },
   {
     icon: CheckCircle,
     step: '03',
-    title: 'Get Confirmation',
-    description: 'Receive an instant email confirmation with your complete reservation details.',
+    title: 'Instant Confirmation',
+    description: 'Receive immediate confirmation in chat with all your booking details.',
+  },
+  {
+    icon: Mail,
+    step: '04',
+    title: 'Email Receipt',
+    description: 'Get a professional confirmation email for your records.',
   },
 ];
 
 export const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-24 px-6">
-      <div className="container mx-auto max-w-5xl">
-        <div className="text-center mb-16">
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
-            How it works
+    <section id="how-it-works" className="py-24 px-6 bg-card/30 border-y border-border/30 relative">
+      {/* Background pattern */}
+      <div className="absolute inset-0 -z-10 opacity-[0.02]"
+        style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--primary)) 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }}
+      />
+
+      <div className="container mx-auto max-w-6xl">
+        <div className="text-center mb-16 space-y-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
+            How It Works
+          </span>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground">
+            Four Simple Steps
           </h2>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            Three simple steps to your perfect dining experience.
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            From request to confirmation in under a minute
           </p>
         </div>
-        
-        <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <div key={step.step} className="relative text-center">
+            <div
+              key={step.step}
+              className="relative group animate-slide-up"
+              style={{ animationDelay: `${index * 150}ms` }}
+            >
+              {/* Connector line */}
               {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-12 left-1/2 w-full h-px bg-border" />
+                <div className="hidden lg:block absolute top-8 left-[calc(50%+40px)] w-[calc(100%-40px)] h-px bg-gradient-to-r from-primary/40 to-primary/10" />
               )}
-              <div className="relative z-10 w-24 h-24 rounded-full bg-secondary border-4 border-background flex items-center justify-center mx-auto mb-6 shadow-soft">
-                <step.icon className="w-10 h-10 text-foreground" />
+              
+              <div className="text-center space-y-4">
+                <div className="relative inline-flex">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:bg-primary/20 group-hover:shadow-glow transition-all duration-500">
+                    <step.icon className="w-7 h-7 text-primary" />
+                  </div>
+                  <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-glow">
+                    {step.step}
+                  </span>
+                </div>
+                <h3 className="font-display text-lg font-semibold text-foreground">
+                  {step.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {step.description}
+                </p>
               </div>
-              <span className="text-sm font-bold text-accent mb-2 block">
-                {step.step}
-              </span>
-              <h3 className="font-semibold text-xl text-foreground mb-3">
-                {step.title}
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {step.description}
-              </p>
             </div>
           ))}
         </div>

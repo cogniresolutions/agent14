@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ['Instrument Serif', 'serif'],
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,16 +51,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        navy: {
-          DEFAULT: "hsl(var(--navy))",
-          light: "hsl(var(--navy-light))",
+        cyber: {
+          blue: "hsl(var(--cyber-blue))",
+          glow: "hsl(var(--cyber-blue-glow))",
+          dark: "hsl(var(--cyber-dark))",
+          darker: "hsl(var(--cyber-darker))",
         },
-        slate: "hsl(var(--slate))",
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          light: "hsl(var(--gold-light))",
-        },
-        cream: "hsl(var(--cream))",
+        steel: "hsl(var(--steel))",
+        ice: "hsl(var(--ice))",
         emerald: "hsl(var(--emerald))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -85,6 +83,7 @@ export default {
         elevated: "var(--shadow-elevated)",
         glow: "var(--shadow-glow)",
         chat: "var(--shadow-chat)",
+        cyber: "var(--shadow-cyber)",
       },
       keyframes: {
         "accordion-down": {
