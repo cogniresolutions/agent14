@@ -1,13 +1,15 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { ChatContainer } from '@/components/chat/ChatContainer';
+import { Helmet } from 'react-helmet-async';
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Helmet>
+        <title>Intelligent Diner Support | Restaurant Reservations</title>
+        <meta name="description" content="Get instant assistance with your restaurant bookings. Modify reservations, cancel, or get restaurant information with our AI-powered support agent." />
+      </Helmet>
+      <ChatContainer />
+    </>
   );
 };
 
