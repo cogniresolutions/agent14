@@ -1,15 +1,11 @@
-import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Header } from '@/components/landing/Header';
 import { Hero } from '@/components/landing/Hero';
 import { Features } from '@/components/landing/Features';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Footer } from '@/components/landing/Footer';
-import { ChatWidget } from '@/components/chat/ChatWidget';
 
 const Index = () => {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
   return (
     <>
       <Helmet>
@@ -20,16 +16,11 @@ const Index = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <main>
-          <Hero onOpenChat={() => setIsChatOpen(true)} />
+          <Hero />
           <Features />
           <HowItWorks />
         </main>
         <Footer />
-        
-        <ChatWidget 
-          isOpen={isChatOpen} 
-          onToggle={() => setIsChatOpen(!isChatOpen)} 
-        />
       </div>
     </>
   );
