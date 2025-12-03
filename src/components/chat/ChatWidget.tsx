@@ -12,7 +12,7 @@ interface Message {
 }
 
 const AGENT_RESPONSES: Record<string, string> = {
-  default: `Hello! 👋 I'm your TableFlow AI assistant. I can help you with:
+  default: `Hello! 👋 I'm your Agent14 AI assistant. I can help you with:
 
 • **New Reservations** - Book a table at any restaurant
 • **Modify Booking** - Change date, time, or party size
@@ -73,7 +73,7 @@ Your conversation history will be shared for a seamless handoff. Is there anythi
 
 📧 A confirmation email has been sent to your email address.
 
-Confirmation #: TF-2024-7829
+Confirmation #: A14-2024-7829
 
 Is there anything else I can help you with?`,
 };
@@ -191,7 +191,7 @@ export const ChatWidget = ({ isOpen, onToggle }: ChatWidgetProps) => {
               <Bot className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">TableFlow AI</h3>
+              <h3 className="font-semibold text-foreground">Agent14</h3>
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald animate-pulse-soft" />
                 <span className="text-xs text-muted-foreground">Online</span>
