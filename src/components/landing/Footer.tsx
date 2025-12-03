@@ -1,16 +1,14 @@
-import { UtensilsCrossed } from 'lucide-react';
+import { Agent14Logo } from './Agent14Logo';
 
 export const Footer = () => {
   return (
     <footer id="contact" className="py-16 px-6 bg-primary text-primary-foreground">
       <div className="container mx-auto max-w-6xl">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-primary-foreground/10 flex items-center justify-center">
-              <UtensilsCrossed className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-serif text-xl font-medium">
-              TableFlow
+          <div className="flex items-center gap-3">
+            <Agent14Logo size="sm" variant="light" />
+            <span className="font-serif text-xl font-semibold tracking-tight">
+              Agent<span className="text-primary-foreground/70">14</span>
             </span>
           </div>
           
@@ -28,7 +26,7 @@ export const Footer = () => {
         </div>
         
         <div className="mt-12 pt-8 border-t border-primary-foreground/10 text-center text-sm text-primary-foreground/50">
-          © {new Date().getFullYear()} TableFlow. All rights reserved. Powered by Salesforce Agentforce.
+          © {new Date().getFullYear()} Agent14. All rights reserved. Powered by Salesforce Agentforce.
         </div>
       </div>
     </footer>
