@@ -1,4 +1,4 @@
-import agentLogo from '@/assets/agent14-logo.png';
+import agentLogoFull from '@/assets/agent14-logo-full.png';
 
 const footerLinks = {
   product: [
@@ -34,7 +34,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-1">
             <a href="/" className="block mb-4">
-              <img src={agentLogo} alt="Agent14 Logo" className="h-12 w-auto object-contain" />
+              <img src={agentLogoFull} alt="Agent14 Logo" className="h-10 w-auto object-contain" />
             </a>
             <p className="text-sm text-muted-foreground leading-relaxed">
               AI-powered restaurant reservations. Book smarter, dine better.
