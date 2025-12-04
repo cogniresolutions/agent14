@@ -71,8 +71,8 @@ export const Hero = () => {
           <div className="relative max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '300ms' }}>
             <div className="bg-card border border-border rounded-2xl p-6 shadow-elevated">
               <div className="flex items-start gap-4 mb-4">
-              <div className="w-14 h-14 rounded-xl overflow-hidden ring-2 ring-primary/20 flex-shrink-0 shadow-md">
-                  <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover" />
+              <div className="w-14 h-14 rounded-xl overflow-hidden ring-2 ring-primary/20 flex-shrink-0 shadow-md hover:ring-primary/50 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer" onClick={handleOpenChat}>
+                  <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-semibold text-foreground mb-1">Agent14</p>
