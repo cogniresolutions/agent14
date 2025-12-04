@@ -65,7 +65,7 @@ export const HowItWorks = () => {
               )}
               
               <div className="relative inline-flex mb-6">
-                <div className="w-24 h-24 rounded-2xl bg-secondary text-secondary-foreground flex items-center justify-center shadow-lg">
+                <div className="w-24 h-24 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-lg">
                   <step.icon className="w-10 h-10" />
                 </div>
                 <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center shadow-md">

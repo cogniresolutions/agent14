@@ -65,7 +65,7 @@ export const Testimonials = () => {
               
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
                   {testimonial.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>

@@ -67,7 +67,7 @@ export const Features = () => {
               key={feature.title}
               className="group p-6 rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300"
             >
-              <div className="w-12 h-12 rounded-lg bg-secondary text-secondary-foreground flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                 <feature.icon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">
