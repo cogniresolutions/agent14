@@ -35,12 +35,15 @@ export const Header = () => {
       
       <div className="container mx-auto px-6 h-28 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center group">
+        <a href="/" className="flex items-center gap-3 group">
           <img 
             src={agentLogoFull} 
             alt="Agent14 Logo" 
-            className="h-20 md:h-28 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
+            className="h-16 md:h-20 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
           />
+          <span className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
+            Agent<span className="text-gold">14</span>
+          </span>
         </a>
 
         {/* Desktop Navigation */}
