@@ -1,29 +1,99 @@
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
 import agentLogo from '@/assets/agent14-logo.png';
 
+declare global {
+  interface Window {
+    embeddedservice_bootstrap?: {
+      utilAPI?: {
+        launchChat: () => void;
+      };
+    };
+  }
+}
+
 export const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleOpenChat = () => {
+    if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
+      window.embeddedservice_bootstrap.utilAPI.launchChat();
+    }
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-b border-border/30">
-      <div className="container mx-auto px-6 h-18 flex items-center justify-between py-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-primary/30 shadow-cyber">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/40">
+      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <a href="/" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 rounded-lg overflow-hidden ring-1 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
             <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-display text-xl font-semibold tracking-tight text-foreground">
-            Agent<span className="text-primary glow-text">14</span>
+            Agent<span className="text-primary">14</span>
           </span>
-        </div>
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300">
-            Features
-          </a>
-          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300">
+        </a>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-1">
+          <a href="#how-it-works" className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
             How It Works
           </a>
-          <a href="#contact" className="text-sm text-muted-foreground hover:text-primary transition-colors duration-300">
-            Contact
+          <a href="#features" className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+            Features
+          </a>
+          <a href="#testimonials" className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+            Reviews
+          </a>
+          <a href="#faq" className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200">
+            FAQ
           </a>
         </nav>
+
+        {/* CTA Button */}
+        <div className="hidden md:flex items-center gap-3">
+          <button
+            onClick={handleOpenChat}
+            className="px-5 py-2.5 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            Book Now
+          </button>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-background border-t border-border/40">
+          <nav className="container mx-auto px-6 py-4 flex flex-col gap-2">
+            <a href="#how-it-works" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+              How It Works
+            </a>
+            <a href="#features" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+              Features
+            </a>
+            <a href="#testimonials" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+              Reviews
+            </a>
+            <a href="#faq" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+              FAQ
+            </a>
+            <button
+              onClick={handleOpenChat}
+              className="mt-2 px-4 py-3 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Book Now
+            </button>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
