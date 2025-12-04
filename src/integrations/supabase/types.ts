@@ -14,7 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      loyalty_members: {
+        Row: {
+          id: string
+          joined_at: string
+          points: number
+          tier: string
+          total_bookings: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          points?: number
+          tier?: string
+          total_bookings?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          points?: number
+          tier?: string
+          total_bookings?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      loyalty_offers: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percent: number | null
+          id: string
+          is_active: boolean
+          min_tier: string
+          points_required: number | null
+          title: string
+          valid_from: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean
+          min_tier?: string
+          points_required?: number | null
+          title: string
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean
+          min_tier?: string
+          points_required?: number | null
+          title?: string
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
