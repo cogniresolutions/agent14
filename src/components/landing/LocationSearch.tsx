@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { MapPin, Loader2, Navigation, Search, X } from 'lucide-react';
-import { Star } from 'lucide-react';
+import { useState } from 'react';
+import { MapPin, Loader2, Navigation, Search, X, Star } from 'lucide-react';
 
 interface Restaurant {
   name: string;
@@ -122,7 +121,6 @@ export const LocationSearch = () => {
         try {
           const { latitude, longitude } = position.coords;
           
-          // Use free reverse geocoding API
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
             {
@@ -143,8 +141,6 @@ export const LocationSearch = () => {
           setUserLocation({ city, zipCode });
           setSearchQuery(zipCode || city);
           setShowResults(true);
-          
-          // Simulate finding nearby restaurants (in production, this would filter based on actual location)
           setNearbyRestaurants(allRestaurants.slice(0, 4));
         } catch (error) {
           console.error('Reverse geocoding error:', error);
@@ -182,7 +178,6 @@ export const LocationSearch = () => {
     if (!searchQuery.trim()) return;
     
     setShowResults(true);
-    // Filter restaurants based on search (simulated)
     const filtered = allRestaurants.filter(
       (r) =>
         r.zipCode.includes(searchQuery) ||
@@ -212,7 +207,7 @@ export const LocationSearch = () => {
         </div>
 
         {/* Search form */}
-        <div className="bg-card border border-border rounded-2xl p-6 md:p-8 mb-8">
+        <div className="bg-background border border-border rounded-2xl p-6 md:p-8 mb-8 shadow-sm">
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
             {/* Location input */}
             <div className="flex-1 relative">
@@ -222,7 +217,7 @@ export const LocationSearch = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter zip code or city..."
-                className="w-full pl-12 pr-10 py-3.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                className="w-full pl-12 pr-10 py-3.5 bg-secondary/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               />
               {searchQuery && (
                 <button
@@ -240,7 +235,7 @@ export const LocationSearch = () => {
               type="button"
               onClick={detectLocation}
               disabled={isLoading}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-muted/50 border border-border rounded-xl text-foreground font-medium hover:bg-muted transition-colors disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-secondary border border-border rounded-xl text-foreground font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -254,7 +249,7 @@ export const LocationSearch = () => {
             {/* Search button */}
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-sm"
             >
               <Search className="w-5 h-5" />
               Search
@@ -295,7 +290,7 @@ export const LocationSearch = () => {
                 <div
                   key={restaurant.name}
                   onClick={handleOpenChat}
-                  className="group cursor-pointer flex gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-all"
+                  className="group cursor-pointer flex gap-4 p-4 bg-background border border-border rounded-xl hover:border-primary/30 hover:shadow-md transition-all"
                 >
                   {/* Image */}
                   <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -321,7 +316,7 @@ export const LocationSearch = () => {
                     </p>
                     <div className="flex items-center gap-2 text-sm">
                       <div className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+                        <Star className="w-3.5 h-3.5 fill-accent text-accent" />
                         <span className="font-medium text-foreground">{restaurant.rating}</span>
                       </div>
                       <span className="text-muted-foreground">•</span>
@@ -336,7 +331,7 @@ export const LocationSearch = () => {
             <div className="mt-8 text-center">
               <button
                 onClick={handleOpenChat}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-sm"
               >
                 Book a Table with Agent14
               </button>

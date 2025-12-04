@@ -22,13 +22,13 @@ const footerLinks = {
 
 export const Footer = () => {
   return (
-    <footer className="py-16 px-6 bg-card/50 border-t border-border">
+    <footer className="py-16 px-6 bg-secondary/50 border-t border-border">
       <div className="container mx-auto max-w-6xl">
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="md:col-span-1">
             <a href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-lg overflow-hidden ring-1 ring-primary/20">
+              <div className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-border shadow-sm">
                 <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-display text-xl font-semibold tracking-tight text-foreground">
@@ -48,7 +48,7 @@ export const Footer = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
                   </a>
@@ -65,7 +65,7 @@ export const Footer = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
                   </a>
@@ -82,7 +82,7 @@ export const Footer = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
                   </a>

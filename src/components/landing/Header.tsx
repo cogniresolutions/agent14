@@ -22,11 +22,11 @@ export const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/40">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-lg overflow-hidden ring-1 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
+          <div className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-border group-hover:ring-primary/40 transition-all duration-300 shadow-sm">
             <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-display text-xl font-semibold tracking-tight text-foreground">
@@ -71,18 +71,18 @@ export const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-background border-t border-border/40">
-          <nav className="container mx-auto px-6 py-4 flex flex-col gap-2">
-            <a href="#how-it-works" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+        <div className="md:hidden bg-background border-t border-border shadow-lg">
+          <nav className="container mx-auto px-6 py-4 flex flex-col gap-1">
+            <a href="#how-it-works" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
               How It Works
             </a>
-            <a href="#features" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+            <a href="#features" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
               Features
             </a>
-            <a href="#testimonials" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+            <a href="#testimonials" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
               Reviews
             </a>
-            <a href="#faq" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors">
+            <a href="#faq" className="px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
               FAQ
             </a>
             <button

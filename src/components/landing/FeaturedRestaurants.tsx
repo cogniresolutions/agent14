@@ -1,4 +1,4 @@
-import { Star, MapPin, Clock } from 'lucide-react';
+import { Star, MapPin } from 'lucide-react';
 
 const restaurants = [
   {
@@ -61,7 +61,7 @@ export const FeaturedRestaurants = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 px-6 bg-card/30">
+    <section className="py-20 md:py-28 px-6 bg-secondary/30">
       <div className="container mx-auto max-w-6xl">
         {/* Section header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
@@ -97,7 +97,7 @@ export const FeaturedRestaurants = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 {restaurant.badge && (
-                  <span className="absolute top-3 left-3 px-2.5 py-1 text-xs font-medium bg-primary text-primary-foreground rounded-full">
+                  <span className="absolute top-3 left-3 px-2.5 py-1 text-xs font-medium bg-primary text-primary-foreground rounded-full shadow-sm">
                     {restaurant.badge}
                   </span>
                 )}
@@ -120,7 +120,7 @@ export const FeaturedRestaurants = () => {
 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-primary text-primary" />
+                    <Star className="w-4 h-4 fill-accent text-accent" />
                     <span className="font-medium text-foreground">{restaurant.rating}</span>
                     <span className="text-muted-foreground">({restaurant.reviews.toLocaleString()})</span>
                   </div>
@@ -135,7 +135,7 @@ export const FeaturedRestaurants = () => {
         </div>
 
         {/* Partner stats */}
-        <div className="mt-16 p-8 rounded-2xl bg-background border border-border">
+        <div className="mt-16 p-8 rounded-2xl bg-background border border-border shadow-sm">
           <div className="grid sm:grid-cols-3 gap-8 text-center">
             <div>
               <p className="font-display text-3xl font-bold text-foreground mb-1">500+</p>

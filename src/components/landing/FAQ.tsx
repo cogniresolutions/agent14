@@ -32,7 +32,7 @@ export const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-20 md:py-28 px-6 bg-card/30">
+    <section id="faq" className="py-20 md:py-28 px-6 bg-secondary/30">
       <div className="container mx-auto max-w-3xl">
         {/* Section header */}
         <div className="text-center mb-16">
@@ -49,11 +49,11 @@ export const FAQ = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="rounded-xl border border-border bg-background overflow-hidden"
+              className="rounded-xl border border-border bg-background overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-muted/30 transition-colors"
+                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-secondary/50 transition-colors"
               >
                 <span className="font-medium text-foreground pr-4">{faq.question}</span>
                 <ChevronDown 

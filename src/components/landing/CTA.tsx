@@ -20,10 +20,10 @@ export const CTA = () => {
   return (
     <section className="py-20 md:py-28 px-6">
       <div className="container mx-auto max-w-4xl">
-        <div className="relative rounded-3xl bg-gradient-to-br from-primary/10 via-card to-card border border-border p-8 md:p-12 text-center overflow-hidden">
+        <div className="relative rounded-3xl bg-gradient-to-br from-primary/5 via-secondary to-secondary border border-border p-8 md:p-12 text-center overflow-hidden shadow-lg">
           {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
           
           <div className="relative">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
