@@ -65,18 +65,18 @@ export const Header = () => {
 
         {/* CTA Buttons */}
         <div className="hidden lg:flex items-center gap-3">
-          <button
-            onClick={handleOpenChat}
+          <a
+            href="/auth"
             className="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary transition-colors"
           >
             Login
-          </button>
-          <button
-            onClick={handleOpenChat}
+          </a>
+          <a
+            href="/auth"
             className="px-6 py-2.5 text-sm font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all shadow-md"
           >
-            Try it free
-          </button>
+            Sign Up Free
+          </a>
         </div>
 
         {/* Mobile Menu Button */}
@@ -105,18 +105,18 @@ export const Header = () => {
               FAQ
             </a>
             <div className="flex gap-3 mt-4">
-              <button
-                onClick={handleOpenChat}
-                className="flex-1 px-4 py-3 text-sm font-semibold border border-border rounded-lg hover:bg-muted transition-colors"
+              <a
+                href="/auth"
+                className="flex-1 px-4 py-3 text-sm font-semibold border border-border rounded-lg hover:bg-muted transition-colors text-center"
               >
                 Login
-              </button>
-              <button
-                onClick={handleOpenChat}
-                className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-lg"
+              </a>
+              <a
+                href="/auth"
+                className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-lg text-center"
               >
-                Try it free
-              </button>
+                Sign Up
+              </a>
             </div>
           </nav>
         </div>
