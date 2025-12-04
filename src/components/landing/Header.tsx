@@ -35,15 +35,15 @@ export const Header = () => {
       
       <div className="container mx-auto px-6 h-32 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center gap-4 group">
+        <a href="/" className="flex items-center gap-5 group">
           <img 
             src={agentLogoFull} 
             alt="Agent14 Logo" 
-            className="h-16 md:h-20 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
+            className="h-20 md:h-28 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
           />
-          <div className="flex items-baseline gap-0.5">
-            <span className="text-2xl md:text-3xl font-light text-primary tracking-wide uppercase">Agent</span>
-            <span className="text-3xl md:text-4xl font-bold text-gold">14</span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl md:text-4xl font-light text-primary tracking-wide uppercase">Agent</span>
+            <span className="text-4xl md:text-5xl font-bold text-gold">14</span>
           </div>
         </a>
 
