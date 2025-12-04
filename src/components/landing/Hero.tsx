@@ -1,4 +1,4 @@
-import { ArrowRight, MessageSquare, Star, Clock, Users } from 'lucide-react';
+import { ArrowRight, Check, Star } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo.png';
 
 declare global {
@@ -11,10 +11,10 @@ declare global {
   }
 }
 
-const stats = [
-  { icon: Users, value: '50K+', label: 'Happy Diners' },
-  { icon: Star, value: '4.9', label: 'User Rating' },
-  { icon: Clock, value: '<30s', label: 'Avg. Booking Time' },
+const features = [
+  'AI-powered instant bookings',
+  'Modify or cancel with a message',
+  'No phone calls or waiting',
 ];
 
 export const Hero = () => {
@@ -25,88 +25,112 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
-      {/* Subtle background gradient */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-[100px]" />
-        <div className="absolute top-1/3 right-0 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px]" />
-      </div>
+    <section className="relative bg-secondary text-secondary-foreground overflow-hidden">
+      <div className="container mx-auto px-6 py-16 lg:py-24">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left content */}
+          <div className="max-w-xl">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+              AI reservation system for{' '}
+              <span className="text-primary">smart diners</span>
+            </h1>
+            
+            <p className="text-lg text-secondary-foreground/80 mb-8 leading-relaxed">
+              Book tables instantly, modify reservations effortlessly, and never wait on hold again. 
+              Let AI handle your dining plans!
+            </p>
 
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Trust badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-sm font-medium text-primary mb-8 animate-fade-in">
-            <span className="w-2 h-2 rounded-full bg-emerald animate-pulse" />
-            Powered by Salesforce Agentforce
+            {/* Feature checklist */}
+            <ul className="space-y-4 mb-10">
+              {features.map((feature) => (
+                <li key={feature} className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                    <Check className="w-4 h-4 text-accent-foreground" />
+                  </div>
+                  <span className="text-secondary-foreground/90">{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <button
+                onClick={handleOpenChat}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-base shadow-lg hover:bg-primary/90 transition-all"
+              >
+                Try it free
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <a
+                href="#features"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-secondary-foreground/10 text-secondary-foreground rounded-lg font-semibold text-base hover:bg-secondary-foreground/20 transition-all"
+              >
+                See features
+              </a>
+            </div>
+
+            {/* Award badge */}
+            <p className="text-sm text-secondary-foreground/60">
+              Best AI Booking System 2024 - powered by Salesforce Agentforce
+            </p>
           </div>
 
-          {/* Main heading */}
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] mb-6 animate-slide-up">
-            Restaurant Reservations,{' '}
-            <span className="text-primary">Reimagined</span>
-          </h1>
+          {/* Right content - Demo card */}
+          <div className="relative lg:pl-8">
+            {/* Background circle */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-secondary-foreground/5 rounded-full" />
+            
+            {/* Stats badge */}
+            <div className="absolute -top-4 right-0 lg:right-8 bg-accent text-accent-foreground px-4 py-3 rounded-xl shadow-lg z-10">
+              <div className="text-2xl font-bold">98%</div>
+              <div className="text-xs">Happy diners</div>
+            </div>
 
-          {/* Subheading */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-slide-up text-balance" style={{ animationDelay: '100ms' }}>
-            Book your perfect table in seconds with our AI concierge. No phone calls, 
-            no waiting on hold—just tell us what you need.
-          </p>
-
-          {/* CTA Section */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-slide-up" style={{ animationDelay: '200ms' }}>
-            <button
-              onClick={handleOpenChat}
-              className="group inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold text-base shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all duration-300"
-            >
-              <MessageSquare className="w-5 h-5" />
-              Start Booking
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <span className="text-sm text-muted-foreground">
-              No account required
-            </span>
-          </div>
-
-          {/* Demo preview card */}
-          <div className="relative max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '300ms' }}>
-            <div className="bg-card border border-border rounded-2xl p-6 shadow-elevated">
+            {/* Main card */}
+            <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md mx-auto">
               <div className="flex items-start gap-4 mb-4">
-              <div className="w-14 h-14 rounded-xl overflow-hidden ring-2 ring-primary/20 flex-shrink-0 shadow-md hover:ring-primary/50 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer" onClick={handleOpenChat}>
-                  <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+                <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                  <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 text-left">
+                <div className="flex-1">
                   <p className="text-sm font-semibold text-foreground mb-1">Agent14</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Hi! I'm your AI dining concierge. I can help you book, modify, or cancel reservations. 
-                    What would you like to do today?
+                    Hi! I'm your AI dining concierge. I can help you book, modify, or cancel reservations. What would you like to do?
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {['Book a table', 'Change reservation', 'Cancel booking'].map((option) => (
                   <button
                     key={option}
                     onClick={handleOpenChat}
-                    className="px-4 py-2.5 text-sm bg-secondary text-secondary-foreground rounded-lg border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200"
+                    className="px-4 py-2 text-sm bg-muted text-foreground rounded-lg hover:bg-primary hover:text-primary-foreground transition-all"
                   >
                     {option}
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16 mt-16 animate-slide-up" style={{ animationDelay: '400ms' }}>
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <stat.icon className="w-4 h-4 text-primary" />
-                  <span className="font-display text-2xl font-bold text-foreground">{stat.value}</span>
+              
+              {/* Confirmation popup */}
+              <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                    <Check className="w-5 h-5 text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Reservation confirmed!</p>
+                    <p className="text-xs text-muted-foreground">Tonight at 7:00 PM</p>
+                  </div>
                 </div>
-                <span className="text-sm text-muted-foreground">{stat.label}</span>
               </div>
-            ))}
+
+              {/* Rating badge */}
+              <div className="absolute -bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-current" />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

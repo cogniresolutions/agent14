@@ -1,10 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 import { Header } from '@/components/landing/Header';
 import { Hero } from '@/components/landing/Hero';
-import { LocationSearch } from '@/components/landing/LocationSearch';
-import { FeaturedRestaurants } from '@/components/landing/FeaturedRestaurants';
-import { HowItWorks } from '@/components/landing/HowItWorks';
+import { TrustBadges } from '@/components/landing/TrustBadges';
 import { Features } from '@/components/landing/Features';
+import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { FAQ } from '@/components/landing/FAQ';
 import { CTA } from '@/components/landing/CTA';
@@ -22,10 +21,9 @@ const Index = () => {
         <Header />
         <main>
           <Hero />
-          <LocationSearch />
-          <FeaturedRestaurants />
-          <HowItWorks />
+          <TrustBadges />
           <Features />
+          <HowItWorks />
           <Testimonials />
           <FAQ />
           <CTA />
