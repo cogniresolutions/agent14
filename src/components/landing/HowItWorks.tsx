@@ -1,5 +1,5 @@
 import { MessageCircle, Bot, CheckCircle } from 'lucide-react';
-import agentLogo from '@/assets/agent14-logo.png';
+import agentLogo from '@/assets/agent14-logo-new.png';
 
 const steps = [
   {

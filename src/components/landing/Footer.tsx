@@ -1,4 +1,4 @@
-import agentLogoFull from '@/assets/agent14-logo-full.png';
+import agentLogoFull from '@/assets/agent14-logo-new.png';
 
 const footerLinks = {
   product: [
