@@ -1,34 +1,40 @@
-import { Star } from 'lucide-react';
+import { Star, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    name: 'Sarah M.',
-    role: 'Food Enthusiast',
-    content: 'Agent14 completely changed how I book restaurants. I just say what I want, and it handles everything. So much easier than calling or using complicated apps.',
+    name: 'Sarah Mitchell',
+    role: 'Food Blogger',
+    content: 'Agent14 completely transformed how I book restaurants. The AI understands exactly what I need and confirms instantly. No more waiting on hold!',
     rating: 5,
+    image: null,
   },
   {
-    name: 'David L.',
-    role: 'Business Professional',
-    content: 'As someone who books client dinners frequently, this saves me hours every week. The AI understands exactly what I need and confirms instantly.',
+    name: 'David Chen',
+    role: 'Business Executive',
+    content: 'As someone who books client dinners frequently, this saves me hours every week. The modification feature is a game-changer for last-minute changes.',
     rating: 5,
+    image: null,
   },
   {
-    name: 'Emma K.',
-    role: 'Travel Blogger',
-    content: 'I\'ve tried every reservation app out there. Agent14 is by far the most intuitive. It feels like texting a friend who happens to know every restaurant.',
+    name: 'Emma Rodriguez',
+    role: 'Travel Writer',
+    content: 'I\'ve tried every reservation app out there. Agent14 is by far the most intuitive. It feels like texting a friend who knows every restaurant in town.',
     rating: 5,
+    image: null,
   },
 ];
 
 export const Testimonials = () => {
   return (
-    <section id="testimonials" className="py-20 md:py-28 px-6">
+    <section id="testimonials" className="py-20 md:py-28 px-6 bg-background">
       <div className="container mx-auto max-w-6xl">
         {/* Section header */}
         <div className="text-center mb-16">
+          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4">
+            Testimonials
+          </span>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Loved by Diners
+            Loved by diners everywhere
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             See what our users are saying about their experience
@@ -36,34 +42,35 @@ export const Testimonials = () => {
         </div>
 
         {/* Testimonials grid */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="p-6 rounded-2xl bg-background border border-border shadow-sm hover:shadow-md transition-shadow"
+              className="relative p-8 rounded-2xl bg-muted/30 border border-border"
             >
+              {/* Quote icon */}
+              <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/20" />
+              
               {/* Rating */}
               <div className="flex items-center gap-1 mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-accent text-accent" />
+                  <Star key={i} className="w-5 h-5 fill-primary text-primary" />
                 ))}
               </div>
               
               {/* Content */}
-              <p className="text-foreground text-sm leading-relaxed mb-6">
+              <p className="text-foreground leading-relaxed mb-6">
                 "{testimonial.content}"
               </p>
               
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-semibold text-primary">
-                    {testimonial.name.split(' ').map(n => n[0]).join('')}
-                  </span>
+                <div className="w-12 h-12 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-bold">
+                  {testimonial.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{testimonial.name}</p>
-                  <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                  <p className="font-semibold text-foreground">{testimonial.name}</p>
+                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                 </div>
               </div>
             </div>
