@@ -33,13 +33,8 @@ export const Footer = () => {
         <div className="grid md:grid-cols-5 gap-10 mb-12">
           {/* Brand */}
           <div className="md:col-span-1">
-            <a href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg overflow-hidden">
-                <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
-              </div>
-              <span className="font-display text-xl font-bold text-foreground">
-                Agent<span className="text-primary">14</span>
-              </span>
+            <a href="/" className="block mb-4">
+              <img src={agentLogo} alt="Agent14 Logo" className="h-12 w-auto object-contain" />
             </a>
             <p className="text-sm text-muted-foreground leading-relaxed">
               AI-powered restaurant reservations. Book smarter, dine better.
