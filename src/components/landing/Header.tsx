@@ -52,8 +52,8 @@ export const Header = () => {
           <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             How It Works
           </a>
-          <a href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-            Reviews
+          <a href="#loyalty" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            Rewards
           </a>
           <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             FAQ
@@ -95,8 +95,8 @@ export const Header = () => {
             <a href="#how-it-works" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
               How It Works
             </a>
-            <a href="#testimonials" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
-              Reviews
+            <a href="#loyalty" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
+              Rewards
             </a>
             <a href="#faq" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
               FAQ

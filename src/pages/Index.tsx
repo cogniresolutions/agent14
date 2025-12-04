@@ -4,6 +4,7 @@ import { Hero } from '@/components/landing/Hero';
 import { TrustBadges } from '@/components/landing/TrustBadges';
 import { Features } from '@/components/landing/Features';
 import { HowItWorks } from '@/components/landing/HowItWorks';
+import { LoyaltyProgram } from '@/components/landing/LoyaltyProgram';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { FAQ } from '@/components/landing/FAQ';
 import { CTA } from '@/components/landing/CTA';
@@ -24,6 +25,7 @@ const Index = () => {
           <TrustBadges />
           <Features />
           <HowItWorks />
+          <LoyaltyProgram />
           <Testimonials />
           <FAQ />
           <CTA />
