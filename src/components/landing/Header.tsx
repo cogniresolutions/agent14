@@ -33,13 +33,13 @@ export const Header = () => {
         </span>
       </div>
       
-      <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="container mx-auto px-6 h-24 flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center group">
           <img 
             src={agentLogoFull} 
             alt="Agent14 Logo" 
-            className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
+            className="h-16 md:h-20 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
           />
         </a>
 
