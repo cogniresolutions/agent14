@@ -26,10 +26,10 @@ export const Header = () => {
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 shadow-md">
-            <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
+          <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:scale-105">
+            <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
           </div>
-          <span className="font-display text-2xl font-bold tracking-tight text-foreground">
+          <span className="font-display text-2xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors duration-300">
             Agent<span className="text-primary">14</span>
           </span>
         </a>
