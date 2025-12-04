@@ -1,6 +1,6 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import agentLogoFull from '@/assets/agent14-logo-full.png';
+import agentLogoFull from '@/assets/agent14-logo-new.png';
 
 declare global {
   interface Window {
