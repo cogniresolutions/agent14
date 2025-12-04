@@ -28,14 +28,15 @@ export const Hero = () => {
     <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-primary/5 rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-[100px]" />
+        <div className="absolute top-1/3 right-0 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px]" />
       </div>
 
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center">
           {/* Trust badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border text-xs font-medium text-muted-foreground mb-8 animate-fade-in">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-sm font-medium text-primary mb-8 animate-fade-in">
+            <span className="w-2 h-2 rounded-full bg-emerald animate-pulse" />
             Powered by Salesforce Agentforce
           </div>
 
@@ -70,12 +71,12 @@ export const Hero = () => {
           <div className="relative max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '300ms' }}>
             <div className="bg-card border border-border rounded-2xl p-6 shadow-elevated">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-10 h-10 rounded-lg overflow-hidden ring-1 ring-primary/20 flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-primary/20 flex-shrink-0 shadow-sm">
                   <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-foreground mb-1">Agent14</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm font-semibold text-foreground mb-1">Agent14</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Hi! I'm your AI dining concierge. I can help you book, modify, or cancel reservations. 
                     What would you like to do today?
                   </p>
@@ -86,7 +87,7 @@ export const Hero = () => {
                   <button
                     key={option}
                     onClick={handleOpenChat}
-                    className="px-4 py-2 text-sm bg-muted/50 text-muted-foreground rounded-lg border border-border hover:bg-muted hover:text-foreground transition-colors"
+                    className="px-4 py-2.5 text-sm bg-secondary text-secondary-foreground rounded-lg border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200"
                   >
                     {option}
                   </button>

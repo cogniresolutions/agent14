@@ -62,10 +62,10 @@ export const HowItWorks = () => {
               
               <div className="text-center">
                 <div className="relative inline-flex mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-card border border-border flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-2xl bg-secondary border border-border flex items-center justify-center shadow-sm">
                     <step.icon className="w-7 h-7 text-primary" />
                   </div>
-                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-md">
                     {step.number}
                   </span>
                 </div>
@@ -84,9 +84,9 @@ export const HowItWorks = () => {
         <div className="text-center">
           <button
             onClick={handleOpenChat}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl text-foreground font-medium hover:bg-muted/50 hover:border-primary/30 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-secondary border border-border rounded-xl text-foreground font-medium hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200 shadow-sm"
           >
-            <Sparkles className="w-4 h-4 text-primary" />
+            <Sparkles className="w-4 h-4" />
             Try It Now — It's Free
           </button>
         </div>

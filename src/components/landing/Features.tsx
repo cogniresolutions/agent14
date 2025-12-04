@@ -1,4 +1,4 @@
-import { MessageSquare, Calendar, Clock, Shield, Zap, Globe, Bell, CreditCard } from 'lucide-react';
+import { MessageSquare, Calendar, Clock, Shield, Bell, Globe } from 'lucide-react';
 
 const features = [
   {
@@ -35,7 +35,7 @@ const features = [
 
 export const Features = () => {
   return (
-    <section id="features" className="py-20 md:py-28 px-6 bg-card/30">
+    <section id="features" className="py-20 md:py-28 px-6 bg-secondary/30">
       <div className="container mx-auto max-w-6xl">
         {/* Section header */}
         <div className="text-center mb-16">
@@ -49,13 +49,13 @@ export const Features = () => {
 
         {/* Features grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <div
               key={feature.title}
-              className="group p-6 rounded-2xl bg-background border border-border hover:border-primary/20 transition-all duration-300"
+              className="group p-6 rounded-2xl bg-background border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
-                <feature.icon className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                <feature.icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
               </div>
               <h3 className="font-display text-lg font-semibold text-foreground mb-2">
                 {feature.title}
