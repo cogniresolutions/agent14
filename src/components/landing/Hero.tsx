@@ -25,17 +25,17 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative bg-secondary text-secondary-foreground overflow-hidden">
+    <section className="relative bg-muted overflow-hidden">
       <div className="container mx-auto px-6 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left content */}
           <div className="max-w-xl">
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-foreground">
               AI reservation system for{' '}
               <span className="text-primary">smart diners</span>
             </h1>
             
-            <p className="text-lg text-secondary-foreground/80 mb-8 leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
               Book tables instantly, modify reservations effortlessly, and never wait on hold again. 
               Let AI handle your dining plans!
             </p>
@@ -47,7 +47,7 @@ export const Hero = () => {
                   <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
                     <Check className="w-4 h-4 text-accent-foreground" />
                   </div>
-                  <span className="text-secondary-foreground/90">{feature}</span>
+                  <span className="text-foreground/80">{feature}</span>
                 </li>
               ))}
             </ul>
@@ -63,14 +63,14 @@ export const Hero = () => {
               </button>
               <a
                 href="#features"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-secondary-foreground/10 text-secondary-foreground rounded-lg font-semibold text-base hover:bg-secondary-foreground/20 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-border text-foreground rounded-lg font-semibold text-base hover:bg-background transition-all"
               >
                 See features
               </a>
             </div>
 
             {/* Award badge */}
-            <p className="text-sm text-secondary-foreground/60">
+            <p className="text-sm text-muted-foreground">
               Best AI Booking System 2024 - powered by Salesforce Agentforce
             </p>
           </div>
@@ -78,7 +78,7 @@ export const Hero = () => {
           {/* Right content - Demo card */}
           <div className="relative lg:pl-8">
             {/* Background circle */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-secondary-foreground/5 rounded-full" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full" />
             
             {/* Stats badge */}
             <div className="absolute -top-4 right-0 lg:right-8 bg-accent text-accent-foreground px-4 py-3 rounded-xl shadow-lg z-10">
@@ -87,7 +87,7 @@ export const Hero = () => {
             </div>
 
             {/* Main card */}
-            <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md mx-auto">
+            <div className="relative bg-background rounded-2xl shadow-xl border border-border p-6 max-w-md mx-auto">
               <div className="flex items-start gap-4 mb-4">
                 <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
                   <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover" />
@@ -112,7 +112,7 @@ export const Hero = () => {
               </div>
               
               {/* Confirmation popup */}
-              <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-border">
+              <div className="absolute -bottom-6 -left-6 bg-background rounded-xl shadow-lg p-4 border border-border">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
                     <Check className="w-5 h-5 text-accent" />

@@ -1,4 +1,4 @@
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import agentLogo from '@/assets/agent14-logo.png';
 
@@ -22,12 +22,12 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-secondary text-secondary-foreground">
+    <header className="sticky top-0 z-50 bg-background border-b border-border">
       {/* Top banner */}
-      <div className="bg-secondary-foreground/10 py-2 px-6 text-center text-sm">
-        <span className="text-secondary-foreground/80">
-          <span className="font-semibold text-primary">New:</span> AI-Powered Reservations Now Available!{' '}
-          <button onClick={handleOpenChat} className="underline hover:text-primary transition-colors">
+      <div className="bg-primary py-2 px-6 text-center text-sm">
+        <span className="text-primary-foreground">
+          <span className="font-semibold">New:</span> AI-Powered Reservations Now Available!{' '}
+          <button onClick={handleOpenChat} className="underline hover:opacity-80 transition-opacity">
             Try it now
           </button>
         </span>
@@ -39,23 +39,23 @@ export const Header = () => {
           <div className="w-10 h-10 rounded-lg overflow-hidden group-hover:scale-105 transition-transform duration-300">
             <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="font-display text-2xl font-bold tracking-tight">
+          <span className="font-display text-2xl font-bold tracking-tight text-foreground">
             Agent<span className="text-primary">14</span>
           </span>
         </a>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8">
-          <a href="#features" className="text-sm font-medium text-secondary-foreground/80 hover:text-primary transition-colors">
+          <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Features
           </a>
-          <a href="#how-it-works" className="text-sm font-medium text-secondary-foreground/80 hover:text-primary transition-colors">
+          <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             How It Works
           </a>
-          <a href="#testimonials" className="text-sm font-medium text-secondary-foreground/80 hover:text-primary transition-colors">
+          <a href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Reviews
           </a>
-          <a href="#faq" className="text-sm font-medium text-secondary-foreground/80 hover:text-primary transition-colors">
+          <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             FAQ
           </a>
         </nav>
@@ -64,7 +64,7 @@ export const Header = () => {
         <div className="hidden lg:flex items-center gap-3">
           <button
             onClick={handleOpenChat}
-            className="px-5 py-2.5 text-sm font-semibold text-secondary-foreground hover:text-primary transition-colors"
+            className="px-5 py-2.5 text-sm font-semibold text-foreground hover:text-primary transition-colors"
           >
             Login
           </button>
@@ -78,7 +78,7 @@ export const Header = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden p-2 text-secondary-foreground"
+          className="lg:hidden p-2 text-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -87,24 +87,24 @@ export const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-secondary border-t border-secondary-foreground/10">
+        <div className="lg:hidden bg-background border-t border-border">
           <nav className="container mx-auto px-6 py-4 flex flex-col gap-2">
-            <a href="#features" className="px-4 py-3 text-sm text-secondary-foreground/80 hover:text-primary rounded-lg transition-colors">
+            <a href="#features" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="px-4 py-3 text-sm text-secondary-foreground/80 hover:text-primary rounded-lg transition-colors">
+            <a href="#how-it-works" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
               How It Works
             </a>
-            <a href="#testimonials" className="px-4 py-3 text-sm text-secondary-foreground/80 hover:text-primary rounded-lg transition-colors">
+            <a href="#testimonials" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
               Reviews
             </a>
-            <a href="#faq" className="px-4 py-3 text-sm text-secondary-foreground/80 hover:text-primary rounded-lg transition-colors">
+            <a href="#faq" className="px-4 py-3 text-sm text-muted-foreground hover:text-primary rounded-lg transition-colors">
               FAQ
             </a>
             <div className="flex gap-3 mt-4">
               <button
                 onClick={handleOpenChat}
-                className="flex-1 px-4 py-3 text-sm font-semibold border border-secondary-foreground/20 rounded-lg hover:bg-secondary-foreground/10 transition-colors"
+                className="flex-1 px-4 py-3 text-sm font-semibold border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Login
               </button>
