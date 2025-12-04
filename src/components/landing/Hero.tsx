@@ -1,4 +1,4 @@
-import { ArrowRight, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, MessageSquare, Star, Clock, Users } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo.png';
 
 declare global {
@@ -11,77 +11,101 @@ declare global {
   }
 }
 
+const stats = [
+  { icon: Users, value: '50K+', label: 'Happy Diners' },
+  { icon: Star, value: '4.9', label: 'User Rating' },
+  { icon: Clock, value: '<30s', label: 'Avg. Booking Time' },
+];
+
 export const Hero = () => {
   const handleOpenChat = () => {
-    // Trigger Salesforce Agentforce chat
     if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
       window.embeddedservice_bootstrap.utilAPI.launchChat();
     }
   };
+
   return (
-    <section className="relative pt-32 pb-24 px-6 overflow-hidden">
-      {/* Background effects */}
+    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+      {/* Subtle background gradient */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
-        <div className="absolute top-1/3 right-0 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[80px]" />
-        
-        {/* Grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }}
-        />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-primary/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="container mx-auto max-w-5xl">
-        <div className="text-center space-y-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary animate-fade-in">
-            <Zap className="w-4 h-4" />
-            AI-Powered Reservation System
+      <div className="container mx-auto px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Trust badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border text-xs font-medium text-muted-foreground mb-8 animate-fade-in">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
+            Powered by Salesforce Agentforce
           </div>
-          
-          {/* Logo showcase */}
-          <div className="flex justify-center animate-slide-up" style={{ animationDelay: '100ms' }}>
-            <div className="relative">
-              <div className="w-28 h-28 rounded-2xl overflow-hidden ring-2 ring-primary/40 shadow-cyber animate-glow">
-                <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover" />
+
+          {/* Main heading */}
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] mb-6 animate-slide-up">
+            Restaurant Reservations,{' '}
+            <span className="text-primary">Reimagined</span>
+          </h1>
+
+          {/* Subheading */}
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-slide-up text-balance" style={{ animationDelay: '100ms' }}>
+            Book your perfect table in seconds with our AI concierge. No phone calls, 
+            no waiting on hold—just tell us what you need.
+          </p>
+
+          {/* CTA Section */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-slide-up" style={{ animationDelay: '200ms' }}>
+            <button
+              onClick={handleOpenChat}
+              className="group inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold text-base shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all duration-300"
+            >
+              <MessageSquare className="w-5 h-5" />
+              Start Booking
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <span className="text-sm text-muted-foreground">
+              No account required
+            </span>
+          </div>
+
+          {/* Demo preview card */}
+          <div className="relative max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '300ms' }}>
+            <div className="bg-card border border-border rounded-2xl p-6 shadow-elevated">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-10 h-10 rounded-lg overflow-hidden ring-1 ring-primary/20 flex-shrink-0">
+                  <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium text-foreground mb-1">Agent14</p>
+                  <p className="text-sm text-muted-foreground">
+                    Hi! I'm your AI dining concierge. I can help you book, modify, or cancel reservations. 
+                    What would you like to do today?
+                  </p>
+                </div>
               </div>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-glow">
-                <Sparkles className="w-4 h-4 text-primary-foreground" />
+              <div className="flex flex-wrap gap-2">
+                {['Book a table', 'Change reservation', 'Cancel booking'].map((option) => (
+                  <button
+                    key={option}
+                    onClick={handleOpenChat}
+                    className="px-4 py-2 text-sm bg-muted/50 text-muted-foreground rounded-lg border border-border hover:bg-muted hover:text-foreground transition-colors"
+                  >
+                    {option}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
-          
-          {/* Headline */}
-          <h1 className="font-display text-5xl md:text-7xl font-bold leading-tight text-foreground animate-slide-up text-balance" style={{ animationDelay: '200ms' }}>
-            Your AI Dining
-            <br />
-            <span className="text-primary glow-text">Concierge</span>
-          </h1>
-          
-          {/* Subheadline */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-slide-up text-balance" style={{ animationDelay: '300ms' }}>
-            Book, modify, or cancel restaurant reservations instantly through our intelligent AI agent. No calls, no waiting—just seamless dining experiences.
-          </p>
-          
-          {/* CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 animate-slide-up" style={{ animationDelay: '400ms' }}>
-            <button
-              onClick={handleOpenChat}
-              className="group relative inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-full font-semibold text-base shadow-glow hover:shadow-cyber transition-all duration-500 hover:scale-105 overflow-hidden"
-            >
-              <span className="relative z-10">Start Reservation</span>
-              <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-              <div className="absolute inset-0 bg-gradient-to-r from-primary via-cyber-glow to-primary bg-[length:200%_100%] animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-            <span className="text-sm text-muted-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald animate-pulse-soft" />
-              No account required
-            </span>
+
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16 mt-16 animate-slide-up" style={{ animationDelay: '400ms' }}>
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <stat.icon className="w-4 h-4 text-primary" />
+                  <span className="font-display text-2xl font-bold text-foreground">{stat.value}</span>
+                </div>
+                <span className="text-sm text-muted-foreground">{stat.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
