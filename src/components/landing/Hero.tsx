@@ -89,11 +89,11 @@ export const Hero = () => {
             {/* Main card */}
             <div className="relative bg-background rounded-2xl shadow-xl border border-border p-6 max-w-md mx-auto">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 shadow-md bg-slate-900 p-1">
+                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 shadow-md bg-slate-900 p-2">
                   <img src={agentLogo} alt="Agent14" className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-foreground mb-1">Agent14</p>
+                  <p className="text-base font-semibold text-foreground mb-1">Agent14</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Hi! I'm your AI dining concierge. I can help you book, modify, or cancel reservations. What would you like to do?
                   </p>

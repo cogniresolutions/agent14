@@ -1,6 +1,6 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import agentLogo from '@/assets/agent14-logo.png';
+import agentLogoFull from '@/assets/agent14-logo-full.png';
 
 declare global {
   interface Window {
@@ -37,7 +37,7 @@ export const Header = () => {
         {/* Logo */}
         <a href="/" className="flex items-center group">
           <img 
-            src={agentLogo} 
+            src={agentLogoFull} 
             alt="Agent14 Logo" 
             className="h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
           />
