@@ -54,6 +54,8 @@ export default {
         cyber: {
           blue: "hsl(var(--cyber-blue))",
           glow: "hsl(var(--cyber-blue-glow))",
+          orange: "hsl(var(--cyber-orange))",
+          "orange-glow": "hsl(var(--cyber-orange-glow))",
           dark: "hsl(var(--cyber-dark))",
           darker: "hsl(var(--cyber-darker))",
         },
