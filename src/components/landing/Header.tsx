@@ -25,11 +25,11 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-border group-hover:ring-primary/40 transition-all duration-300 shadow-sm">
+        <a href="/" className="flex items-center gap-3 group">
+          <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 shadow-md">
             <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="font-display text-xl font-semibold tracking-tight text-foreground">
+          <span className="font-display text-2xl font-bold tracking-tight text-foreground">
             Agent<span className="text-primary">14</span>
           </span>
         </a>

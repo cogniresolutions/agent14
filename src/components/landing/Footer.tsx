@@ -27,11 +27,11 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="md:col-span-1">
-            <a href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-border shadow-sm">
+            <a href="/" className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-primary/20 shadow-md">
                 <img src={agentLogo} alt="Agent14 Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="font-display text-xl font-semibold tracking-tight text-foreground">
+              <span className="font-display text-2xl font-bold tracking-tight text-foreground">
                 Agent<span className="text-primary">14</span>
               </span>
             </a>
