@@ -39,11 +39,12 @@ export const Header = () => {
           <img 
             src={agentLogoFull} 
             alt="Agent14 Logo" 
-            className="h-20 md:h-24 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
+            className="h-16 md:h-20 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
           />
-          <span className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-            Agent<span className="text-gold">14</span>
-          </span>
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-2xl md:text-3xl font-light text-primary tracking-wide uppercase">Agent</span>
+            <span className="text-3xl md:text-4xl font-bold text-gold">14</span>
+          </div>
         </a>
 
         {/* Desktop Navigation */}
