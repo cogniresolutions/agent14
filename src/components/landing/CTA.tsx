@@ -1,23 +1,8 @@
 import { ArrowRight, MessageSquare } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo-new.png';
-
-declare global {
-  interface Window {
-    embeddedservice_bootstrap?: {
-      utilAPI?: {
-        launchChat: () => void;
-      };
-    };
-  }
-}
+import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 
 export const CTA = () => {
-  const handleOpenChat = () => {
-    if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
-      window.embeddedservice_bootstrap.utilAPI.launchChat();
-    }
-  };
-
   return (
     <section className="py-20 md:py-28 px-6 bg-primary">
       <div className="container mx-auto max-w-4xl text-center">
@@ -35,7 +20,7 @@ export const CTA = () => {
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
-            onClick={handleOpenChat}
+            onClick={launchChat}
             className="inline-flex items-center gap-3 px-8 py-4 bg-background text-foreground rounded-lg font-semibold text-lg shadow-lg hover:bg-background/90 transition-all"
           >
             <MessageSquare className="w-5 h-5" />
