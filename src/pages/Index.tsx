@@ -10,6 +10,7 @@ import { FAQ } from '@/components/landing/FAQ';
 import { CTA } from '@/components/landing/CTA';
 import { Footer } from '@/components/landing/Footer';
 import { SalesforceChatbot } from '@/components/chatbot/SalesforceChatbot';
+import { FloatingChatButton } from '@/components/chatbot/FloatingChatButton';
 
 const Index = () => {
   return (
@@ -21,6 +22,7 @@ const Index = () => {
       
       <div className="min-h-screen bg-background">
         <SalesforceChatbot />
+        <FloatingChatButton />
         <Header />
         <main>
           <Hero />
