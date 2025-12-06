@@ -1,16 +1,6 @@
 import { ArrowRight, Check, Star } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo-new.png';
 
-declare global {
-  interface Window {
-    embeddedservice_bootstrap?: {
-      utilAPI?: {
-        launchChat: () => void;
-      };
-    };
-  }
-}
-
 const features = [
   'AI-powered instant bookings',
   'Modify or cancel with a message',
@@ -19,8 +9,9 @@ const features = [
 
 export const Hero = () => {
   const handleOpenChat = () => {
-    if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
-      window.embeddedservice_bootstrap.utilAPI.launchChat();
+    const esb = (window as any).embeddedservice_bootstrap;
+    if (esb?.utilAPI?.launchChat) {
+      esb.utilAPI.launchChat();
     }
   };
 
