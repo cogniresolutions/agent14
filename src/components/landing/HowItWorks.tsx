@@ -1,5 +1,6 @@
 import { MessageCircle, Bot, CheckCircle } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo-new.png';
+import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 
 const steps = [
   {
@@ -22,23 +23,7 @@ const steps = [
   },
 ];
 
-declare global {
-  interface Window {
-    embeddedservice_bootstrap?: {
-      utilAPI?: {
-        launchChat: () => void;
-      };
-    };
-  }
-}
-
 export const HowItWorks = () => {
-  const handleOpenChat = () => {
-    if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
-      window.embeddedservice_bootstrap.utilAPI.launchChat();
-    }
-  };
-
   return (
     <section id="how-it-works" className="py-20 md:py-28 px-6 bg-muted/50">
       <div className="container mx-auto max-w-6xl">
@@ -85,7 +70,7 @@ export const HowItWorks = () => {
         {/* CTA */}
         <div className="text-center">
           <button
-            onClick={handleOpenChat}
+            onClick={launchChat}
             className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold shadow-lg hover:bg-primary/90 transition-all"
           >
             <div className="w-8 h-8 rounded-lg overflow-hidden">

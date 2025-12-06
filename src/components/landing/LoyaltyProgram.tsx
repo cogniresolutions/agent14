@@ -1,4 +1,5 @@
 import { Gift, Star, Percent, Crown, Trophy, Sparkles } from 'lucide-react';
+import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 
 const benefits = [
   {
@@ -48,23 +49,7 @@ const tiers = [
   },
 ];
 
-declare global {
-  interface Window {
-    embeddedservice_bootstrap?: {
-      utilAPI?: {
-        launchChat: () => void;
-      };
-    };
-  }
-}
-
 export const LoyaltyProgram = () => {
-  const handleOpenChat = () => {
-    if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
-      window.embeddedservice_bootstrap.utilAPI.launchChat();
-    }
-  };
-
   return (
     <section id="loyalty" className="py-20 md:py-28 px-6 bg-muted/30">
       <div className="container mx-auto max-w-6xl">
@@ -148,7 +133,7 @@ export const LoyaltyProgram = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={handleOpenChat}
+              onClick={launchChat}
               className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold shadow-lg hover:bg-primary/90 transition-all"
             >
               <Gift className="w-5 h-5" />

@@ -1,4 +1,26 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
+
+// Create a global promise that resolves when chat is ready
+let chatReadyPromise: Promise<void> | null = null;
+let chatReadyResolve: (() => void) | null = null;
+
+export const launchChat = () => {
+  const esb = (window as any).embeddedservice_bootstrap;
+  if (esb?.utilAPI?.launchChat) {
+    esb.utilAPI.launchChat();
+  } else {
+    console.warn('Chat not ready yet, waiting...');
+    // If chat isn't ready, wait for it
+    if (chatReadyPromise) {
+      chatReadyPromise.then(() => {
+        const esb = (window as any).embeddedservice_bootstrap;
+        if (esb?.utilAPI?.launchChat) {
+          esb.utilAPI.launchChat();
+        }
+      });
+    }
+  }
+};
 
 export const SalesforceChatbot = () => {
   useEffect(() => {
@@ -6,6 +28,11 @@ export const SalesforceChatbot = () => {
     if ((window as any).embeddedservice_bootstrap) {
       return;
     }
+
+    // Create promise for chat ready state
+    chatReadyPromise = new Promise((resolve) => {
+      chatReadyResolve = resolve;
+    });
 
     const script = document.createElement('script');
     script.src = 'https://orgfarm-7eec8186c7.my.site.com/ESWAgt14MessagingChanne1764980162743/assets/js/bootstrap.min.js';
@@ -26,9 +53,27 @@ export const SalesforceChatbot = () => {
             scrt2URL: 'https://orgfarm-7eec8186c7.my.salesforce-scrt.com'
           }
         );
+
+        // Wait a bit for utilAPI to become available, then resolve
+        const checkReady = setInterval(() => {
+          if ((window as any).embeddedservice_bootstrap?.utilAPI?.launchChat) {
+            clearInterval(checkReady);
+            if (chatReadyResolve) {
+              chatReadyResolve();
+            }
+            console.log('Salesforce chat is ready');
+          }
+        }, 100);
+
+        // Clear interval after 10 seconds as fallback
+        setTimeout(() => clearInterval(checkReady), 10000);
       } catch (err) {
         console.error('Error loading Embedded Messaging: ', err);
       }
+    };
+
+    script.onerror = () => {
+      console.error('Failed to load Salesforce chat script');
     };
 
     document.body.appendChild(script);

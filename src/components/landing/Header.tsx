@@ -1,25 +1,10 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import agentLogoFull from '@/assets/agent14-logo-new.png';
-
-declare global {
-  interface Window {
-    embeddedservice_bootstrap?: {
-      utilAPI?: {
-        launchChat: () => void;
-      };
-    };
-  }
-}
+import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleOpenChat = () => {
-    if (window.embeddedservice_bootstrap?.utilAPI?.launchChat) {
-      window.embeddedservice_bootstrap.utilAPI.launchChat();
-    }
-  };
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border">
@@ -27,7 +12,7 @@ export const Header = () => {
       <div className="bg-primary py-2 px-6 text-center text-sm">
         <span className="text-primary-foreground">
           <span className="font-semibold">New:</span> AI-Powered Reservations Now Available!{' '}
-          <button onClick={handleOpenChat} className="underline hover:opacity-80 transition-opacity">
+          <button onClick={launchChat} className="underline hover:opacity-80 transition-opacity">
             Try it now
           </button>
         </span>

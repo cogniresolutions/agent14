@@ -1,5 +1,6 @@
 import { ArrowRight, Check, Star } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo-new.png';
+import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 
 const features = [
   'AI-powered instant bookings',
@@ -8,13 +9,6 @@ const features = [
 ];
 
 export const Hero = () => {
-  const handleOpenChat = () => {
-    const esb = (window as any).embeddedservice_bootstrap;
-    if (esb?.utilAPI?.launchChat) {
-      esb.utilAPI.launchChat();
-    }
-  };
-
   return (
     <section className="relative bg-muted overflow-hidden">
       <div className="container mx-auto px-6 py-16 lg:py-24">
@@ -46,7 +40,7 @@ export const Hero = () => {
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <button
-                onClick={handleOpenChat}
+                onClick={launchChat}
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-base shadow-lg hover:bg-primary/90 transition-all"
               >
                 Try it free
@@ -94,7 +88,7 @@ export const Hero = () => {
                 {['Book a table', 'Change reservation', 'Cancel booking'].map((option) => (
                   <button
                     key={option}
-                    onClick={handleOpenChat}
+                    onClick={launchChat}
                     className="px-4 py-2 text-sm bg-muted text-foreground rounded-lg hover:bg-primary hover:text-primary-foreground transition-all"
                   >
                     {option}
