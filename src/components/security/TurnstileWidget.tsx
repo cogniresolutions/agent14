@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 // Declare Turnstile types
 declare global {
@@ -27,22 +28,39 @@ interface TurnstileWidgetProps {
   onExpire?: () => void;
 }
 
-// Replace with your actual Turnstile Site Key from Cloudflare Dashboard
-const TURNSTILE_SITE_KEY = '0x4AAAAAAAgPBcKj_CCDcQcY';
-
 export const TurnstileWidget = ({ onVerify, onError, onExpire }: TurnstileWidgetProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [scriptError, setScriptError] = useState(false);
+  const [siteKey, setSiteKey] = useState<string | null>(null);
   const mountedRef = useRef(true);
 
+  // Fetch site key from edge function
+  useEffect(() => {
+    const fetchSiteKey = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('turnstile-config');
+        if (error || !data?.siteKey) {
+          console.error('Failed to fetch Turnstile config:', error);
+          setScriptError(true);
+          return;
+        }
+        setSiteKey(data.siteKey);
+      } catch (err) {
+        console.error('Error fetching Turnstile config:', err);
+        setScriptError(true);
+      }
+    };
+    fetchSiteKey();
+  }, []);
+
   const renderWidget = useCallback(() => {
-    if (!containerRef.current || !window.turnstile || widgetIdRef.current) return;
+    if (!containerRef.current || !window.turnstile || widgetIdRef.current || !siteKey) return;
     
     try {
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
+        sitekey: siteKey,
         callback: onVerify,
         'error-callback': onError,
         'expired-callback': onExpire,
@@ -53,9 +71,11 @@ export const TurnstileWidget = ({ onVerify, onError, onExpire }: TurnstileWidget
       console.error('Failed to render Turnstile widget:', err);
       setScriptError(true);
     }
-  }, [onVerify, onError, onExpire]);
+  }, [onVerify, onError, onExpire, siteKey]);
 
   useEffect(() => {
+    if (!siteKey) return;
+    
     mountedRef.current = true;
 
     // Check if script is already loaded
@@ -68,7 +88,6 @@ export const TurnstileWidget = ({ onVerify, onError, onExpire }: TurnstileWidget
     // Check if script tag already exists
     const existingScript = document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
     if (existingScript) {
-      // Wait for it to load
       const checkLoaded = setInterval(() => {
         if (window.turnstile) {
           clearInterval(checkLoaded);
@@ -120,7 +139,7 @@ export const TurnstileWidget = ({ onVerify, onError, onExpire }: TurnstileWidget
         widgetIdRef.current = null;
       }
     };
-  }, [renderWidget]);
+  }, [renderWidget, siteKey]);
 
   if (scriptError) {
     return (
