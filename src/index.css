@@ -112,6 +112,93 @@
   }
 }
 
+/* Salesforce Agentforce Chatbot Styling */
+.embeddedMessagingFrame,
+[class*="embeddedMessaging"] {
+  z-index: 9999 !important;
+}
+
+.embeddedMessagingConversationButton,
+.embeddedMessagingConversationButtonLoaded {
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 50% !important;
+  box-shadow: 
+    0 8px 32px -4px hsl(220 60% 35% / 0.35),
+    0 4px 16px -2px hsl(36 90% 50% / 0.2),
+    0 0 0 3px hsl(36 90% 50% / 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  animation: chatButtonFloat 3s ease-in-out infinite !important;
+}
+
+.embeddedMessagingConversationButton:hover,
+.embeddedMessagingConversationButtonLoaded:hover {
+  transform: scale(1.08) !important;
+  box-shadow: 
+    0 12px 40px -4px hsl(220 60% 35% / 0.45),
+    0 6px 20px -2px hsl(36 90% 50% / 0.3),
+    0 0 0 4px hsl(36 90% 50% / 0.4) !important;
+}
+
+.embeddedMessagingFrame[class*="isMaximized"],
+.embeddedMessagingFrame[class*="isOpen"] {
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 400px !important;
+  max-width: calc(100vw - 48px) !important;
+  height: 600px !important;
+  max-height: calc(100vh - 120px) !important;
+  border-radius: 24px !important;
+  box-shadow: 
+    0 25px 80px -12px hsl(220 60% 20% / 0.35),
+    0 12px 40px -8px hsl(220 60% 35% / 0.2),
+    0 0 0 1px hsl(220 15% 90% / 0.5) !important;
+  overflow: hidden !important;
+  animation: chatPanelSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .embeddedMessagingFrame[class*="isMaximized"],
+  .embeddedMessagingFrame[class*="isOpen"] {
+    width: calc(100vw - 32px) !important;
+    height: calc(100vh - 100px) !important;
+    bottom: 16px !important;
+    right: 16px !important;
+    border-radius: 20px !important;
+  }
+  
+  .embeddedMessagingConversationButton,
+  .embeddedMessagingConversationButtonLoaded {
+    bottom: 16px !important;
+    right: 16px !important;
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
+@keyframes chatButtonFloat {
+  0%, 100% { 
+    transform: translateY(0);
+  }
+  50% { 
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes chatPanelSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @layer utilities {
   .animate-float {
     animation: float 6s ease-in-out infinite;
