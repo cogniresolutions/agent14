@@ -9,8 +9,6 @@ import { toast } from 'sonner';
 import { Mail, Phone, ArrowLeft } from 'lucide-react';
 import agentLogo from '@/assets/agent14-logo-new.png';
 import { z } from 'zod';
-import { useBotProtection } from '@/hooks/useBotProtection';
-import { HoneypotField } from '@/components/HoneypotField';
 
 const emailSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -42,9 +40,6 @@ export default function Auth() {
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
 
-  // Bot protection
-  const { honeypotValue, setHoneypotValue, validateSubmission } = useBotProtection();
-
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -65,14 +60,6 @@ export default function Auth() {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Bot protection check
-    const botCheck = validateSubmission();
-    if (botCheck.isBot) {
-      toast.error(botCheck.reason || 'Suspicious activity detected');
-      return;
-    }
-    
     setLoading(true);
 
     try {
@@ -124,14 +111,6 @@ export default function Auth() {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Bot protection check
-    const botCheck = validateSubmission();
-    if (botCheck.isBot) {
-      toast.error(botCheck.reason || 'Suspicious activity detected');
-      return;
-    }
-    
     setLoading(true);
 
     try {
@@ -226,9 +205,6 @@ export default function Auth() {
             {/* Email Auth */}
             <TabsContent value="email">
               <form onSubmit={handleEmailAuth} className="space-y-4">
-                {/* Honeypot field for bot protection */}
-                <HoneypotField value={honeypotValue} onChange={(e) => setHoneypotValue(e.target.value)} />
-                
                 {!isLogin && (
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>
@@ -275,9 +251,6 @@ export default function Auth() {
             <TabsContent value="phone">
               {!otpSent ? (
                 <form onSubmit={handleSendOtp} className="space-y-4">
-                  {/* Honeypot field for bot protection */}
-                  <HoneypotField value={honeypotValue} onChange={(e) => setHoneypotValue(e.target.value)} />
-                  
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
                     <Input
