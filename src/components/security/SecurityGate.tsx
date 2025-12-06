@@ -1,6 +1,7 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { TurnstileWidget } from './TurnstileWidget';
 import { Shield, CheckCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import logo from '@/assets/agent14-logo-new.png';
 
 interface SecurityGateProps {
@@ -14,6 +15,7 @@ export const SecurityGate = ({ children }: SecurityGateProps) => {
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is already verified
@@ -29,26 +31,41 @@ export const SecurityGate = ({ children }: SecurityGateProps) => {
     setIsVerified(false);
   }, []);
 
-  const handleVerify = (token: string) => {
+  const handleVerify = async (token: string) => {
     setIsVerifying(true);
+    setError(null);
     
-    // Store verification with timestamp
-    localStorage.setItem(VERIFICATION_KEY, JSON.stringify({
-      verified: true,
-      timestamp: Date.now(),
-      token: token.substring(0, 20) // Store partial token for reference
-    }));
+    try {
+      // Server-side verification
+      const { data, error: fnError } = await supabase.functions.invoke('verify-turnstile', {
+        body: { token }
+      });
 
-    // Show success animation
-    setShowSuccess(true);
-    setTimeout(() => {
-      setIsVerified(true);
-    }, 1500);
+      if (fnError || !data?.success) {
+        throw new Error(fnError?.message || 'Verification failed');
+      }
+
+      // Store verification with timestamp
+      localStorage.setItem(VERIFICATION_KEY, JSON.stringify({
+        verified: true,
+        timestamp: Date.now()
+      }));
+
+      // Show success animation
+      setShowSuccess(true);
+      setTimeout(() => {
+        setIsVerified(true);
+      }, 1500);
+    } catch (err) {
+      console.error('Verification error:', err);
+      setError('Verification failed. Please try again.');
+      setIsVerifying(false);
+    }
   };
 
   const handleError = () => {
     setIsVerifying(false);
-    console.error('Turnstile verification failed');
+    setError('Security check failed. Please refresh and try again.');
   };
 
   const handleExpire = () => {
@@ -129,6 +146,12 @@ export const SecurityGate = ({ children }: SecurityGateProps) => {
               {isVerifying && (
                 <div className="mt-4 text-center text-sm text-muted-foreground">
                   Verifying...
+                </div>
+              )}
+
+              {error && (
+                <div className="mt-4 text-center text-sm text-red-500">
+                  {error}
                 </div>
               )}
             </>
