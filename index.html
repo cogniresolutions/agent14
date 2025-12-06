@@ -22,25 +22,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Salesforce Agentforce Chatbot -->
-    <script type='text/javascript'>
-      function initEmbeddedMessaging() {
-        try {
-          embeddedservice_bootstrap.settings.language = 'en_US';
-          embeddedservice_bootstrap.init(
-            '00Daj00000fuXdh',
-            'Agt14_Messaging_Channel_with_reCaptcha',
-            'https://orgfarm-7eec8186c7.my.site.com/ESWAgt14MessagingChanne1764980162743',
-            {
-              scrt2URL: 'https://orgfarm-7eec8186c7.my.salesforce-scrt.com'
-            }
-          );
-        } catch (err) {
-          console.error('Error loading Embedded Messaging: ', err);
-        }
-      };
-    </script>
-    <script type='text/javascript' src='https://orgfarm-7eec8186c7.my.site.com/ESWAgt14MessagingChanne1764980162743/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
   </body>
 </html>
