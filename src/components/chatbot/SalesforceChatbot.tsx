@@ -1,8 +1,14 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
 // Create a global promise that resolves when chat is ready
 let chatReadyPromise: Promise<void> | null = null;
 let chatReadyResolve: (() => void) | null = null;
+let scriptLoaded = false;
+
+// Initialize the promise immediately
+chatReadyPromise = new Promise((resolve) => {
+  chatReadyResolve = resolve;
+});
 
 export const launchChat = () => {
   const esb = (window as any).embeddedservice_bootstrap;
@@ -10,29 +16,24 @@ export const launchChat = () => {
     esb.utilAPI.launchChat();
   } else {
     console.warn('Chat not ready yet, waiting...');
-    // If chat isn't ready, wait for it
-    if (chatReadyPromise) {
-      chatReadyPromise.then(() => {
-        const esb = (window as any).embeddedservice_bootstrap;
-        if (esb?.utilAPI?.launchChat) {
-          esb.utilAPI.launchChat();
-        }
-      });
-    }
+    // Wait for chat to be ready
+    chatReadyPromise?.then(() => {
+      const esb = (window as any).embeddedservice_bootstrap;
+      if (esb?.utilAPI?.launchChat) {
+        esb.utilAPI.launchChat();
+      }
+    });
   }
 };
 
 export const SalesforceChatbot = () => {
   useEffect(() => {
     // Check if already loaded
-    if ((window as any).embeddedservice_bootstrap) {
+    if (scriptLoaded || (window as any).embeddedservice_bootstrap) {
       return;
     }
 
-    // Create promise for chat ready state
-    chatReadyPromise = new Promise((resolve) => {
-      chatReadyResolve = resolve;
-    });
+    scriptLoaded = true;
 
     const script = document.createElement('script');
     script.src = 'https://orgfarm-7eec8186c7.my.site.com/ESWAgt14MessagingChanne1764980162743/assets/js/bootstrap.min.js';
@@ -54,7 +55,7 @@ export const SalesforceChatbot = () => {
           }
         );
 
-        // Wait a bit for utilAPI to become available, then resolve
+        // Wait for utilAPI to become available, then resolve
         const checkReady = setInterval(() => {
           if ((window as any).embeddedservice_bootstrap?.utilAPI?.launchChat) {
             clearInterval(checkReady);
