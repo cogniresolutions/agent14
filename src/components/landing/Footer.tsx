@@ -1,28 +1,29 @@
+import { Link } from 'react-router-dom';
 import agentLogoFull from '@/assets/agent14-logo-new.png';
 
 const footerLinks = {
   product: [
-    { label: 'Features', href: '#features' },
-    { label: 'How It Works', href: '#how-it-works' },
-    { label: 'Pricing', href: '#' },
-    { label: 'FAQ', href: '#faq' },
+    { label: 'Features', href: '#features', isExternal: true },
+    { label: 'How It Works', href: '#how-it-works', isExternal: true },
+    { label: 'Pricing', href: '#', isExternal: true },
+    { label: 'FAQ', href: '#faq', isExternal: true },
   ],
   company: [
-    { label: 'About Us', href: '#' },
-    { label: 'For Restaurants', href: '#' },
-    { label: 'Careers', href: '#' },
-    { label: 'Contact', href: 'mailto:support@agent14.online' },
+    { label: 'About Us', href: '#', isExternal: true },
+    { label: 'For Restaurants', href: '#', isExternal: true },
+    { label: 'Careers', href: '#', isExternal: true },
+    { label: 'Contact', href: 'mailto:support@agent14.online', isExternal: true },
   ],
   resources: [
-    { label: 'Blog', href: '#' },
-    { label: 'Help Center', href: '#' },
-    { label: 'API Docs', href: '#' },
-    { label: 'Status', href: '#' },
+    { label: 'Blog', href: '#', isExternal: true },
+    { label: 'Help Center', href: '#', isExternal: true },
+    { label: 'API Docs', href: '#', isExternal: true },
+    { label: 'Status', href: '#', isExternal: true },
   ],
   legal: [
-    { label: 'Privacy Policy', href: '#' },
-    { label: 'Terms of Service', href: '#' },
-    { label: 'Cookie Policy', href: '#' },
+    { label: 'Privacy Policy', href: '/privacy-policy', isExternal: false },
+    { label: 'Terms of Service', href: '/terms-of-service', isExternal: false },
+    { label: 'Cookie Policy', href: '#', isExternal: true },
   ],
 };
 
@@ -51,9 +52,15 @@ export const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
-                  </a>
+                  {link.isExternal ? (
+                    <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -65,9 +72,15 @@ export const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
-                  </a>
+                  {link.isExternal ? (
+                    <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -79,9 +92,15 @@ export const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
-                  </a>
+                  {link.isExternal ? (
+                    <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -93,9 +112,15 @@ export const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
-                  </a>
+                  {link.isExternal ? (
+                    <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
