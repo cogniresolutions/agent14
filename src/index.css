@@ -133,6 +133,14 @@
   z-index: 9999 !important;
 }
 
+/* Force chat window and all modals to be centered and fully visible */
+.embeddedMessagingFrame,
+.embeddedMessagingFrame iframe,
+[class*="slds-"] {
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
+}
+
 .embeddedMessagingConversationButton,
 .embeddedMessagingConversationButtonLoaded {
   bottom: 24px !important;
@@ -160,9 +168,11 @@
 .embeddedMessagingFrame[class*="isMaximized"],
 .embeddedMessagingFrame[class*="isOpen"] {
   bottom: 24px !important;
-  right: 24px !important;
+  right: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
   width: 400px !important;
-  max-width: calc(100vw - 48px) !important;
+  max-width: calc(100vw - 32px) !important;
   height: 600px !important;
   max-height: calc(100vh - 120px) !important;
   border-radius: 24px !important;
@@ -174,14 +184,30 @@
   animation: chatPanelSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
+/* Error messages and notifications inside chat */
+.embeddedMessaging .slds-notify,
+.embeddedMessaging [class*="error"],
+.embeddedMessaging [class*="Error"],
+.embeddedMessaging [class*="toast"],
+.embeddedMessaging [class*="notification"] {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  max-width: calc(100vw - 48px) !important;
+  text-align: center !important;
+}
+
 /* Mobile responsive */
 @media (max-width: 480px) {
   .embeddedMessagingFrame[class*="isMaximized"],
   .embeddedMessagingFrame[class*="isOpen"] {
-    width: calc(100vw - 32px) !important;
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
     height: calc(100vh - 100px) !important;
-    bottom: 16px !important;
-    right: 16px !important;
+    bottom: 12px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
     border-radius: 20px !important;
   }
   
@@ -206,11 +232,11 @@
 @keyframes chatPanelSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.96);
+    transform: translateX(-50%) translateY(20px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0) scale(1);
   }
 }
 
