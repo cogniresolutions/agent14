@@ -171,19 +171,25 @@ flowchart TB
 
 ![Salesforce Agentforce Architecture](./salesforce-agentforce-architecture.jpg)
 
-**Salesforce Agentforce Component Architecture (from Salesforce Trailhead):**
+**Diagram Legend (icons clockwise from top):**
+
+| Icon | Component | Salesforce Term | Description |
+|------|-----------|-----------------|-------------|
+| 🗄️ Database | **Data Cloud** | Salesforce Data Cloud | Unified customer data platform for grounding AI responses |
+| 💡 Lightbulb | **Einstein Trust Layer** | Trust Layer | Secure AI architecture with prompt defense, toxicity detection, data masking |
+| ☁️ Cloud | **Service Cloud** | Service Cloud | Customer service integration for human agent escalation |
+| ⚙️ Gear | **Custom Flows** | Flow Automation | Business process automation triggered by agent actions |
+| 📱 Mobile | **Actions** | Standard/Custom Actions | Tools the agent uses to complete tasks |
+| 📊 Chart | **Topics** | Topic Classification | Categories of actions related to specific jobs |
+| 🛡️ Shield (orange) | **Guardrails** | Agentforce Guardrails | Ethical and security rules that define agent behavior boundaries |
+| 🛡️ Shield (purple) | **Security** | Platform Guardrails | Acceptable Use Policy and Model Containment Policies |
+
+**Core Components (from Salesforce Trailhead):**
 
 | Component | Salesforce Term | Description |
 |-----------|-----------------|-------------|
-| **Agentforce Agent** | Agent Engine | Core conversational AI that orchestrates all components |
-| **Topics** | Topic Classification | Categories of actions related to specific jobs (e.g., Reservations, Cancellations) |
-| **Actions** | Standard/Custom Actions | Tools the agent uses to complete tasks (e.g., Create Reservation, Check Availability) |
-| **Guardrails** | Agentforce Guardrails | Ethical and security rules that define agent behavior boundaries |
-| **Einstein Trust Layer** | Trust Layer | Secure AI architecture with prompt defense, toxicity detection, data masking |
-| **Data Cloud** | Salesforce Data Cloud | Unified customer data platform for grounding AI responses |
-| **Service Cloud** | Service Cloud | Customer service integration for human agent escalation |
+| **Agentforce Agent** | Agent Engine | Core conversational AI that orchestrates all components (center cloud) |
 | **Knowledge Base** | Salesforce Knowledge | Restaurant info, FAQs, policies for grounding responses |
-| **Salesforce Flow** | Flow Automation | Business process automation triggered by agent actions |
 
 **Agentforce Guardrail Types (from Salesforce documentation):**
 
