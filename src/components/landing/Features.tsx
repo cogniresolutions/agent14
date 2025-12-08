@@ -1,4 +1,4 @@
-import { MessageSquare, Calendar, Clock, Shield, Bell, Globe, Smartphone, Zap } from 'lucide-react';
+import { MessageSquare, Calendar, Clock, Shield, Bell, Globe, Smartphone, Zap, Users, HeartHandshake } from 'lucide-react';
 
 const features = [
   {
@@ -17,14 +17,14 @@ const features = [
     description: 'Change date, time, or party size with a simple message anytime.',
   },
   {
-    icon: Bell,
-    title: 'Smart Reminders',
-    description: 'Get timely notifications so you never miss a reservation.',
+    icon: HeartHandshake,
+    title: 'Human When You Need It',
+    description: 'Seamless escalation to real people for complex requests or when you prefer human touch.',
   },
   {
     icon: Shield,
     title: 'Secure & Private',
-    description: 'Your data is encrypted and never shared with third parties.',
+    description: 'Enterprise-grade security with Salesforce Einstein Trust Layer protection.',
   },
   {
     icon: Globe,
@@ -32,9 +32,9 @@ const features = [
     description: 'Book anytime, anywhere. Our AI concierge never sleeps.',
   },
   {
-    icon: Smartphone,
-    title: 'Mobile Friendly',
-    description: 'Perfect experience on any device - phone, tablet, or desktop.',
+    icon: Users,
+    title: 'Dedicated Support Team',
+    description: 'Our human agents are always ready to assist with complaints, special requests, or accessibility needs.',
   },
   {
     icon: Zap,

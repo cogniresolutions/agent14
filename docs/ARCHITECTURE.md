@@ -1128,19 +1128,170 @@ flowchart LR
     class D1,D2,D3 ai
 ```
 
-### Prompt Injection Protection
+### Prompt Injection Protection & Human Escalation
 
 ![Prompt Injection Protection Flow](./prompt-injection-protection.jpg)
 
-**Einstein Trust Layer Security Pipeline (based on Salesforce official documentation):**
+**Einstein Trust Layer Security Pipeline with Human Escalation (icon-only diagram):**
 
-| Stage | Salesforce Component | Description |
-|-------|---------------------|-------------|
-| **1. User Prompt** | Input Capture | User message enters the Agentforce system |
-| **2. Prompt Defense** | Prompt Injection Detection | AI classifier detects malicious prompts using taxonomy-based detection (Pretending/Role-play, Privilege Escalation, Prompt Leakage, Adversarial Suffix, Privacy Attacks, Malicious Code Generation) |
-| **3. Toxicity Detection** | Toxicity Detector | LLM responses are scanned for potentially harmful content |
-| **4. Data Masking** | Secure Data Masking | Sensitive data (PII, credentials) automatically masked before response |
-| **5. Secure Ground** | Zero-Data Retention | Data grounded in trusted company data, never retained by third-party LLMs |
+| Icon | Stage | Salesforce Component | Description |
+|------|-------|---------------------|-------------|
+| ⚠️ Red Warning | User Input | Input Capture | User message enters the Agentforce system |
+| 🛡️ Blue Shield | Security Check | Prompt Defense | Detects malicious prompts using taxonomy-based detection |
+| 🧠 Green Brain | AI Processing | Einstein Trust Layer | Toxicity detection, semantic analysis, data masking |
+| 👤 Orange Person | Human Escalation | Service Cloud Handoff | Complex requests routed to human agents |
+| ✅ Purple Check | Safe Output | Secure Response | Validated, secure response delivered to user |
+
+---
+
+## Human Escalation Process
+
+Agent14 ensures customers always have access to human support when needed. The escalation process is a core feature, not just a fallback.
+
+### Escalation Architecture
+
+```mermaid
+flowchart TB
+    subgraph UserInput["👤 User Interaction"]
+        Message["User Message"]
+    end
+
+    subgraph AIProcessing["🤖 Agentforce Processing"]
+        Intent["Intent Classification"]
+        Topic["Topic Routing"]
+        Action["Action Execution"]
+    end
+
+    subgraph EscalationCheck["🔍 Escalation Detection"]
+        Trigger["Trigger Evaluation"]
+        Sentiment["Sentiment Analysis"]
+        Complexity["Complexity Check"]
+    end
+
+    subgraph HumanHandoff["👥 Human Handoff"]
+        Queue["Support Queue"]
+        Agent["Human Agent"]
+        Context["Context Transfer"]
+    end
+
+    subgraph Resolution["✅ Resolution"]
+        AIResponse["AI Response"]
+        HumanResponse["Human Response"]
+        Confirmation["Customer Confirmation"]
+    end
+
+    Message --> Intent
+    Intent --> Topic
+    Topic --> EscalationCheck
+    
+    EscalationCheck -->|No Trigger| Action
+    Action --> AIResponse
+    AIResponse --> Confirmation
+    
+    EscalationCheck -->|Trigger Detected| Queue
+    Queue --> Context
+    Context --> Agent
+    Agent --> HumanResponse
+    HumanResponse --> Confirmation
+
+    classDef user fill:#3498db,stroke:#3498db,color:#fff
+    classDef ai fill:#00a1e0,stroke:#00a1e0,color:#fff
+    classDef check fill:#f39c12,stroke:#f39c12,color:#fff
+    classDef human fill:#27ae60,stroke:#27ae60,color:#fff
+    classDef resolve fill:#9b59b6,stroke:#9b59b6,color:#fff
+
+    class Message user
+    class Intent,Topic,Action ai
+    class Trigger,Sentiment,Complexity check
+    class Queue,Agent,Context human
+    class AIResponse,HumanResponse,Confirmation resolve
+```
+
+### Escalation Triggers
+
+| Trigger Category | Specific Triggers | Action |
+|------------------|-------------------|--------|
+| **Explicit Request** | "Speak to a person", "Human please", "Real agent" | Immediate handoff |
+| **Complaints** | Negative sentiment, dissatisfaction expressions | Priority escalation |
+| **Refund Requests** | Cancellation with refund mention | Manager queue |
+| **Accessibility Needs** | Wheelchair, dietary allergies, special accommodations | Specialist queue |
+| **Large Parties** | Bookings over 12 guests | Event coordinator |
+| **Complex Modifications** | Multiple changes, special timing | Senior agent |
+| **Repeated Failures** | 3+ failed AI resolution attempts | Auto-escalate |
+| **VIP Customers** | Loyalty tier Gold/Platinum | Priority human queue |
+
+### Seamless Handoff Process
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant AI as Agentforce AI
+    participant SC as Service Cloud
+    participant HA as Human Agent
+
+    C->>AI: "I have a complaint about my last visit"
+    AI->>AI: Detect: COMPLAINT trigger
+    AI->>AI: Sentiment: NEGATIVE
+    AI->>C: "I understand you have a concern. Let me connect you with a specialist who can help."
+    AI->>SC: Escalation Request + Full Context
+    SC->>SC: Route to Priority Queue
+    SC->>HA: Assign Case + Conversation History
+    HA->>C: "Hi, I'm Sarah from Agent14 Support. I can see you visited on [date]. How can I help resolve this?"
+    C->>HA: Explains issue
+    HA->>C: "I've arranged [resolution]. Is there anything else?"
+    C->>HA: "No, thank you!"
+    HA->>SC: Close Case - Resolved
+    SC->>AI: Log Resolution for Training
+```
+
+### Context Transfer Protocol
+
+When escalating to a human agent, the following context is automatically transferred:
+
+| Context Item | Description |
+|--------------|-------------|
+| **Conversation History** | Full AI chat transcript |
+| **Customer Profile** | Name, contact, loyalty tier, preferences |
+| **Reservation Details** | Current/past bookings, modifications |
+| **Escalation Reason** | Why AI triggered handoff |
+| **Sentiment Score** | Customer emotion assessment |
+| **Attempted Solutions** | What AI already tried |
+| **Suggested Actions** | AI recommendations for resolution |
+
+### Human Agent Dashboard
+
+Human agents receive escalated cases in Service Cloud with:
+
+- **Real-time Chat Interface**: Continue conversation seamlessly
+- **Customer 360 View**: Complete customer history
+- **AI Suggestions**: Recommended responses and actions
+- **One-Click Actions**: Quick resolution tools
+- **Escalation Timer**: SLA tracking
+- **Manager Override**: Instant supervisor access
+
+### Escalation SLAs
+
+| Priority Level | Response Time | Resolution Target |
+|----------------|---------------|-------------------|
+| **Critical** (VIP complaint) | < 1 minute | < 15 minutes |
+| **High** (Refund, accessibility) | < 3 minutes | < 30 minutes |
+| **Medium** (Complex booking) | < 5 minutes | < 1 hour |
+| **Standard** (General inquiry) | < 10 minutes | < 2 hours |
+
+### Trust Pattern: Human-in-the-Loop
+
+From Salesforce Trust Patterns documentation:
+
+> "We facilitate smooth transitions from agents to humans. Examples include copying a sales manager on AI-generated emails, or providing a dashboard for human oversight."
+
+Agent14 implements this trust pattern through:
+
+1. **Transparency**: Customers always know when they are speaking to AI vs human
+2. **Opt-out**: Customers can request human assistance at any time
+3. **Oversight**: Human managers can monitor AI conversations in real-time
+4. **Audit Trail**: All escalations logged for quality assurance
+
+---
 
 **Salesforce Prompt Injection Taxonomy (from Salesforce AI Research):**
 

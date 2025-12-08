@@ -26,6 +26,18 @@ const faqs = [
     question: 'How far in advance can I book?',
     answer: 'Booking windows vary by restaurant, but most allow reservations up to 30 days in advance. Some high-demand restaurants may have longer or shorter windows.',
   },
+  {
+    question: 'What if I need to speak with a real person?',
+    answer: 'Agent14 seamlessly connects you with a human representative whenever needed. For complex requests, complaints, accessibility accommodations, or if you simply prefer human assistance, our AI automatically escalates to our dedicated support team. You can also request human help at any time during your conversation.',
+  },
+  {
+    question: 'How does the human escalation process work?',
+    answer: 'Our AI is designed to recognize when human assistance would be more helpful. Triggers include complaints, refund requests, special accommodations, large party bookings over 12 guests, or when you explicitly ask for a person. The handoff is smooth - your conversation history is shared so you do not have to repeat yourself.',
+  },
+  {
+    question: 'Is my data secure with the AI?',
+    answer: 'Absolutely. Agent14 is built on Salesforce Einstein Trust Layer, which includes prompt injection protection, data masking, toxicity detection, and zero data retention by third-party AI providers. Your personal information is encrypted and never shared.',
+  },
 ];
 
 export const FAQ = () => {
