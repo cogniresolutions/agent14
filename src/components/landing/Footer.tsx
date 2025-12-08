@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import agentLogoFull from '@/assets/agent14-logo-new.png';
 
 const footerLinks = {
@@ -28,6 +28,13 @@ const footerLinks = {
 };
 
 export const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleLinkClick = (href: string) => {
+    navigate(href);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <footer className="py-16 px-6 bg-background border-t border-border">
       <div className="container mx-auto max-w-6xl">
@@ -117,9 +124,12 @@ export const Footer = () => {
                       {link.label}
                     </a>
                   ) : (
-                    <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    <button
+                      onClick={() => handleLinkClick(link.href)}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                    >
                       {link.label}
-                    </Link>
+                    </button>
                   )}
                 </li>
               ))}
