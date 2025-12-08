@@ -1184,13 +1184,23 @@ Agent14 ensures customers always have access to human support when needed. The e
 
 **Escalation Flow Legend (left to right):**
 
-| Icon | Step | Description |
-|------|------|-------------|
-| 💬 Chat Bubbles | **User Message** | Customer initiates conversation or requests help |
-| 🤖 Robot | **AI Processing** | Agentforce analyzes intent and attempts resolution |
-| ⚠️ Warning Triangle | **Escalation Trigger** | System detects need for human intervention |
-| 🎧 Headset Person | **Human Agent** | Request routed to Service Cloud human support |
-| ✅ Checkmark | **Resolution** | Issue resolved and customer confirmation received |
+| Step | Icon | Color | Salesforce Component | Official Term | Description |
+|------|------|-------|---------------------|---------------|-------------|
+| 1 | 💬 Chat Bubbles | Blue | **Messaging Channel** | Salesforce Messaging | Customer initiates conversation via chat widget |
+| 2 | 🤖 Robot | Purple | **Agentforce** | Agentforce Service Agent | AI analyzes intent using Topic Classification |
+| 3 | ⚠️ Warning Triangle | Orange | **Escalation Trigger** | Agentforce Escalation Rules | System detects need for human intervention |
+| 4 | 🎧 Headset Person | Yellow/Green | **Service Cloud** | Omni-Channel Routing | Request routed to available human agent |
+| 5 | ✅ Checkmark | Teal | **Case Resolution** | Service Cloud Case Management | Issue resolved with customer confirmation |
+
+**Salesforce Service Cloud Escalation Components:**
+
+| Component | Official Name | Function |
+|-----------|---------------|----------|
+| AI Agent | Agentforce Service Agent | Handles initial customer interaction |
+| Trigger Detection | Agentforce Escalation Rules | Identifies when human support is needed |
+| Queue Management | Omni-Channel Routing | Routes cases to appropriate human agents |
+| Context Transfer | Einstein Conversation Insights | Transfers full conversation history to agent |
+| Case Tracking | Service Cloud Cases | Manages resolution workflow and SLAs |
 
 ### Escalation Architecture
 
