@@ -11,6 +11,7 @@ import { CTA } from '@/components/landing/CTA';
 import { Footer } from '@/components/landing/Footer';
 import { SalesforceChatbot } from '@/components/chatbot/SalesforceChatbot';
 import { FloatingChatButton } from '@/components/chatbot/FloatingChatButton';
+import { SecurityTrustBadge } from '@/components/landing/SecurityTrustBadge';
 
 const Index = () => {
   return (
@@ -30,6 +31,7 @@ const Index = () => {
           <Features />
           <HowItWorks />
           <LoyaltyProgram />
+          <SecurityTrustBadge />
           <Testimonials />
           <FAQ />
           <CTA />
