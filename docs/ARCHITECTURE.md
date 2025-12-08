@@ -11,12 +11,12 @@
 ![Agent14 Architecture Diagram](./architecture-diagram.jpg)
 
 **Diagram Legend (top to bottom):**
-| Icon | Layer | Description |
-|------|-------|-------------|
-| 👤 User | Users | Web & Mobile browsers accessing the platform |
-| 🖥️ Monitor | Frontend | React application with authentication & chatbot UI |
-| ☁️ Cloud/Server | Backend | API Gateway, Authentication, Database services |
-| 🤖 Robot | Salesforce Agentforce | AI Chatbot with Einstein Trust Layer security |
+| Layer | Color | Description |
+|-------|-------|-------------|
+| **Users** | Gray | Web & Mobile browsers accessing the platform |
+| **Cloudflare** | Orange | Security layer with CDN, WAF, DDoS & Bot Protection |
+| **Frontend** | Light Blue | React application with authentication & chatbot UI |
+| **Salesforce** | Dark Blue | Salesforce Agentforce AI backend |
 
 ---
 
@@ -171,18 +171,19 @@ flowchart TB
 
 ![Salesforce Agentforce Architecture](./salesforce-agentforce-architecture.jpg)
 
-**Diagram Legend (center hub with connected components):**
+**Diagram Legend (Salesforce Agentforce Hub & Spoke):**
 
-| Color | Icon | Component | Description |
-|-------|------|-----------|-------------|
-| 🔵 Blue (Center) | Robot | **AI Agent** | Core Agentforce conversational AI engine |
-| 🟣 Purple | Document | **Topics & Actions** | Defines conversation scope, allowed intents, and action boundaries |
-| 🔴 Red | Gears | **Agent Actions** | Executable operations (create reservation, modify booking, cancel) |
-| 🟠 Orange | Shield | **Guardrails** | Safety boundaries preventing harmful or off-topic responses |
-| 🟡 Yellow | Settings | **Einstein GPT** | Generative AI engine powering natural language understanding |
-| 🟣 Dark Purple | Cloud | **Data Cloud** | Unified customer data platform for personalization |
-| 🔵 Teal | Person | **Service Cloud** | Customer service integration for case escalation |
-| 🟢 Green | Person | **Sales Cloud CRM** | Customer relationship data and booking history |
+| Component | Description |
+|-----------|-------------|
+| **Salesforce (Center)** | Core Agentforce platform with AI Agent |
+| **Topics** | Conversation scope and intent classification |
+| **Actions** | Executable operations (reservations, bookings) |
+| **Guardrails** | Safety boundaries and restrictions |
+| **Einstein AI** | AI engine powering natural language understanding |
+| **Einstein Flows** | Automation and workflow orchestration |
+| **Data Cloud** | Unified customer data platform |
+| **Service Cloud** | Customer service and case escalation |
+| **Knowledge** | Restaurant info, FAQs, and policies |
 
 ### Agentforce Component Details
 
@@ -1122,14 +1123,15 @@ flowchart LR
 
 ![Prompt Injection Protection Flow](./prompt-injection-protection.jpg)
 
-**Diagram Legend (left to right):**
-| Icon | Stage | Description |
-|------|-------|-------------|
-| ⚠️ Warning Triangle | Threat | Potentially malicious user input |
-| 🛡️ Shield (1st) | Pattern Detection | Einstein Trust Layer scans for injection patterns |
-| 🛡️ Shield (2nd) | Boundary Check | Topic & Action boundaries validate intent |
-| ✅ Checkmark | Safe Output | Validated, sanitized response |
-| 🛡️ Shield (3rd) | Output Masking | Data masking before delivery |
+**Diagram Legend (Einstein Trust Layer Security Pipeline):**
+
+| Stage | Description |
+|-------|-------------|
+| **Input** | User message enters the system |
+| **Pattern Detection** | Scans for known injection patterns and malicious content |
+| **Semantic Analysis** | AI-powered intent analysis to detect disguised attacks |
+| **Trust Layer** | Einstein Trust Layer validates and filters content |
+| **Safe Output** | Validated, sanitized response delivered to user |
 
 The platform is protected against six categories of prompt injection attacks:
 
