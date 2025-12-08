@@ -10,6 +10,14 @@
 
 ![Agent14 Architecture Diagram](./architecture-diagram.jpg)
 
+**Diagram Legend (top to bottom):**
+| Icon | Layer | Description |
+|------|-------|-------------|
+| 👤 User | Users | Web & Mobile browsers accessing the platform |
+| 🖥️ Monitor | Frontend | React application with authentication & chatbot UI |
+| ☁️ Cloud/Server | Backend | API Gateway, Authentication, Database services |
+| 🤖 Robot | Salesforce Agentforce | AI Chatbot with Einstein Trust Layer security |
+
 ---
 
 ## Executive Summary
