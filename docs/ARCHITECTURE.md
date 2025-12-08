@@ -10,13 +10,23 @@
 
 ![Agent14 Architecture Diagram](./architecture-diagram.jpg)
 
-**Diagram Legend (top to bottom):**
-| Layer | Color | Description |
-|-------|-------|-------------|
-| **Users** | Gray | Web & Mobile browsers accessing the platform |
-| **Cloudflare** | Orange | Security layer with CDN, WAF, DDoS & Bot Protection |
-| **Frontend** | Light Blue | React application with authentication & chatbot UI |
-| **Salesforce** | Dark Blue | Salesforce Agentforce AI backend |
+**Diagram Legend (top to bottom layers):**
+
+| Icon | Layer | Color | Description |
+|------|-------|-------|-------------|
+| 👤 User | **Users** | Navy/Dark Blue | Web & Mobile browsers accessing the platform |
+| 🤖🛡️ Bot + Shield | **Security** | Teal | Cloudflare Turnstile bot protection & security verification |
+| 🖥️ Monitor | **Frontend** | Blue-Green | React application with authentication UI & chatbot interface |
+| 🤖 Robot | **AI Agent** | Cyan/Light Teal | Salesforce Agentforce AI backend handling reservations |
+
+**Layer Descriptions:**
+
+| Layer | Technologies | Key Functions |
+|-------|--------------|---------------|
+| **Users** | Web/Mobile Browsers | Customer access point for reservation requests |
+| **Security** | Cloudflare Turnstile, WAF, DDoS Protection | Bot detection, human verification, traffic filtering |
+| **Frontend** | React, Lovable Platform, Supabase Auth | User interface, authentication, chatbot widget |
+| **AI Agent** | Salesforce Agentforce, Einstein Trust Layer | Intelligent reservation processing, natural language understanding |
 
 ---
 
