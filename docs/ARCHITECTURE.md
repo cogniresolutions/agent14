@@ -167,6 +167,176 @@ flowchart TB
 
 ---
 
+## Salesforce Agentforce Internal Architecture
+
+![Salesforce Agentforce Architecture](./salesforce-agentforce-architecture.jpg)
+
+**Diagram Legend (center hub with connected components):**
+
+| Color | Icon | Component | Description |
+|-------|------|-----------|-------------|
+| 🔵 Blue (Center) | Robot | **AI Agent** | Core Agentforce conversational AI engine |
+| 🟣 Purple | Document | **Topics & Actions** | Defines conversation scope, allowed intents, and action boundaries |
+| 🔴 Red | Gears | **Agent Actions** | Executable operations (create reservation, modify booking, cancel) |
+| 🟠 Orange | Shield | **Guardrails** | Safety boundaries preventing harmful or off-topic responses |
+| 🟡 Yellow | Settings | **Einstein GPT** | Generative AI engine powering natural language understanding |
+| 🟣 Dark Purple | Cloud | **Data Cloud** | Unified customer data platform for personalization |
+| 🔵 Teal | Person | **Service Cloud** | Customer service integration for case escalation |
+| 🟢 Green | Person | **Sales Cloud CRM** | Customer relationship data and booking history |
+
+### Agentforce Component Details
+
+```mermaid
+flowchart TB
+    subgraph AgentCore["🤖 Agentforce Core"]
+        Agent["AI Agent Engine"]
+        NLU["Natural Language Understanding"]
+        Dialog["Dialog Management"]
+    end
+
+    subgraph Topics["📝 Topics & Actions"]
+        ResTopic["Reservation Topic"]
+        ModTopic["Modification Topic"]
+        CancelTopic["Cancellation Topic"]
+        InfoTopic["Information Topic"]
+    end
+
+    subgraph Actions["⚡ Agent Actions"]
+        CreateRes["Create Reservation"]
+        ModifyRes["Modify Booking"]
+        CancelRes["Cancel Booking"]
+        CheckAvail["Check Availability"]
+    end
+
+    subgraph Guardrails["🛡️ Guardrails"]
+        Boundary["Topic Boundaries"]
+        Restrict["Action Restrictions"]
+        Escalate["Human Escalation Rules"]
+    end
+
+    subgraph Einstein["🧠 Einstein Platform"]
+        GPT["Einstein GPT"]
+        Trust["Einstein Trust Layer"]
+        Copilot["Einstein Copilot"]
+    end
+
+    subgraph DataSources["📊 Data Sources"]
+        DataCloud["Data Cloud"]
+        ServiceCloud["Service Cloud"]
+        SalesCRM["Sales Cloud CRM"]
+        Knowledge["Knowledge Base"]
+    end
+
+    subgraph Flows["⚙️ Automation"]
+        SFFlow["Salesforce Flow"]
+        Apex["Apex Triggers"]
+        Integration["External APIs"]
+    end
+
+    %% Core connections
+    Agent --> NLU
+    NLU --> Dialog
+    Dialog --> Topics
+    
+    %% Topic to Action
+    ResTopic --> CreateRes
+    ModTopic --> ModifyRes
+    CancelTopic --> CancelRes
+    InfoTopic --> CheckAvail
+    
+    %% Guardrails
+    Topics --> Guardrails
+    Actions --> Guardrails
+    
+    %% Einstein
+    Agent --> Einstein
+    GPT --> Trust
+    Trust --> Agent
+    
+    %% Data Sources
+    Agent --> DataSources
+    DataCloud --> Agent
+    Knowledge --> Agent
+    
+    %% Automation
+    Actions --> Flows
+    SFFlow --> Integration
+
+    classDef core fill:#00a1e0,stroke:#00a1e0,color:#fff
+    classDef topics fill:#9b59b6,stroke:#9b59b6,color:#fff
+    classDef actions fill:#e74c3c,stroke:#e74c3c,color:#fff
+    classDef guard fill:#f39c12,stroke:#f39c12,color:#fff
+    classDef einstein fill:#1abc9c,stroke:#1abc9c,color:#fff
+    classDef data fill:#3498db,stroke:#3498db,color:#fff
+    classDef flow fill:#27ae60,stroke:#27ae60,color:#fff
+
+    class Agent,NLU,Dialog core
+    class ResTopic,ModTopic,CancelTopic,InfoTopic topics
+    class CreateRes,ModifyRes,CancelRes,CheckAvail actions
+    class Boundary,Restrict,Escalate guard
+    class GPT,Trust,Copilot einstein
+    class DataCloud,ServiceCloud,SalesCRM,Knowledge data
+    class SFFlow,Apex,Integration flow
+```
+
+### How Agentforce Processes a Reservation Request
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Agent as AI Agent
+    participant NLU as NLU Engine
+    participant Topic as Topic Router
+    participant Guard as Guardrails
+    participant Trust as Einstein Trust Layer
+    participant Action as Agent Action
+    participant Flow as Salesforce Flow
+    participant Data as Data Cloud
+
+    User->>Agent: "Book a table for 4 tonight at 7pm"
+    Agent->>Trust: Security scan (prompt injection check)
+    Trust-->>Agent: ✅ Safe input
+    Agent->>NLU: Parse intent & entities
+    NLU-->>Agent: Intent: CREATE_RESERVATION, Entities: {party_size: 4, time: 19:00, date: today}
+    Agent->>Topic: Route to Reservation Topic
+    Topic->>Guard: Check topic boundaries
+    Guard-->>Topic: ✅ Within scope
+    Topic->>Action: Execute "Create Reservation"
+    Action->>Data: Fetch customer preferences
+    Data-->>Action: Customer history & preferences
+    Action->>Flow: Trigger reservation flow
+    Flow-->>Action: Reservation confirmed #RES-12345
+    Action-->>Agent: Success response
+    Agent->>Trust: Mask sensitive data
+    Trust-->>Agent: Safe response
+    Agent-->>User: "Your table for 4 is confirmed for tonight at 7pm. Confirmation: #RES-12345"
+```
+
+### Salesforce Integration Points
+
+| Salesforce Product | Integration Purpose |
+|--------------------|---------------------|
+| **Data Cloud** | Unified customer profiles, preferences, dining history |
+| **Service Cloud** | Case escalation, human agent handoff, support tickets |
+| **Sales Cloud** | CRM data, loyalty program, customer relationships |
+| **Einstein GPT** | Natural language generation, response personalization |
+| **Einstein Trust Layer** | Security scanning, data masking, toxicity detection |
+| **Salesforce Flow** | Business process automation, reservation workflows |
+| **Knowledge Base** | Restaurant info, menu details, policies, FAQs |
+| **MuleSoft** | External system integrations (POS, payment systems) |
+
+### Guardrail Configuration
+
+| Guardrail Type | Configuration |
+|----------------|---------------|
+| **Topic Boundaries** | Agent only discusses reservations, restaurant info, loyalty program |
+| **Action Restrictions** | Cannot access payment details, cannot modify past reservations |
+| **Data Access** | Read-only access to customer history, no PII in responses |
+| **Escalation Triggers** | Complaints, refund requests, special accommodations |
+| **Response Limits** | Max 500 characters, no external links, professional tone |
+
+---
+
 ## Data Flow Sequence
 
 ```mermaid
