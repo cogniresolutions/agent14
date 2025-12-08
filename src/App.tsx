@@ -13,6 +13,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ApiDocumentation from "./pages/ApiDocumentation";
 import Blog from "./pages/Blog";
+import Status from "./pages/Status";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/api-docs" element={<ApiDocumentation />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/status" element={<Status />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
