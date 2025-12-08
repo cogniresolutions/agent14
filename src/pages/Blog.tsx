@@ -1,10 +1,39 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, User, Heart, Star, Quote } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import agentLogoFull from '@/assets/agent14-logo-new.png';
+
+// Blog image component with loading state and fallback
+const BlogImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  const fallbackImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect fill='%231a1a2e' width='800' height='500'/%3E%3Ctext fill='%23c9a961' font-family='sans-serif' font-size='24' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3EAgent14 Story%3C/text%3E%3C/svg%3E";
+
+  return (
+    <div className={`relative ${className}`}>
+      {isLoading && (
+        <Skeleton className="absolute inset-0 w-full h-full" />
+      )}
+      <img 
+        src={hasError ? fallbackImage : src}
+        alt={alt}
+        className={`w-full h-full object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        loading="lazy"
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          setHasError(true);
+          setIsLoading(false);
+        }}
+      />
+    </div>
+  );
+};
 
 const blogPosts = [
   {
@@ -16,7 +45,7 @@ const blogPosts = [
     location: "New York, NY",
     date: "December 5, 2024",
     readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
     featured: true,
     content: {
       story: `My husband and I had been planning our 10th wedding anniversary dinner for months. We had reservations at this exclusive French restaurant downtown—the kind of place you book three months in advance. Then, disaster struck.
@@ -46,7 +75,7 @@ I've now used Agent14 for every special occasion since. It's like having a perso
     location: "Chicago, IL",
     date: "November 28, 2024",
     readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800&h=500&fit=crop",
+    image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80",
     featured: false,
     content: {
       story: `Organizing a surprise 60th birthday party for my mother was supposed to be simple. Twenty guests, her favorite Italian restaurant, maybe a private room. What could go wrong?
@@ -78,7 +107,7 @@ My family still talks about that party. And they all now use Agent14 for their o
     location: "Austin, TX",
     date: "November 15, 2024",
     readTime: "3 min read",
-    image: "https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=800&h=500&fit=crop",
+    image: "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=800&q=80",
     featured: false,
     content: {
       story: `I have pretty severe social anxiety. Making phone calls to strangers? Nightmare. Walking into a restaurant and hoping my reservation exists? Cold sweats.
@@ -108,7 +137,7 @@ We're still dating, by the way. And yes, I've used Agent14 for every date since�
     location: "San Francisco, CA",
     date: "November 8, 2024",
     readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop",
+    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
     featured: true,
     content: {
       story: `When you're closing a seven-figure deal with clients from Tokyo, the dinner venue matters. It's not just about the food—it's about showing respect, understanding cultural nuances, and creating an environment where business relationships flourish.
@@ -142,7 +171,7 @@ We closed the deal that night, over dessert, overlooking the stars above wine co
     location: "Barcelona, Spain",
     date: "October 25, 2024",
     readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=800&h=500&fit=crop",
+    image: "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&q=80",
     featured: false,
     content: {
       story: `Solo travel is liberating until you're standing alone in a foreign city, starving, surrounded by tourist traps, with no idea where the locals actually eat.
@@ -174,7 +203,7 @@ Solo travel doesn't have to mean eating alone in silence. Agent14 gave me confid
     location: "Miami, FL",
     date: "October 12, 2024",
     readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1529543544277-750e580e538d?w=800&h=500&fit=crop",
+    image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80",
     featured: true,
     content: {
       story: `I had the ring. I had practiced my speech fifty times. I had permission from her father. All I needed was the perfect restaurant—and to somehow coordinate the whole thing without my extremely perceptive girlfriend figuring out what I was planning.
@@ -264,12 +293,12 @@ const Blog = () => {
               {featuredPosts.map((post) => (
                 <Card key={post.id} className="group border-border overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                   <div className="relative h-48 overflow-hidden">
-                    <img 
+                    <BlogImage 
                       src={post.image} 
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full group-hover:scale-105 transition-transform duration-500"
                     />
-                    <Badge className="absolute top-3 left-3 bg-gold text-gold-foreground">
+                    <Badge className="absolute top-3 left-3 bg-gold text-gold-foreground z-10">
                       {post.category}
                     </Badge>
                   </div>
@@ -304,13 +333,13 @@ const Blog = () => {
                 <article key={post.id} className="group">
                   <Card className="border-border overflow-hidden hover:shadow-lg transition-all duration-300">
                     <div className="md:flex">
-                      <div className="md:w-1/3 relative overflow-hidden">
-                        <img 
+                      <div className="md:w-1/3 relative overflow-hidden h-48 md:h-auto md:min-h-[250px]">
+                        <BlogImage 
                           src={post.image} 
                           alt={post.title}
-                          className="w-full h-48 md:h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full group-hover:scale-105 transition-transform duration-500"
                         />
-                        <Badge className="absolute top-3 left-3 bg-gold text-gold-foreground">
+                        <Badge className="absolute top-3 left-3 bg-gold text-gold-foreground z-10">
                           {post.category}
                         </Badge>
                       </div>
