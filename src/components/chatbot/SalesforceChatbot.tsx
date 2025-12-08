@@ -15,7 +15,7 @@ export const launchChat = () => {
   if (esb?.utilAPI?.launchChat) {
     esb.utilAPI.launchChat();
   } else {
-    console.warn('Chat not ready yet, waiting...');
+    // Chat not ready yet, waiting...
     // Wait for chat to be ready
     chatReadyPromise?.then(() => {
       const esb = (window as any).embeddedservice_bootstrap;
@@ -62,19 +62,18 @@ export const SalesforceChatbot = () => {
             if (chatReadyResolve) {
               chatReadyResolve();
             }
-            console.log('Salesforce chat is ready');
           }
         }, 100);
 
         // Clear interval after 10 seconds as fallback
         setTimeout(() => clearInterval(checkReady), 10000);
       } catch (err) {
-        console.error('Error loading Embedded Messaging: ', err);
+        // Failed to load Embedded Messaging
       }
     };
 
     script.onerror = () => {
-      console.error('Failed to load Salesforce chat script');
+      // Failed to load Salesforce chat script
     };
 
     document.body.appendChild(script);
