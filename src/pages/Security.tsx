@@ -303,7 +303,7 @@ const Security = () => {
                 </h2>
                 <p className="text-muted-foreground mb-6">
                   Our AI reservation assistant is powered by Salesforce Agentforce, which includes 
-                  the Einstein Trust Layer—a comprehensive security framework designed to protect 
+                  the Einstein Trust Layer, a comprehensive security framework designed to protect 
                   against prompt injection attacks and ensure safe AI interactions.
                 </p>
                 <div className="space-y-4">
