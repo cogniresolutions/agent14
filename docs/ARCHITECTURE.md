@@ -1154,15 +1154,25 @@ flowchart LR
 
 ![Prompt Injection Protection Flow](./prompt-injection-protection.jpg)
 
-**Einstein Trust Layer Security Pipeline with Human Escalation (icon-only diagram):**
+**Einstein Trust Layer Security Pipeline (left to right):**
 
-| Icon | Stage | Salesforce Component | Description |
-|------|-------|---------------------|-------------|
-| ⚠️ Red Warning | User Input | Input Capture | User message enters the Agentforce system |
-| 🛡️ Blue Shield | Security Check | Prompt Defense | Detects malicious prompts using taxonomy-based detection |
-| 🧠 Green Brain | AI Processing | Einstein Trust Layer | Toxicity detection, semantic analysis, data masking |
-| 👤 Orange Person | Human Escalation | Service Cloud Handoff | Complex requests routed to human agents |
-| ✅ Purple Check | Safe Output | Secure Response | Validated, secure response delivered to user |
+| Step | Icon | Color | Salesforce Component | Official Term | Description |
+|------|------|-------|---------------------|---------------|-------------|
+| 1 | ⚠️ Warning Triangle | Orange | **Prompt Capture** | Agent Input Handler | User message enters Agentforce system for processing |
+| 2 | 🛡️ Shield | Purple | **Prompt Defense** | Einstein Prompt Guard | Detects prompt injection attacks using taxonomy-based classification |
+| 3 | 🧠 Brain | Blue | **Trust Layer** | Einstein Trust Layer | Toxicity detection, semantic analysis, PII data masking |
+| 4 | ✅ Checkmark | Green | **Secure Ground** | Einstein Secure Grounding | Validates AI output against trusted data sources |
+| 5 | 👤 Person | Teal | **Human Handoff** | Service Cloud Escalation | Complex or sensitive requests routed to human agents |
+
+**Salesforce Einstein Trust Layer Components:**
+
+| Component | Official Name | Function |
+|-----------|---------------|----------|
+| Prompt Defense | Einstein Prompt Guard | Real-time detection of 6 attack categories |
+| Toxicity Filter | Einstein Toxicity Detection | Blocks harmful or inappropriate content |
+| Data Protection | Einstein Data Masking | Automatic PII redaction and anonymization |
+| Output Validation | Secure Grounding | Ensures responses are grounded in trusted data |
+| Audit Logging | Einstein Audit Trail | Complete logging for compliance and monitoring |
 
 ---
 
