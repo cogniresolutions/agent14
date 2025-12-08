@@ -10,23 +10,29 @@
 
 ![Agent14 Architecture Diagram](./architecture-diagram.jpg)
 
-**Diagram Legend (top to bottom layers):**
+**Diagram Legend (top to bottom - connected flow):**
 
-| Icon | Layer | Color | Description |
-|------|-------|-------|-------------|
-| 👤 User | **Users** | Navy/Dark Blue | Web & Mobile browsers accessing the platform |
-| 🤖🛡️ Bot + Shield | **Security** | Teal | Cloudflare Turnstile bot protection & security verification |
-| 🖥️ Monitor | **Frontend** | Blue-Green | React application with authentication UI & chatbot interface |
-| 🤖 Robot | **AI Agent** | Cyan/Light Teal | Salesforce Agentforce AI backend handling reservations |
+| Step | Icon | Layer | Color | Description |
+|------|------|-------|-------|-------------|
+| 1 | 👤🛡️ User + Shield | **Users & Security** | Navy Blue | User access with Cloudflare Turnstile bot protection |
+| 2 | 🖥️ Monitor | **Frontend** | Teal | React application with authentication & chatbot UI |
+| 3 | 🤖 Robot | **AI Agent** | Light Cyan | Salesforce Agentforce handling reservation requests |
 
-**Layer Descriptions:**
+**Data Flow (arrows show connection):**
+
+| From | To | Description |
+|------|----|-------------|
+| Users & Security | Frontend | Verified human users access React application |
+| Frontend | AI Agent | Chatbot sends reservation requests to Agentforce |
+| AI Agent | Frontend | AI responses returned to user interface |
+
+**Layer Technologies:**
 
 | Layer | Technologies | Key Functions |
 |-------|--------------|---------------|
-| **Users** | Web/Mobile Browsers | Customer access point for reservation requests |
-| **Security** | Cloudflare Turnstile, WAF, DDoS Protection | Bot detection, human verification, traffic filtering |
+| **Users & Security** | Web/Mobile, Cloudflare Turnstile, WAF | Customer access, bot detection, human verification |
 | **Frontend** | React, Lovable Platform, Supabase Auth | User interface, authentication, chatbot widget |
-| **AI Agent** | Salesforce Agentforce, Einstein Trust Layer | Intelligent reservation processing, natural language understanding |
+| **AI Agent** | Salesforce Agentforce, Einstein Trust Layer | Natural language processing, reservation management |
 
 ---
 
