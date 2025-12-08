@@ -5,10 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Cloudflare provides test keys for development
-// These always pass verification - replace with real keys in production
-const DEVELOPMENT_SECRET_KEY = '1x0000000000000000000000000000000AA'; // Always passes
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -26,10 +22,17 @@ serve(async (req) => {
       );
     }
 
-    // Use production key if configured, otherwise use development test key
-    const secretKey = Deno.env.get('CLOUDFLARE_TURNSTILE_SECRET_KEY') || DEVELOPMENT_SECRET_KEY;
+    const secretKey = Deno.env.get('CLOUDFLARE_TURNSTILE_SECRET_KEY');
 
-    console.log('Verifying Turnstile token with key:', secretKey.substring(0, 10) + '...');
+    if (!secretKey) {
+      console.error('CLOUDFLARE_TURNSTILE_SECRET_KEY not configured in Supabase secrets');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Turnstile secret key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Verifying Turnstile token using secret from Supabase secrets');
 
     // Verify with Cloudflare
     const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
