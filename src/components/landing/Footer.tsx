@@ -104,9 +104,12 @@ export const Footer = () => {
                       {link.label}
                     </a>
                   ) : (
-                    <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    <button
+                      onClick={() => handleLinkClick(link.href)}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                    >
                       {link.label}
-                    </Link>
+                    </button>
                   )}
                 </li>
               ))}
