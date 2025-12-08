@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent14 Platform Architecture</title>
+  <meta name="description" content="Technical architecture documentation for the Agent14 AI-powered restaurant reservation platform.">
+  <style>
+    :root {
+      --navy: #1a365d;
+      --gold: #d4af37;
+      --text: #1a1a2e;
+      --text-muted: #64748b;
+      --bg: #ffffff;
+      --bg-muted: #f8fafc;
+      --border: #e2e8f0;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+    }
+    
+    h1 {
+      font-size: 2.25rem;
+      color: var(--navy);
+      border-bottom: 3px solid var(--gold);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+    
+    h2 {
+      font-size: 1.75rem;
+      color: var(--navy);
+      margin-top: 48px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    h3 {
+      font-size: 1.375rem;
+      color: #2d3748;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    
+    h4 {
+      font-size: 1.125rem;
+      color: #4a5568;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+    
+    blockquote {
+      border-left: 4px solid var(--gold);
+      margin: 24px 0;
+      padding: 16px 20px;
+      background: var(--bg-muted);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+    
+    blockquote strong {
+      color: var(--text);
+    }
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 24px 0;
+      font-size: 0.9rem;
+    }
+    
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      text-align: left;
+    }
+    
+    th {
+      background: var(--bg-muted);
+      color: var(--navy);
+      font-weight: 600;
+    }
+    
+    tr:nth-child(even) {
+      background: var(--bg-muted);
+    }
+    
+    code {
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-family: 'Fira Code', 'Consolas', monospace;
+      color: #e11d48;
+    }
+    
+    pre {
+      background: #1a1a2e;
+      color: #e2e8f0;
+      padding: 24px;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin: 24px 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    
+    a {
+      color: #3182ce;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 24px 0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0;
+    }
+    
+    ul, ol {
+      margin: 16px 0;
+      padding-left: 24px;
+      color: var(--text-muted);
+    }
+    
+    li {
+      margin: 8px 0;
+    }
+    
+    .mermaid {
+      background: var(--bg-muted);
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 24px 0;
+      border: 1px solid var(--border);
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .header-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--navy), #2d4a7c);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+    }
+    
+    .header-text h1 {
+      margin: 0;
+      border: none;
+      padding: 0;
+      font-size: 1.75rem;
+    }
+    
+    .header-text p {
+      margin: 4px 0 0;
+      font-size: 0.875rem;
+    }
+    
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    
+    .note {
+      background: linear-gradient(135deg, #fef3c7, #fef9c3);
+      border: 1px solid #fbbf24;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 24px 0;
+    }
+    
+    .note strong {
+      color: #92400e;
+    }
+    
+    @media print {
+      body {
+        max-width: 100%;
+        padding: 20px;
+      }
+      
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      
+      .no-print {
+        display: none !important;
+      }
+      
+      h2, h3 {
+        page-break-after: avoid;
+      }
+      
+      table, pre, blockquote {
+        page-break-inside: avoid;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 24px 16px;
+      }
+      
+      h1 {
+        font-size: 1.75rem;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+      
+      table {
+        font-size: 0.8rem;
+      }
+      
+      th, td {
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header no-print">
+    <div class="header-icon">📄</div>
+    <div class="header-text">
+      <h1>Agent14 Platform Architecture</h1>
+      <p>This HTML file is auto-generated from ARCHITECTURE.md</p>
+    </div>
+  </div>
+
+  <div class="note no-print">
+    <strong>Note:</strong> This static HTML file is for reference. For the always-up-to-date version, visit the <a href="/docs">live documentation viewer</a> which automatically syncs with the source markdown file.
+  </div>
+
+  <article>
+    <!-- Content auto-generated from ARCHITECTURE.md -->
+    
+    <h1>Agent14 Platform Architecture</h1>
+    
+    <blockquote>
+      <strong>Version:</strong> 1.0<br>
+      <strong>Last Updated:</strong> December 2024<br>
+      <strong>Document Type:</strong> Technical Architecture Overview
+    </blockquote>
+    
+    <hr>
+    
+    <h2>Architecture Diagram</h2>
+    
+    <p><img src="./architecture-diagram.jpg" alt="Agent14 Architecture Diagram"></p>
+    
+    <p><strong>Diagram Legend (top to bottom - connected flow):</strong></p>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>Icon</th>
+          <th>Layer</th>
+          <th>Color</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>👤🛡️ User + Shield</td>
+          <td><strong>Users & Security</strong></td>
+          <td>Navy Blue</td>
+          <td>User access with Cloudflare Turnstile bot protection</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>🖥️ Monitor</td>
+          <td><strong>Frontend</strong></td>
+          <td>Teal</td>
+          <td>React application with authentication & chatbot UI</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>🤖 Robot</td>
+          <td><strong>AI Agent</strong></td>
+          <td>Light Cyan</td>
+          <td>Salesforce Agentforce handling reservation requests</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <hr>
+    
+    <h2>Executive Summary</h2>
+    
+    <p>Agent14 is a secure, AI-powered restaurant reservation platform that leverages Salesforce Agentforce for intelligent booking management. The platform implements enterprise-grade security through Cloudflare protection and Salesforce Einstein Trust Layer.</p>
+    
+    <hr>
+    
+    <h2>Component Descriptions</h2>
+    
+    <h3>1. Cloudflare Security Layer</h3>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>DNS & CDN</strong></td>
+          <td>Global content delivery network with intelligent DNS routing for optimal performance</td>
+        </tr>
+        <tr>
+          <td><strong>WAF & DDoS Protection</strong></td>
+          <td>Web Application Firewall protecting against common attacks and distributed denial of service</td>
+        </tr>
+        <tr>
+          <td><strong>Turnstile Bot Protection</strong></td>
+          <td>Privacy-preserving CAPTCHA alternative that verifies human users without intrusive challenges</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h3>2. Frontend Application</h3>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>React Web Application</strong></td>
+          <td>Modern, responsive single-page application built with React and TypeScript</td>
+        </tr>
+        <tr>
+          <td><strong>Authentication UI</strong></td>
+          <td>Email/password and phone OTP authentication interfaces</td>
+        </tr>
+        <tr>
+          <td><strong>Chatbot Interface</strong></td>
+          <td>Floating chat widget for AI-powered reservation management</td>
+        </tr>
+        <tr>
+          <td><strong>Cookie Consent Manager</strong></td>
+          <td>GDPR-compliant cookie consent with granular preferences</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h3>3. Backend Services</h3>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>API Gateway</strong></td>
+          <td>Centralized API management with rate limiting and request validation</td>
+        </tr>
+        <tr>
+          <td><strong>Authentication Service</strong></td>
+          <td>Secure user authentication with JWT tokens and session management</td>
+        </tr>
+        <tr>
+          <td><strong>Database</strong></td>
+          <td>PostgreSQL database with Row Level Security (RLS) policies</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h3>4. Salesforce Agentforce</h3>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>AI Chatbot Agent</strong></td>
+          <td>Conversational AI handling all reservation operations</td>
+        </tr>
+        <tr>
+          <td><strong>Topic Actions & Boundaries</strong></td>
+          <td>Defined conversation scope and allowed actions</td>
+        </tr>
+        <tr>
+          <td><strong>Data Access Policies</strong></td>
+          <td>Fine-grained control over data the AI can access</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h3>5. Einstein Trust Layer (Security)</h3>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Prompt Injection Detection</strong></td>
+          <td>Real-time detection and blocking of prompt injection attacks</td>
+        </tr>
+        <tr>
+          <td><strong>Data Masking</strong></td>
+          <td>Automatic masking of sensitive data in AI responses</td>
+        </tr>
+        <tr>
+          <td><strong>Toxicity Detection</strong></td>
+          <td>Filtering of harmful or inappropriate content</td>
+        </tr>
+        <tr>
+          <td><strong>Audit Trail</strong></td>
+          <td>Complete logging of all AI interactions for compliance</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <hr>
+    
+    <h2>Security Architecture</h2>
+    
+    <h3>Multi-Layer Security Model</h3>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Components</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Layer 1: Edge Security</strong></td>
+          <td>Cloudflare WAF, DDoS Protection, Bot Detection</td>
+          <td>First line of defense at the network edge</td>
+        </tr>
+        <tr>
+          <td><strong>Layer 2: Application Security</strong></td>
+          <td>Turnstile Verification, JWT Authentication, Session Management</td>
+          <td>Application-level authentication and authorization</td>
+        </tr>
+        <tr>
+          <td><strong>Layer 3: Data Security</strong></td>
+          <td>Row Level Security, Encrypted Storage, Access Policies</td>
+          <td>Database and data-at-rest protection</td>
+        </tr>
+        <tr>
+          <td><strong>Layer 4: AI Security</strong></td>
+          <td>Prompt Injection Guard, Data Masking, Toxicity Filters</td>
+          <td>AI-specific security controls</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <hr>
+    
+    <h2>Prompt Injection Protection</h2>
+    
+    <p><img src="./prompt-injection-protection.jpg" alt="Prompt Injection Protection Flow"></p>
+    
+    <p><strong>Einstein Trust Layer Security Pipeline:</strong></p>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>Salesforce Component</th>
+          <th>Official Term</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>Prompt Capture</strong></td>
+          <td>Agent Input Handler</td>
+          <td>User message enters Agentforce system for processing</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>Prompt Defense</strong></td>
+          <td>Einstein Prompt Guard</td>
+          <td>Detects prompt injection attacks using taxonomy-based classification</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>Trust Layer</strong></td>
+          <td>Einstein Trust Layer</td>
+          <td>Toxicity detection, semantic analysis, PII data masking</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><strong>Secure Ground</strong></td>
+          <td>Einstein Secure Grounding</td>
+          <td>Validates AI output against trusted data sources</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><strong>Human Handoff</strong></td>
+          <td>Service Cloud Escalation</td>
+          <td>Complex or sensitive requests routed to human agents</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <hr>
+    
+    <h2>Human Escalation Process</h2>
+    
+    <p><img src="./human-escalation-flow.jpg" alt="Human Escalation Flow"></p>
+    
+    <p><strong>Escalation Flow:</strong></p>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>Salesforce Component</th>
+          <th>Official Term</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>Messaging Channel</strong></td>
+          <td>Salesforce Messaging</td>
+          <td>Customer initiates conversation via chat widget</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>Agentforce</strong></td>
+          <td>Agentforce Service Agent</td>
+          <td>AI analyzes intent using Topic Classification</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>Escalation Trigger</strong></td>
+          <td>Agentforce Escalation Rules</td>
+          <td>System detects need for human intervention</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><strong>Service Cloud</strong></td>
+          <td>Omni-Channel Routing</td>
+          <td>Request routed to available human agent</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><strong>Case Resolution</strong></td>
+          <td>Service Cloud Case Management</td>
+          <td>Issue resolved with customer confirmation</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <hr>
+    
+    <h2>Compliance & Standards</h2>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Standard</th>
+          <th>Compliance Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GDPR</strong></td>
+          <td>✅ Compliant</td>
+        </tr>
+        <tr>
+          <td><strong>CCPA</strong></td>
+          <td>✅ Compliant</td>
+        </tr>
+        <tr>
+          <td><strong>PCI DSS</strong></td>
+          <td>✅ Compliant (via Salesforce)</td>
+        </tr>
+        <tr>
+          <td><strong>SOC 2</strong></td>
+          <td>✅ Compliant (via infrastructure providers)</td>
+        </tr>
+        <tr>
+          <td><strong>LGPD</strong></td>
+          <td>✅ Compliant</td>
+        </tr>
+        <tr>
+          <td><strong>POPIA</strong></td>
+          <td>✅ Compliant</td>
+        </tr>
+        <tr>
+          <td><strong>PDPA</strong></td>
+          <td>✅ Compliant</td>
+        </tr>
+        <tr>
+          <td><strong>PIPEDA</strong></td>
+          <td>✅ Compliant</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <hr>
+    
+    <h2>Infrastructure Summary</h2>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Technology</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frontend</strong></td>
+          <td>React, TypeScript, Tailwind CSS, Vite</td>
+        </tr>
+        <tr>
+          <td><strong>Backend</strong></td>
+          <td>Edge Functions, PostgreSQL</td>
+        </tr>
+        <tr>
+          <td><strong>AI Platform</strong></td>
+          <td>Salesforce Agentforce with Einstein Trust Layer</td>
+        </tr>
+        <tr>
+          <td><strong>CDN & Security</strong></td>
+          <td>Cloudflare (DNS, CDN, WAF, Turnstile)</td>
+        </tr>
+        <tr>
+          <td><strong>Authentication</strong></td>
+          <td>Email/Password, Phone OTP</td>
+        </tr>
+        <tr>
+          <td><strong>Hosting</strong></td>
+          <td>Globally distributed edge network</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <hr>
+    
+    <h2>Contact</h2>
+    
+    <p>For technical questions about this architecture, please contact the Agent14 development team.</p>
+  </article>
+
+  <div class="footer no-print">
+    <p><em>This document is confidential and intended for stakeholder review only.</em></p>
+    <p style="margin-top: 8px;">Generated from <code>docs/ARCHITECTURE.md</code> • Agent14 Platform</p>
+  </div>
+</body>
+</html>
