@@ -15,6 +15,7 @@ import ApiDocumentation from "./pages/ApiDocumentation";
 import Blog from "./pages/Blog";
 import Status from "./pages/Status";
 import Security from "./pages/Security";
+import CookiePolicy from "./pages/CookiePolicy";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/blog" element={<Blog />} />
               <Route path="/status" element={<Status />} />
               <Route path="/security" element={<Security />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
