@@ -4,7 +4,7 @@ import { ChevronDown, Plus, Minus } from 'lucide-react';
 const faqs = [
   {
     question: 'How does Agent14 work?',
-    answer: 'Agent14 uses advanced AI powered by Salesforce Agentforce to understand your reservation requests in natural language. Simply tell our chatbot what you need—whether it\'s booking a new table, changing an existing reservation, or cancelling—and it handles everything instantly.',
+    answer: "Agent14 uses advanced AI powered by Salesforce Agentforce to understand your reservation requests in natural language. Simply tell our chatbot what you need, whether it is booking a new table, changing an existing reservation, or cancelling, and it handles everything instantly.",
   },
   {
     question: 'Do I need to create an account?',
@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     question: 'Which restaurants are available?',
-    answer: 'We\'re continuously adding new restaurant partners. Our AI can help you find available tables at partner restaurants in your area. Just tell us your preferences and we\'ll show you what\'s available.',
+    answer: "We are continuously adding new restaurant partners. Our AI can help you find available tables at partner restaurants in your area. Just tell us your preferences and we will show you what is available.",
   },
   {
     question: 'Can I modify or cancel my reservation?',

@@ -48,22 +48,22 @@ const blogPosts = [
     image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
     featured: true,
     content: {
-      story: `My husband and I had been planning our 10th wedding anniversary dinner for months. We had reservations at this exclusive French restaurant downtown—the kind of place you book three months in advance. Then, disaster struck.
+      story: `My husband and I had been planning our 10th wedding anniversary dinner for months. We had reservations at this exclusive French restaurant downtown, the kind of place you book three months in advance. Then, disaster struck.
 
 Two days before our anniversary, I got an email saying the restaurant had a kitchen fire and would be closed for renovations. I panicked. Every nice restaurant in the city was fully booked on a Saturday night.
 
-That's when my friend mentioned Agent14. I was skeptical—could an AI really help me find a last-minute reservation at a comparable venue? I opened the chat at 11 PM, honestly just venting my frustration.
+That is when my friend mentioned Agent14. I was skeptical. Could an AI really help me find a last-minute reservation at a comparable venue? I opened the chat at 11 PM, honestly just venting my frustration.
 
-Within minutes, Agent14 understood exactly what I needed: an intimate, upscale French restaurant with good wine selection, preferably with a view. It didn't just give me a list of restaurants—it actually found availability at three stunning options I hadn't even heard of.
+Within minutes, Agent14 understood exactly what I needed: an intimate, upscale French restaurant with good wine selection, preferably with a view. It did not just give me a list of restaurants. It actually found availability at three stunning options I had not even heard of.
 
-The AI suggested "Le Petit Étoile"—a hidden gem in Brooklyn with a rooftop terrace overlooking the Manhattan skyline. It even noted that the chef had trained at the same culinary school as the one from our original restaurant. Perfect.
+The AI suggested "Le Petit Etoile," a hidden gem in Brooklyn with a rooftop terrace overlooking the Manhattan skyline. It even noted that the chef had trained at the same culinary school as the one from our original restaurant. Perfect.
 
 Agent14 secured our reservation, sent me a confirmation with directions and parking tips, and even reminded me the day before with weather updates suggesting we bring a light jacket for the rooftop.
 
-Our anniversary dinner was absolutely magical. Better than what we originally planned, honestly. The sunset over the skyline, the incredible tasting menu, the attentive service—everything was perfect.
+Our anniversary dinner was absolutely magical. Better than what we originally planned, honestly. The sunset over the skyline, the incredible tasting menu, the attentive service: everything was perfect.
 
-I've now used Agent14 for every special occasion since. It's like having a personal concierge who actually understands what makes a dining experience special.`,
-      quote: "Agent14 didn't just find us a restaurant—it found us the perfect memory.",
+I have now used Agent14 for every special occasion since. It is like having a personal concierge who actually understands what makes a dining experience special.`,
+      quote: "Agent14 did not just find us a restaurant. It found us the perfect memory.",
     }
   },
   {
@@ -84,15 +84,15 @@ Everything, apparently.
 
 My mom has dietary restrictions (gluten-free, lactose intolerant), my aunt uses a wheelchair, my cousin is vegan, and my uncle refuses to eat anywhere "too trendy." Oh, and three of us were flying in from different states with unpredictable arrival times.
 
-I spent two weeks calling restaurants, explaining our needs, getting put on hold, being told "we don't do private events on weekends." I was ready to give up and just order pizza.
+I spent two weeks calling restaurants, explaining our needs, getting put on hold, being told "we do not do private events on weekends." I was ready to give up and just order pizza.
 
-Then I discovered Agent14. I typed out our entire chaotic situation—all the dietary needs, the accessibility requirements, the timing uncertainty, everything. I expected maybe a few suggestions.
+Then I discovered Agent14. I typed out our entire chaotic situation: all the dietary needs, the accessibility requirements, the timing uncertainty, everything. I expected maybe a few suggestions.
 
 Instead, Agent14 became my event planning partner. It found "Nonna's Garden," a family-owned Italian restaurant with a beautiful private garden room, fully accessible, with a chef who actually got excited about creating a custom menu for our group.
 
-But here's what really impressed me: Agent14 helped coordinate the whole thing. It set up the reservation with a 30-minute buffer for our flight delays. It communicated with the restaurant about the surprise element—they dimmed the lights and had staff ready to bring out a cake when we arrived. It even sent separate reminders to each family member with directions tailored to their starting locations.
+But here is what really impressed me: Agent14 helped coordinate the whole thing. It set up the reservation with a 30-minute buffer for our flight delays. It communicated with the restaurant about the surprise element, and they dimmed the lights and had staff ready to bring out a cake when we arrived. It even sent separate reminders to each family member with directions tailored to their starting locations.
 
-The night was flawless. Mom cried happy tears. The food was incredible—everyone found dishes they could eat. My aunt raved about how comfortable and accessible everything was.
+The night was flawless. Mom cried happy tears. The food was incredible, and everyone found dishes they could eat. My aunt raved about how comfortable and accessible everything was.
 
 My family still talks about that party. And they all now use Agent14 for their own reservations.`,
       quote: "I went from stressed event planner to relaxed guest at my own mother's party.",
@@ -101,7 +101,7 @@ My family still talks about that party. And they all now use Agent14 for their o
   {
     id: 3,
     title: "First Date Nerves? Agent14 Had My Back",
-    excerpt: "As someone with social anxiety, letting AI handle the reservation details let me focus on what mattered—connecting.",
+    excerpt: "As someone with social anxiety, letting AI handle the reservation details let me focus on what mattered: connecting.",
     category: "First Date",
     author: "Jamie L.",
     location: "Austin, TX",
@@ -112,11 +112,11 @@ My family still talks about that party. And they all now use Agent14 for their o
     content: {
       story: `I have pretty severe social anxiety. Making phone calls to strangers? Nightmare. Walking into a restaurant and hoping my reservation exists? Cold sweats.
 
-When I finally worked up the courage to ask someone out, I realized I'd have to actually make a dinner reservation. The thought of calling a restaurant, potentially being put on hold, explaining what I wanted, maybe being told no—it was almost enough to make me cancel the whole date.
+When I finally worked up the courage to ask someone out, I realized I would have to actually make a dinner reservation. The thought of calling a restaurant, potentially being put on hold, explaining what I wanted, maybe being told no: it was almost enough to make me cancel the whole date.
 
 A colleague told me about Agent14, and honestly? It changed everything.
 
-I opened the chat and just... talked. I explained I was nervous about a first date, wanted somewhere not too loud (so we could actually talk), not too dark (I wanted to see my food), with good vegetarian options (she mentioned she's vegetarian), and somewhere I wouldn't have to worry about awkward silences because the ambiance would carry some of the atmosphere.
+I opened the chat and just talked. I explained I was nervous about a first date, wanted somewhere not too loud (so we could actually talk), not too dark (I wanted to see my food), with good vegetarian options (she mentioned she is vegetarian), and somewhere I would not have to worry about awkward silences because the ambiance would carry some of the atmosphere.
 
 Agent14 got it immediately. No judgment, no weird pauses, just helpful suggestions. It recommended a modern farm-to-table place with a beautiful open kitchen, live acoustic music on Thursday nights, and a seasonal vegetarian tasting menu.
 
@@ -124,7 +124,7 @@ It made the reservation, sent me confirmation, gave me tips on parking, and even
 
 I showed up feeling actually prepared. The restaurant was perfect. My date loved it. We talked for three hours and barely noticed the time passing.
 
-We're still dating, by the way. And yes, I've used Agent14 for every date since—including the one where I'm planning to propose next month.`,
+We are still dating, by the way. And yes, I have used Agent14 for every date since, including the one where I am planning to propose next month.`,
       quote: "Agent14 understood my anxiety without me having to over-explain. It just helped.",
     }
   },
@@ -140,23 +140,23 @@ We're still dating, by the way. And yes, I've used Agent14 for every date since�
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
     featured: true,
     content: {
-      story: `When you're closing a seven-figure deal with clients from Tokyo, the dinner venue matters. It's not just about the food—it's about showing respect, understanding cultural nuances, and creating an environment where business relationships flourish.
+      story: `When you are closing a seven-figure deal with clients from Tokyo, the dinner venue matters. It is not just about the food. It is about showing respect, understanding cultural nuances, and creating an environment where business relationships flourish.
 
-Our Japanese partners were visiting San Francisco for three days of negotiations. The final dinner would be crucial—a chance to celebrate the partnership and solidify relationships that would last years.
+Our Japanese partners were visiting San Francisco for three days of negotiations. The final dinner would be crucial: a chance to celebrate the partnership and solidify relationships that would last years.
 
 I needed a restaurant that checked impossible boxes: exceptional quality (these clients dine at Michelin-starred restaurants regularly), Japanese-influenced but distinctly Californian (to showcase our local culture), private enough for confidential conversations, and ideally with a sake program that would impress.
 
-My assistant spent days researching options. Nothing quite fit. Then our marketing director mentioned she'd been using Agent14 for client dinners.
+My assistant spent days researching options. Nothing quite fit. Then our marketing director mentioned she had been using Agent14 for client dinners.
 
-I was skeptical—AI helping with something this culturally sensitive? But I was running out of time.
+I was skeptical. AI helping with something this culturally sensitive? But I was running out of time.
 
 I explained the situation to Agent14 in detail. The stakes, the cultural considerations, even the personality dynamics of our client group (one partner loves bold flavors, another prefers subtle preparations).
 
-Agent14's recommendation was inspired: a Japanese-Californian fusion restaurant in Napa Valley—far enough from the city to feel special, but not inconveniently far. Private dining room overlooking the vineyards. A chef who had trained in Kyoto. A sake sommelier who could lead a tasting.
+Agent14's recommendation was inspired: a Japanese-Californian fusion restaurant in Napa Valley, far enough from the city to feel special, but not inconveniently far. Private dining room overlooking the vineyards. A chef who had trained in Kyoto. A sake sommelier who could lead a tasting.
 
 The AI even suggested timing the reservation for sunset, knowing the vineyard views would be spectacular.
 
-Our clients were genuinely impressed. The sake pairing sparked wonderful conversations. The chef came out to personally greet our group—Agent14 had apparently communicated the significance of the dinner.
+Our clients were genuinely impressed. The sake pairing sparked wonderful conversations. The chef came out to personally greet our group, as Agent14 had apparently communicated the significance of the dinner.
 
 We closed the deal that night, over dessert, overlooking the stars above wine country.`,
       quote: "Agent14 understood that business dinners are about much more than food. It understood relationship-building.",
@@ -165,7 +165,7 @@ We closed the deal that night, over dessert, overlooking the stars above wine co
   {
     id: 5,
     title: "Solo Traveler's Best Friend in a New City",
-    excerpt: "Traveling alone in Barcelona, Agent14 became my personal food guide—finding hidden gems locals love.",
+    excerpt: "Traveling alone in Barcelona, Agent14 became my personal food guide, finding hidden gems locals love.",
     category: "Solo Travel",
     author: "Emma R.",
     location: "Barcelona, Spain",
@@ -174,30 +174,30 @@ We closed the deal that night, over dessert, overlooking the stars above wine co
     image: "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&q=80",
     featured: false,
     content: {
-      story: `Solo travel is liberating until you're standing alone in a foreign city, starving, surrounded by tourist traps, with no idea where the locals actually eat.
+      story: `Solo travel is liberating until you are standing alone in a foreign city, starving, surrounded by tourist traps, with no idea where the locals actually eat.
 
-I was in Barcelona for a week—my first solo international trip. I speak maybe ten words of Spanish. Every restaurant near La Rambla looked overpriced and underwhelming. I was about to give up and eat at my hotel.
+I was in Barcelona for a week, my first solo international trip. I speak maybe ten words of Spanish. Every restaurant near La Rambla looked overpriced and underwhelming. I was about to give up and eat at my hotel.
 
 A friend back home texted me: "Just use Agent14, dummy."
 
 So I did. I told the AI I was solo traveling, wanted authentic Catalan food, was open to adventure but nervous about language barriers, and really wanted to avoid tourist traps.
 
-Agent14 became my Barcelona food guide. It found me a tiny tapas bar in the Gothic Quarter where the menu was handwritten in Catalan—but it also told me exactly what to order in Spanish, phonetically written out so I could pronounce it.
+Agent14 became my Barcelona food guide. It found me a tiny tapas bar in the Gothic Quarter where the menu was handwritten in Catalan, but it also told me exactly what to order in Spanish, phonetically written out so I could pronounce it.
 
-The bartender's eyes lit up when I asked for "pa amb tomàquet amb pernil ibèric" in my terrible accent. He laughed, gave me a thumbs up, and brought out the most incredible tomato bread with ham I've ever tasted.
+The bartender's eyes lit up when I asked for "pa amb tomaquet amb pernil iberic" in my terrible accent. He laughed, gave me a thumbs up, and brought out the most incredible tomato bread with ham I have ever tasted.
 
-Over the next week, Agent14 led me through the city's food scene like a local friend. A seafood restaurant in Barceloneta where fishermen actually sold their catch. A vermouth bar open only on Sunday mornings. A Michelin-starred restaurant where Agent14 secured a solo counter seat at the chef's table—something they apparently rarely offer.
+Over the next week, Agent14 led me through the city's food scene like a local friend. A seafood restaurant in Barceloneta where fishermen actually sold their catch. A vermouth bar open only on Sunday mornings. A Michelin-starred restaurant where Agent14 secured a solo counter seat at the chef's table, something they apparently rarely offer.
 
-Each recommendation came with cultural context, ordering tips, and even conversation starters in Spanish. By the end of my trip, I'd had a dozen incredible meals and made connections with restaurant staff who remembered me when I walked in.
+Each recommendation came with cultural context, ordering tips, and even conversation starters in Spanish. By the end of my trip, I had had a dozen incredible meals and made connections with restaurant staff who remembered me when I walked in.
 
-Solo travel doesn't have to mean eating alone in silence. Agent14 gave me confidence to explore.`,
+Solo travel does not have to mean eating alone in silence. Agent14 gave me confidence to explore.`,
       quote: "I came for the architecture. I stayed for the food. Agent14 made both possible.",
     }
   },
   {
     id: 6,
     title: "Proposing at the Perfect Restaurant",
-    excerpt: "The ring was ready. The speech was memorized. All I needed was the perfect setting—and absolute secrecy.",
+    excerpt: "The ring was ready. The speech was memorized. All I needed was the perfect setting and absolute secrecy.",
     category: "Proposal",
     author: "Chris W.",
     location: "Miami, FL",
@@ -206,19 +206,19 @@ Solo travel doesn't have to mean eating alone in silence. Agent14 gave me confid
     image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80",
     featured: true,
     content: {
-      story: `I had the ring. I had practiced my speech fifty times. I had permission from her father. All I needed was the perfect restaurant—and to somehow coordinate the whole thing without my extremely perceptive girlfriend figuring out what I was planning.
+      story: `I had the ring. I had practiced my speech fifty times. I had permission from her father. All I needed was the perfect restaurant, and to somehow coordinate the whole thing without my extremely perceptive girlfriend figuring out what I was planning.
 
-My girlfriend and I share everything, including our phones and calendars. There's literally no way I could call a restaurant without her eventually seeing it in my call history or overhearing a confirmation callback.
+My girlfriend and I share everything, including our phones and calendars. There is literally no way I could call a restaurant without her eventually seeing it in my call history or overhearing a confirmation callback.
 
 Enter Agent14.
 
 I could plan everything through text chat, late at night while she was asleep, without leaving any trace on shared devices. Perfect.
 
-I told Agent14 everything: our story, how we met, what she loves (ocean views, French food, live music), what she hates (being the center of attention, surprise crowds), and the exact vibe I wanted—intimate, romantic, elegant but not stuffy.
+I told Agent14 everything: our story, how we met, what she loves (ocean views, French food, live music), what she hates (being the center of attention, surprise crowds), and the exact vibe I wanted: intimate, romantic, elegant but not stuffy.
 
 Agent14 found a boutique French restaurant on the water with exactly twelve tables. It had a small terrace overlooking Biscayne Bay that could be privately reserved. The sunset timing would be perfect in October.
 
-But Agent14 didn't stop there. It helped me plan the entire evening:
+But Agent14 did not stop there. It helped me plan the entire evening:
 - Reserved the private terrace with a "anniversary dinner" cover story
 - Coordinated with the restaurant to have champagne ready the moment she said yes
 - Arranged for a violinist to play "our song" at precisely 7:45 PM
@@ -229,10 +229,10 @@ The night arrived. Everything went exactly as planned. The sunset was golden. Th
 
 She said yes. The photographer captured the whole thing. The champagne appeared like magic.
 
-Six months later, we got married. And guess where we're having our anniversary dinner every year? Same restaurant. Same terrace. Same magic.
+Six months later, we got married. And guess where we are having our anniversary dinner every year? Same restaurant. Same terrace. Same magic.
 
-Agent14 wasn't just booking software. It was my secret wedding planner.`,
-      quote: "She still doesn't know how I pulled off the perfect proposal. Agent14 is my secret.",
+Agent14 was not just booking software. It was my secret wedding planner.`,
+      quote: "She still does not know how I pulled off the perfect proposal. Agent14 is my secret.",
     }
   }
 ];

@@ -18,7 +18,7 @@ const Index = () => {
     <>
       <Helmet>
         <title>Agent14 | AI-Powered Restaurant Reservations</title>
-        <meta name="description" content="Book, modify, or cancel restaurant reservations instantly with Agent14's intelligent AI concierge. No calls, no waiting—just seamless dining experiences." />
+        <meta name="description" content="Book, modify, or cancel restaurant reservations instantly with Agent14's intelligent AI concierge. No calls, no waiting, just seamless dining experiences." />
       </Helmet>
       
       <div className="min-h-screen bg-background">

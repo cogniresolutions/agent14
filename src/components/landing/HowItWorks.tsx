@@ -7,7 +7,7 @@ const steps = [
     icon: MessageCircle,
     number: '01',
     title: 'Start a conversation',
-    description: 'Click the chat button and tell our AI what you need—new booking, changes, or cancellation.',
+    description: 'Click the chat button and tell our AI what you need: new booking, changes, or cancellation.',
   },
   {
     icon: Bot,
@@ -76,7 +76,7 @@ export const HowItWorks = () => {
             <div className="w-8 h-8 rounded-lg overflow-hidden">
               <img src={agentLogo} alt="Agent14" className="w-full h-full object-cover" />
             </div>
-            Start booking now — It's free
+            Start booking now - It's free
           </button>
         </div>
       </div>
