@@ -171,19 +171,28 @@ flowchart TB
 
 ![Salesforce Agentforce Architecture](./salesforce-agentforce-architecture.jpg)
 
-**Diagram Legend (Salesforce Agentforce Hub & Spoke):**
+**Salesforce Agentforce Component Architecture (from Salesforce Trailhead):**
 
-| Component | Description |
-|-----------|-------------|
-| **Salesforce (Center)** | Core Agentforce platform with AI Agent |
-| **Topics** | Conversation scope and intent classification |
-| **Actions** | Executable operations (reservations, bookings) |
-| **Guardrails** | Safety boundaries and restrictions |
-| **Einstein AI** | AI engine powering natural language understanding |
-| **Einstein Flows** | Automation and workflow orchestration |
-| **Data Cloud** | Unified customer data platform |
-| **Service Cloud** | Customer service and case escalation |
-| **Knowledge** | Restaurant info, FAQs, and policies |
+| Component | Salesforce Term | Description |
+|-----------|-----------------|-------------|
+| **Agentforce Agent** | Agent Engine | Core conversational AI that orchestrates all components |
+| **Topics** | Topic Classification | Categories of actions related to specific jobs (e.g., Reservations, Cancellations) |
+| **Actions** | Standard/Custom Actions | Tools the agent uses to complete tasks (e.g., Create Reservation, Check Availability) |
+| **Guardrails** | Agentforce Guardrails | Ethical and security rules that define agent behavior boundaries |
+| **Einstein Trust Layer** | Trust Layer | Secure AI architecture with prompt defense, toxicity detection, data masking |
+| **Data Cloud** | Salesforce Data Cloud | Unified customer data platform for grounding AI responses |
+| **Service Cloud** | Service Cloud | Customer service integration for human agent escalation |
+| **Knowledge Base** | Salesforce Knowledge | Restaurant info, FAQs, policies for grounding responses |
+| **Salesforce Flow** | Flow Automation | Business process automation triggered by agent actions |
+
+**Agentforce Guardrail Types (from Salesforce documentation):**
+
+| Guardrail Level | Description |
+|-----------------|-------------|
+| **Platform Guardrails** | Acceptable Use Policy (AUP), AI Acceptable Use Policy, Model Containment Policies |
+| **Agentforce Guardrails** | Product-specific rules, ethical guardrails to minimize hallucinations, security guardrails for prompt injection |
+| **Topic Instructions** | Custom guidelines using "Always...", "Never...", "If x, then y..." patterns |
+| **Agent Type Settings** | Pre-configured behaviors for specific agent types (Service Agent, SDR Agent) |
 
 ### Agentforce Component Details
 
@@ -1123,15 +1132,26 @@ flowchart LR
 
 ![Prompt Injection Protection Flow](./prompt-injection-protection.jpg)
 
-**Diagram Legend (Einstein Trust Layer Security Pipeline):**
+**Einstein Trust Layer Security Pipeline (based on Salesforce official documentation):**
 
-| Stage | Description |
-|-------|-------------|
-| **Input** | User message enters the system |
-| **Pattern Detection** | Scans for known injection patterns and malicious content |
-| **Semantic Analysis** | AI-powered intent analysis to detect disguised attacks |
-| **Trust Layer** | Einstein Trust Layer validates and filters content |
-| **Safe Output** | Validated, sanitized response delivered to user |
+| Stage | Salesforce Component | Description |
+|-------|---------------------|-------------|
+| **1. User Prompt** | Input Capture | User message enters the Agentforce system |
+| **2. Prompt Defense** | Prompt Injection Detection | AI classifier detects malicious prompts using taxonomy-based detection (Pretending/Role-play, Privilege Escalation, Prompt Leakage, Adversarial Suffix, Privacy Attacks, Malicious Code Generation) |
+| **3. Toxicity Detection** | Toxicity Detector | LLM responses are scanned for potentially harmful content |
+| **4. Data Masking** | Secure Data Masking | Sensitive data (PII, credentials) automatically masked before response |
+| **5. Secure Ground** | Zero-Data Retention | Data grounded in trusted company data, never retained by third-party LLMs |
+
+**Salesforce Prompt Injection Taxonomy (from Salesforce AI Research):**
+
+| Type | Description |
+|------|-------------|
+| **Pretending/Role-play** | Instructing the LLM to assume a different "system persona" with malicious intent |
+| **Privilege Escalation** | Injecting instructions to bypass/change system policies (e.g., DAN jailbreak) |
+| **Prompt Leakage** | Attempts to leak system prompts and contextual knowledge for reconnaissance |
+| **Adversarial Suffix** | Random character encodings designed to circumvent guardrails |
+| **Privacy Attacks** | Prompts to extract, infer, or expose personal/confidential data |
+| **Malicious Code Generation** | Prompts attempting to generate malware, viruses, or fraud utilities |
 
 The platform is protected against six categories of prompt injection attacks:
 
