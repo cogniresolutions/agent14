@@ -6,6 +6,12 @@
 
 ---
 
+## Architecture Diagram
+
+![Agent14 Architecture Diagram](./architecture-diagram.jpg)
+
+---
+
 ## Executive Summary
 
 Agent14 is a secure, AI-powered restaurant reservation platform that leverages Salesforce Agentforce for intelligent booking management. The platform implements enterprise-grade security through Cloudflare protection and Salesforce Einstein Trust Layer.
