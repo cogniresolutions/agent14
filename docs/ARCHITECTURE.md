@@ -183,16 +183,16 @@ flowchart TB
 
 **Diagram Legend (icons clockwise from top):**
 
-| Icon | Component | Salesforce Term | Description |
-|------|-----------|-----------------|-------------|
-| 🗄️ Database | **Data Cloud** | Salesforce Data Cloud | Unified customer data platform for grounding AI responses |
-| 💡 Lightbulb | **Einstein Trust Layer** | Trust Layer | Secure AI architecture with prompt defense, toxicity detection, data masking |
-| ☁️ Cloud | **Service Cloud** | Service Cloud | Customer service integration for human agent escalation |
-| ⚙️ Gear | **Custom Flows** | Flow Automation | Business process automation triggered by agent actions |
-| 📱 Mobile | **Actions** | Standard/Custom Actions | Tools the agent uses to complete tasks |
-| 📊 Chart | **Topics** | Topic Classification | Categories of actions related to specific jobs |
-| 🛡️ Shield (orange) | **Guardrails** | Agentforce Guardrails | Ethical and security rules that define agent behavior boundaries |
-| 🛡️ Shield (purple) | **Security** | Platform Guardrails | Acceptable Use Policy and Model Containment Policies |
+| Icon | Salesforce Component | Official Salesforce Term | Description |
+|------|---------------------|--------------------------|-------------|
+| 🗄️ Database (green) | **Data Cloud** | Salesforce Data Cloud | Unified customer data platform providing real-time data for AI grounding |
+| 💡 Lightbulb (purple) | **Einstein Trust Layer** | Einstein Trust Layer | Secure AI foundation with Prompt Defense, Toxicity Detection, Data Masking |
+| ☁️ Cloud (blue-gray) | **Service Cloud** | Salesforce Service Cloud | Omnichannel customer service for human agent escalation & case management |
+| ⚙️ Gear (blue) | **Flow Builder** | Salesforce Flow | Low-code automation for business processes triggered by agent actions |
+| 📱 AI Mobile (yellow) | **Agent Actions** | Agentforce Actions | Standard & Custom Actions the agent invokes to complete tasks |
+| 📊 Laptop/Chart (green) | **Topics** | Agentforce Topics | Conversation categories that define agent scope & available actions |
+| 🛡️ Shield (orange) | **Guardrails** | Agentforce Guardrails | Ethical boundaries, security rules & behavioral constraints |
+| 🛡️ Shield (blue) | **Platform Security** | Trust & Compliance | Model Containment, Acceptable Use Policy, AI AUP enforcement |
 
 **Core Components (from Salesforce Trailhead):**
 
