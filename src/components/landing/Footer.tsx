@@ -18,6 +18,7 @@ const footerLinks = {
     { label: 'Blog', href: '/blog', isExternal: false },
     { label: 'API Docs', href: '/api-docs', isExternal: false },
     { label: 'Status', href: '/status', isExternal: false },
+    { label: 'Security', href: '/security', isExternal: false },
   ],
   legal: [
     { label: 'Privacy Policy', href: '/privacy-policy', isExternal: false },
