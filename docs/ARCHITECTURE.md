@@ -1164,6 +1164,18 @@ flowchart LR
 
 Agent14 ensures customers always have access to human support when needed. The escalation process is a core feature, not just a fallback.
 
+![Human Escalation Flow](./human-escalation-flow.jpg)
+
+**Escalation Flow Legend (left to right):**
+
+| Icon | Step | Description |
+|------|------|-------------|
+| 💬 Chat Bubbles | **User Message** | Customer initiates conversation or requests help |
+| 🤖 Robot | **AI Processing** | Agentforce analyzes intent and attempts resolution |
+| ⚠️ Warning Triangle | **Escalation Trigger** | System detects need for human intervention |
+| 🎧 Headset Person | **Human Agent** | Request routed to Service Cloud human support |
+| ✅ Checkmark | **Resolution** | Issue resolved and customer confirmation received |
+
 ### Escalation Architecture
 
 ```mermaid
