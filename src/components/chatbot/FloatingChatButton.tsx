@@ -1,12 +1,16 @@
-import { MessageCircle } from 'lucide-react';
 import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 import agentLogo from '@/assets/agent14-logo-new.png';
 
 export const FloatingChatButton = () => {
+  const handleClick = () => {
+    console.log('[FloatingChatButton] Button clicked');
+    launchChat();
+  };
+
   return (
     <button
-      onClick={launchChat}
-      className="fixed bottom-6 right-6 z-50 group"
+      onClick={handleClick}
+      className="fixed bottom-6 right-6 z-[9999] group"
       aria-label="Open chat"
     >
       {/* Pulse animation ring */}
