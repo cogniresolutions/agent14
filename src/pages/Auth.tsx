@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Mail, Phone, ArrowLeft } from 'lucide-react';
-import agentLogo from '@/assets/agent14-logo-new.png';
+import agentLogo from '@/assets/agent14-mascot-logo.png';
 import { z } from 'zod';
 
 const emailSchema = z.object({

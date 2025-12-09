@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import agentLogoFull from '@/assets/agent14-logo-new.png';
+import agentLogoFull from '@/assets/agent14-mascot-logo.png';
 
 const footerLinks = {
   product: [
