@@ -304,3 +304,12 @@
     100% { background-position: 200% 0; }
   }
 }
+
+/* Hide default Salesforce chat button - we use our custom FloatingChatButton */
+.embeddedServiceHelpButton,
+.embedded-service .fab,
+[class*="embeddedService"] button.helpButton,
+.helpButton {
+  display: none !important;
+  visibility: hidden !important;
+}
