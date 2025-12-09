@@ -1,5 +1,5 @@
 import { launchChat } from '@/components/chatbot/SalesforceChatbot';
-import agentLogo from '@/assets/agent14-logo-new.png';
+import agentLogo from '@/assets/agent14-mascot-logo.png';
 
 export const FloatingChatButton = () => {
   const handleClick = () => {

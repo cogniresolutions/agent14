@@ -1,6 +1,6 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import agentLogoFull from '@/assets/agent14-logo-new.png';
+import agentLogoFull from '@/assets/agent14-mascot-logo.png';
 import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 
 export const Header = () => {
