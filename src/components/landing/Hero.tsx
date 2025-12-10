@@ -1,5 +1,5 @@
 import { ArrowRight, Check, Star } from 'lucide-react';
-import agentLogo from '@/assets/agent14-logo-new.png';
+import agentLogo from '@/assets/agent14-mascot-logo.png';
 import { launchChat } from '@/components/chatbot/SalesforceChatbot';
 
 const features = [
@@ -74,7 +74,7 @@ export const Hero = () => {
             {/* Main card */}
             <div className="relative bg-background rounded-2xl shadow-xl border border-border p-6 max-w-md mx-auto">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 shadow-md bg-slate-900 p-2">
+                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 shadow-md border-2 border-primary/20 bg-background p-1">
                   <img src={agentLogo} alt="Agent14" className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-1">
