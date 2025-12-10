@@ -42,7 +42,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-1">
             <a href="/" className="flex items-center gap-2 mb-4">
-              <img src={agentLogoFull} alt="Agent14 Logo" className="h-10 w-auto object-contain" />
+              <img src={agentLogoFull} alt="Agent14 Logo" className="h-14 w-auto object-contain" />
               <div className="flex items-baseline gap-0.5">
                 <span className="text-lg font-light text-primary tracking-wide uppercase">Agent</span>
                 <span className="text-xl font-bold text-gold">14</span>

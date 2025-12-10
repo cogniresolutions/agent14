@@ -17,11 +17,11 @@ export const FloatingChatButton = () => {
       <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
       
       {/* Button */}
-      <div className="relative w-16 h-16 rounded-full bg-primary shadow-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+      <div className="relative w-20 h-20 rounded-full bg-primary shadow-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
         <img 
           src={agentLogo} 
           alt="Chat with Agent14" 
-          className="w-10 h-10 object-contain"
+          className="w-14 h-14 object-contain"
         />
       </div>
       
