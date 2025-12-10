@@ -24,7 +24,7 @@ export const Header = () => {
           <img 
             src={agentLogoFull} 
             alt="Agent14 Logo" 
-            className="h-20 md:h-28 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
+            className="h-24 md:h-32 w-auto object-contain group-hover:scale-105 transition-transform duration-300" 
           />
           <div className="flex items-baseline gap-1">
             <span className="text-3xl md:text-4xl font-light text-primary tracking-wide uppercase">Agent</span>

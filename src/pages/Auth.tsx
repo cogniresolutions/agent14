@@ -204,7 +204,7 @@ export default function Auth() {
         <div className="bg-background rounded-2xl shadow-xl border border-border p-8">
           {/* Logo */}
           <div className="flex items-center justify-center gap-3 mb-8">
-            <img src={agentLogo} alt="Agent14" className="h-14 w-auto" />
+            <img src={agentLogo} alt="Agent14" className="h-20 w-auto" />
             <div className="flex items-baseline gap-0.5">
               <span className="text-2xl font-light text-primary tracking-wide uppercase">Agent</span>
               <span className="text-3xl font-bold text-gold">14</span>
