@@ -60,45 +60,55 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
   }
 }
 
-// Helper to create SSE streaming response
+// Helper to create SSE streaming response - OpenAI compatible format for Tavus
 function createStreamingResponse(content: string, model: string): ReadableStream {
   const encoder = new TextEncoder();
   const id = `chatcmpl-${crypto.randomUUID()}`;
+  const created = Math.floor(Date.now() / 1000);
+  
+  console.log(`Creating streaming response with content: ${content.substring(0, 100)}...`);
   
   return new ReadableStream({
     start(controller) {
-      // Split content into chunks for more natural streaming
-      const words = content.split(' ');
-      let currentChunk = '';
+      // First chunk with role (required by OpenAI spec)
+      const roleChunk = {
+        id,
+        object: "chat.completion.chunk",
+        created,
+        model,
+        choices: [{
+          index: 0,
+          delta: {
+            role: "assistant",
+            content: ""
+          },
+          finish_reason: null
+        }]
+      };
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify(roleChunk)}\n\n`));
       
-      // Send chunks of ~3-5 words at a time
-      for (let i = 0; i < words.length; i++) {
-        currentChunk += (currentChunk ? ' ' : '') + words[i];
-        
-        if ((i + 1) % 3 === 0 || i === words.length - 1) {
-          const chunk = {
-            id,
-            object: "chat.completion.chunk",
-            created: Math.floor(Date.now() / 1000),
-            model,
-            choices: [{
-              index: 0,
-              delta: {
-                content: currentChunk + (i < words.length - 1 ? ' ' : '')
-              },
-              finish_reason: null
-            }]
-          };
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
-          currentChunk = '';
-        }
-      }
+      // Send the full content in one chunk for reliable delivery to Tavus
+      const contentChunk = {
+        id,
+        object: "chat.completion.chunk",
+        created,
+        model,
+        choices: [{
+          index: 0,
+          delta: {
+            content: content
+          },
+          finish_reason: null
+        }]
+      };
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify(contentChunk)}\n\n`));
+      console.log(`Sent content chunk to stream`);
       
       // Send final chunk with finish_reason
       const finalChunk = {
         id,
         object: "chat.completion.chunk",
-        created: Math.floor(Date.now() / 1000),
+        created,
         model,
         choices: [{
           index: 0,
@@ -108,6 +118,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       controller.enqueue(encoder.encode(`data: ${JSON.stringify(finalChunk)}\n\n`));
       controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+      console.log(`Streaming response completed`);
       controller.close();
     }
   });
