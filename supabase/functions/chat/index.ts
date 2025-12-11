@@ -421,35 +421,59 @@ serve(async (req) => {
         
         // Extract the text from Salesforce response
         let foundReply = false;
+        let hasFailure = false;
+        
         if (sfData.messages && Array.isArray(sfData.messages)) {
+          // First pass: check for failures
+          for (const msg of sfData.messages) {
+            if (msg.type === 'Failure') {
+              hasFailure = true;
+              const errorMsg = msg.errors?.[0] || msg.message || 'System error';
+              console.log(`Agentforce action failed: ${errorMsg}, code: ${msg.code}`);
+            }
+          }
+          
+          // Second pass: get response messages
           for (const msg of sfData.messages) {
             // Check for escalation request
             if (msg.type === 'Escalate') {
               needsHumanEscalation = true;
-              botReply = msg.message || "I'll connect you with a human agent right away. One moment please while I transfer you to our support team.";
-              foundReply = true;
+              // Don't override existing message if we have an Inform
+              if (!foundReply) {
+                botReply = "I'll connect you with a human agent right away. One moment please while I transfer you to our support team.";
+              }
               console.log(`Escalation requested`);
-              break;
+              // Don't break - we want to capture Inform messages first
             }
-            // Check for any message content
-            if (msg.message && msg.message.trim()) {
+            // Check for Inform type messages (these contain the actual response)
+            if (msg.type === 'Inform' && msg.message && msg.message.trim()) {
+              botReply = msg.message;
+              foundReply = true;
+              console.log(`Found Agentforce Inform reply: ${botReply}`);
+            }
+            // Also check for any message content in other types
+            else if (!foundReply && msg.message && msg.message.trim() && msg.type !== 'Failure') {
               botReply = msg.message;
               foundReply = true;
               console.log(`Found Agentforce reply: ${botReply}`);
-              break;
-            } else if (msg.text && msg.text.trim()) {
+            } else if (!foundReply && msg.text && msg.text.trim()) {
               botReply = msg.text;
               foundReply = true;
               console.log(`Found Agentforce text: ${botReply}`);
-              break;
             }
           }
         }
         
+        // Handle failure case - offer to retry or escalate
+        if (hasFailure && !foundReply) {
+          console.log(`Salesforce action failed, offering retry or escalation`);
+          needsHumanEscalation = true;
+          botReply = "I apologize, but I encountered an issue retrieving that information. Would you like to try your request again, or shall I connect you with a human agent who can assist you directly?";
+        }
         // If no message found in response, provide helpful fallback
-        if (!foundReply) {
+        else if (!foundReply) {
           console.log(`No message found in Agentforce response, using fallback`);
-          botReply = "Thank you for your patience! I'm searching for the best information to help you. Could you please provide a bit more detail about what you're looking for? I can help with restaurant reservations, modifications, cancellations, or recommendations.";
+          botReply = "Thank you for your patience! Could you please provide a bit more detail about what you're looking for? I can help with restaurant reservations, modifications, cancellations, or recommendations.";
         }
       } else {
         const errorText = await sfResp.text();
