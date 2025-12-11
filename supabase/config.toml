@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.create-video-conversation]
 verify_jwt = false
+
+[functions.end-video-conversation]
+verify_jwt = false
