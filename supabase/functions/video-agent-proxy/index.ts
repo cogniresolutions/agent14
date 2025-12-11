@@ -11,7 +11,7 @@ const AGENT_ID = "0Xxaj000001Q1G1CAK";
 const BASE_URL = "https://api.salesforce.com/einstein/ai-agent/v1";
 const INSTANCE_URL = "https://orgfarm-7eec8186c7.my.salesforce.com";
 
-// Store sessions in memory (for demo - in production use database)
+// Store sessions in memory
 const sessions: Map<string, { sessionId: string; sequenceId: number }> = new Map();
 
 async function getSfSession(userId: string, sfToken: string): Promise<{ sessionId: string; sequenceId: number } | null> {
@@ -61,8 +61,20 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
 }
 
 serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Handle GET requests (health checks)
+  if (req.method === 'GET') {
+    return new Response(JSON.stringify({ 
+      status: 'ok', 
+      service: 'video-agent-proxy',
+      model: 'salesforce-agentforce'
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   try {
@@ -77,8 +89,38 @@ serve(async (req) => {
       });
     }
 
-    const data = await req.json();
+    // Parse request body with error handling
+    let data: any = {};
+    try {
+      const bodyText = await req.text();
+      if (bodyText && bodyText.trim()) {
+        data = JSON.parse(bodyText);
+      }
+    } catch (parseError) {
+      console.log('Empty or invalid request body, using defaults');
+    }
+
     const messages = data.messages || [];
+    
+    // If no messages, return a default response
+    if (messages.length === 0) {
+      console.log('No messages in request, returning greeting');
+      return new Response(JSON.stringify({
+        id: `chatcmpl-${crypto.randomUUID()}`,
+        object: "chat.completion",
+        created: Math.floor(Date.now() / 1000),
+        choices: [{
+          index: 0,
+          message: {
+            role: "assistant",
+            content: "Hello! I'm your AI concierge. How can I help you with your reservation today?"
+          },
+          finish_reason: "stop"
+        }]
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     // Extract the latest user message
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "Hello";
@@ -92,7 +134,7 @@ serve(async (req) => {
       return new Response(JSON.stringify({
         id: "chatcmpl-error",
         object: "chat.completion",
-        created: Date.now(),
+        created: Math.floor(Date.now() / 1000),
         choices: [{
           index: 0,
           message: {
@@ -156,7 +198,7 @@ serve(async (req) => {
       // If session expired, clear it
       if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400) {
         sessions.delete(userId);
-        botReply = "Session issue. Please try again.";
+        botReply = "Let me reconnect. Please try again.";
       }
     }
 
@@ -179,10 +221,19 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in video-agent-proxy:', error);
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return new Response(JSON.stringify({
+      id: "chatcmpl-error",
+      object: "chat.completion", 
+      created: Math.floor(Date.now() / 1000),
+      choices: [{
+        index: 0,
+        message: {
+          role: "assistant",
+          content: "I'm having a technical issue. Please try again."
+        },
+        finish_reason: "stop"
+      }]
     }), {
-      status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
