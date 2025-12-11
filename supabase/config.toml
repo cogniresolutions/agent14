@@ -6,7 +6,7 @@ verify_jwt = false
 [functions.turnstile-config]
 verify_jwt = false
 
-[functions.video-agent-proxy]
+[functions.chat]
 verify_jwt = false
 
 [functions.create-video-conversation]
