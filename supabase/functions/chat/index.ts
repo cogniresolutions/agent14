@@ -275,6 +275,20 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
+
+  // Handle DELETE requests (clear session)
+  if (req.method === 'DELETE') {
+    console.log(`[${requestId}] Clear session request`);
+    const userId = new URL(req.url).searchParams.get('user_id') || 'video_demo_user';
+    await clearStoredSession(userId);
+    return new Response(JSON.stringify({ 
+      status: 'ok', 
+      message: `Session cleared for ${userId}`,
+      timestamp: new Date().toISOString()
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
   
   console.log(`[${requestId}] Processing POST request`);
 
@@ -447,6 +461,9 @@ serve(async (req) => {
             // Check for escalation request
             if (msg.type === 'Escalate') {
               needsHumanEscalation = true;
+              // Clear the session so next message starts fresh - session is now in escalated state
+              console.log(`Escalation detected - clearing session to start fresh next time`);
+              await clearStoredSession(userId);
               // Don't override existing message if we have an Inform
               if (!foundReply) {
                 botReply = "I'll connect you with a human agent right away. One moment please while I transfer you to our support team.";
@@ -473,9 +490,10 @@ serve(async (req) => {
           }
         }
         
-        // Handle failure case - offer to retry or escalate
+        // Handle failure case - offer to retry or escalate and clear session
         if (hasFailure && !foundReply) {
-          console.log(`Salesforce action failed, offering retry or escalation`);
+          console.log(`Salesforce action failed, clearing session and offering retry`);
+          await clearStoredSession(userId);
           needsHumanEscalation = true;
           botReply = "I apologize, but I encountered an issue retrieving that information. Would you like to try your request again, or shall I connect you with a human agent who can assist you directly?";
         }
