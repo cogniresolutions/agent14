@@ -60,13 +60,27 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
   }
 }
 
+// Helper to sanitize content for speech - remove problematic characters
+function sanitizeForSpeech(content: string): string {
+  return content
+    .replace(/\n+/g, ' ')  // Replace newlines with spaces
+    .replace(/\r/g, '')     // Remove carriage returns
+    .replace(/\t/g, ' ')    // Replace tabs with spaces
+    .replace(/\s+/g, ' ')   // Collapse multiple spaces
+    .replace(/[""]|['']/g, '"')  // Normalize quotes
+    .replace(/URL_Redacted/gi, 'their website')  // Replace redacted URLs
+    .trim();
+}
+
 // Helper to create SSE streaming response - OpenAI compatible format for Tavus
 function createStreamingResponse(content: string, model: string): ReadableStream {
   const encoder = new TextEncoder();
   const id = `chatcmpl-${crypto.randomUUID()}`;
   const created = Math.floor(Date.now() / 1000);
   
-  console.log(`Creating streaming response with content: ${content.substring(0, 100)}...`);
+  // Sanitize content for speech
+  const sanitizedContent = sanitizeForSpeech(content);
+  console.log(`Creating streaming response with sanitized content: ${sanitizedContent.substring(0, 150)}...`);
   
   return new ReadableStream({
     start(controller) {
@@ -85,7 +99,9 @@ function createStreamingResponse(content: string, model: string): ReadableStream
           finish_reason: null
         }]
       };
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify(roleChunk)}\n\n`));
+      const roleData = `data: ${JSON.stringify(roleChunk)}\n\n`;
+      controller.enqueue(encoder.encode(roleData));
+      console.log(`Sent role chunk`);
       
       // Send the full content in one chunk for reliable delivery to Tavus
       const contentChunk = {
@@ -96,13 +112,14 @@ function createStreamingResponse(content: string, model: string): ReadableStream
         choices: [{
           index: 0,
           delta: {
-            content: content
+            content: sanitizedContent
           },
           finish_reason: null
         }]
       };
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify(contentChunk)}\n\n`));
-      console.log(`Sent content chunk to stream`);
+      const contentData = `data: ${JSON.stringify(contentChunk)}\n\n`;
+      controller.enqueue(encoder.encode(contentData));
+      console.log(`Sent content chunk: ${contentData.substring(0, 200)}...`);
       
       // Send final chunk with finish_reason
       const finalChunk = {
@@ -118,7 +135,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       controller.enqueue(encoder.encode(`data: ${JSON.stringify(finalChunk)}\n\n`));
       controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
-      console.log(`Streaming response completed`);
+      console.log(`Streaming response completed for Tavus`);
       controller.close();
     }
   });
