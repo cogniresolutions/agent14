@@ -17,6 +17,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
   const conversationIdRef = useRef<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // End conversation on Tavus backend
@@ -24,7 +25,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
     if (!conversationIdRef.current) return;
     
     const convId = conversationIdRef.current;
-    conversationIdRef.current = null; // Clear immediately to prevent duplicate calls
+    conversationIdRef.current = null;
     
     try {
       console.log('Ending Tavus conversation:', convId);
@@ -47,10 +48,15 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       callRef.current.destroy();
       callRef.current = null;
     }
+    // Clear any iframes that might have been left behind
+    if (containerRef.current) {
+      containerRef.current.innerHTML = '';
+    }
   }, []);
 
   const startConversation = async () => {
     setIsLoading(true);
+    setIsJoining(true);
     setError(null);
 
     try {
@@ -72,13 +78,19 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       }
 
       console.log('Conversation created:', data);
-      
-      // Store conversation ID for cleanup
       conversationIdRef.current = data.conversation_id;
+
+      // Clear container before creating frame
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
 
       // Create Daily.co frame
       callRef.current = DailyIframe.createFrame(containerRef.current!, {
         iframeStyle: {
+          position: 'absolute',
+          top: '0',
+          left: '0',
           width: '100%',
           height: '100%',
           border: '0',
@@ -92,12 +104,14 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         console.log('Joined video conversation');
         setIsConnected(true);
         setIsLoading(false);
+        setIsJoining(false);
       });
 
       callRef.current.on('left-meeting', () => {
         console.log('Left video conversation');
         setIsConnected(false);
-        endTavusConversation(); // End on Tavus backend
+        setIsJoining(false);
+        endTavusConversation();
         cleanup();
       });
 
@@ -105,15 +119,18 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         console.error('Daily error:', e);
         setError('Video connection error');
         setIsLoading(false);
-        endTavusConversation(); // End on error too
+        setIsJoining(false);
+        endTavusConversation();
       });
 
+      // Join the call
       await callRef.current.join({ url: data.conversation_url });
 
     } catch (err) {
       console.error('Error starting conversation:', err);
       setError(err instanceof Error ? err.message : 'Failed to start conversation');
       setIsLoading(false);
+      setIsJoining(false);
       toast({
         title: "Connection Error",
         description: err instanceof Error ? err.message : 'Failed to start video conversation',
@@ -130,19 +147,26 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
 
   useEffect(() => {
     return () => {
-      endTavusConversation(); // End conversation on unmount
+      endTavusConversation();
       cleanup();
     };
   }, [endTavusConversation, cleanup]);
 
+  const showStartScreen = !isConnected && !isJoining;
+
   return (
     <div className="w-full h-full flex flex-col">
-      <div 
-        ref={containerRef} 
-        className="flex-1 min-h-[400px] bg-muted/50 rounded-2xl overflow-hidden"
-      >
-        {!isConnected && !isLoading && (
-          <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
+      {/* Video container - always present with relative positioning */}
+      <div className="flex-1 min-h-[400px] bg-muted/50 rounded-2xl overflow-hidden relative">
+        {/* Daily.co iframe container */}
+        <div 
+          ref={containerRef} 
+          className={`absolute inset-0 ${isJoining || isConnected ? 'block' : 'hidden'}`}
+        />
+        
+        {/* Start screen overlay */}
+        {showStartScreen && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-muted/50 z-10">
             <div className="p-6 rounded-full bg-primary/10 mb-6">
               <Video className="h-16 w-16 text-primary" />
             </div>
@@ -167,14 +191,16 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
           </div>
         )}
 
-        {isLoading && (
-          <div className="w-full h-full flex flex-col items-center justify-center">
+        {/* Loading overlay */}
+        {isLoading && isJoining && !isConnected && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 z-20">
             <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
             <p className="text-muted-foreground">Connecting to video agent...</p>
           </div>
         )}
       </div>
 
+      {/* End button */}
       {isConnected && (
         <div className="mt-4 flex justify-center">
           <Button 
