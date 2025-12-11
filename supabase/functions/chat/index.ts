@@ -488,10 +488,61 @@ serve(async (req) => {
         const errorText = await sfResp.text();
         console.error(`Salesforce error: ${errorText}`);
         
-        // If session expired, clear it from database
-        if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400) {
+        // If session expired, clear it from database and retry with new session
+        if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400 || sfResp.status === 410) {
+          console.log(`Session expired (status ${sfResp.status}), clearing and creating new session`);
           await clearStoredSession(userId);
-          botReply = "I apologize for the brief interruption. Let me reconnect to our system. Could you please repeat your request? I'm here to help with your dining needs.";
+          
+          // Try to create a new session and retry the message
+          const newSessionData = await getSfSession(userId, sfToken);
+          if (newSessionData) {
+            console.log(`Retrying with new session: ${newSessionData.sessionId}`);
+            const retryResp = await fetch(`${BASE_URL}/sessions/${newSessionData.sessionId}/messages`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${sfToken}`,
+                'Content-Type': 'application/json',
+                'x-org-id': ORG_ID,
+                'x-client-feature-id': FEATURE_ID,
+              },
+              body: JSON.stringify({
+                message: {
+                  text: lastUserMessage,
+                  type: "Text",
+                  sequenceId: newSessionData.sequenceId
+                }
+              }),
+            });
+            
+            if (retryResp.ok) {
+              const retryData = await retryResp.json();
+              console.log(`Retry successful: ${JSON.stringify(retryData)}`);
+              await updateSequenceId(userId, newSessionData.sequenceId + 1);
+              
+              // Extract reply from retry response
+              if (retryData.messages && Array.isArray(retryData.messages)) {
+                for (const msg of retryData.messages) {
+                  if (msg.type === 'Inform' && msg.message && msg.message.trim()) {
+                    botReply = msg.message;
+                    console.log(`Found retry reply: ${botReply}`);
+                    break;
+                  } else if (msg.message && msg.message.trim() && msg.type !== 'Failure') {
+                    botReply = msg.message;
+                    break;
+                  }
+                }
+              }
+              
+              if (!botReply) {
+                botReply = "I've reconnected to the system. How can I assist you with your dining needs today?";
+              }
+            } else {
+              console.error(`Retry also failed: ${await retryResp.text()}`);
+              botReply = "I apologize for the brief interruption. Let me reconnect to our system. Could you please repeat your request? I'm here to help with your dining needs.";
+            }
+          } else {
+            botReply = "I apologize for the brief interruption. Let me reconnect to our system. Could you please repeat your request? I'm here to help with your dining needs.";
+          }
         } else {
           needsHumanEscalation = true;
           botReply = "I'm experiencing some difficulty retrieving that information right now. I sincerely apologize for the inconvenience. Would you like me to connect you with one of our human support agents? They would be happy to assist you personally.";
