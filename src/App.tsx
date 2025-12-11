@@ -16,7 +16,6 @@ import Blog from "./pages/Blog";
 import Status from "./pages/Status";
 import Security from "./pages/Security";
 import CookiePolicy from "./pages/CookiePolicy";
-import PremiumVideo from "./pages/PremiumVideo";
 
 const queryClient = new QueryClient();
 
@@ -38,7 +37,6 @@ const App = () => (
             <Route path="/status" element={<Status />} />
             <Route path="/security" element={<Security />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
-            <Route path="/premiumvideo" element={<PremiumVideo />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
