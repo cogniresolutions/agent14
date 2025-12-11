@@ -10,9 +10,53 @@ const FEATURE_ID = "ai-platform-agents-scrt";
 const AGENT_ID = "0Xxaj000001Q1G1CAK";
 const BASE_URL = "https://api.salesforce.com/einstein/ai-agent/v1";
 const INSTANCE_URL = "https://orgfarm-7eec8186c7.my.salesforce.com";
+const OAUTH_URL = "https://orgfarm-7eec8186c7.my.salesforce.com/services/oauth2/token";
 
-// Store sessions in memory
+// Store sessions in memory (keyed by user + token to handle token refresh)
 const sessions: Map<string, { sessionId: string; sequenceId: number }> = new Map();
+
+// Generate fresh OAuth token using client credentials
+async function getOAuthToken(): Promise<string | null> {
+  const clientId = Deno.env.get('SF_CLIENT_ID');
+  const clientSecret = Deno.env.get('SF_CLIENT_SECRET');
+  
+  if (!clientId || !clientSecret) {
+    console.error('SF_CLIENT_ID or SF_CLIENT_SECRET not configured');
+    return null;
+  }
+  
+  console.log('Generating fresh OAuth token...');
+  
+  try {
+    const params = new URLSearchParams();
+    params.append('grant_type', 'client_credentials');
+    params.append('client_id', clientId);
+    params.append('client_secret', clientSecret);
+    
+    const resp = await fetch(OAUTH_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    });
+    
+    console.log(`OAuth response status: ${resp.status}`);
+    
+    if (resp.ok) {
+      const data = await resp.json();
+      console.log('OAuth token generated successfully');
+      return data.access_token;
+    } else {
+      const errorText = await resp.text();
+      console.error(`OAuth error: ${errorText}`);
+      return null;
+    }
+  } catch (e) {
+    console.error(`OAuth connection error: ${e}`);
+    return null;
+  }
+}
 
 async function getSfSession(userId: string, sfToken: string): Promise<{ sessionId: string; sequenceId: number } | null> {
   if (sessions.has(userId)) {
@@ -159,16 +203,19 @@ serve(async (req) => {
   }
 
   try {
-    const sfToken = Deno.env.get('SF_AGENT_TOKEN');
+    // Generate fresh OAuth token for each request to avoid expiry issues
+    const sfToken = await getOAuthToken();
     if (!sfToken) {
-      console.error('SF_AGENT_TOKEN not configured');
+      console.error('Failed to generate OAuth token');
       return new Response(JSON.stringify({ 
-        error: 'Salesforce token not configured' 
+        error: 'Failed to authenticate with Salesforce' 
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    
+    console.log('Using fresh OAuth token for this request');
 
     // Parse request body with error handling
     let data: any = {};
