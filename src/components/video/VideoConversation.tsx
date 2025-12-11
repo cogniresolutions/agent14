@@ -20,6 +20,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
   const hasJoinedRef = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [showFrame, setShowFrame] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // End conversation via API
@@ -92,6 +93,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
     destroyCall();
     setIsConnected(false);
     setIsLoading(false);
+    setShowFrame(false);
 
     // Only end on server if we actually joined
     if (convId && joined) {
@@ -141,16 +143,18 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         showFullscreenButton: true,
       });
 
+      // Show the frame and hide loading overlay so user can interact with Daily.co UI
+      setShowFrame(true);
+      setIsLoading(false);
+
       callRef.current.on('joined-meeting', () => {
         console.log('Joined video call successfully');
         hasJoinedRef.current = true;
-        // Only save to localStorage after successfully joining
         localStorage.setItem(CONVERSATION_STORAGE_KEY, JSON.stringify({
           id: conversationIdRef.current,
           timestamp: Date.now()
         }));
         setIsConnected(true);
-        setIsLoading(false);
       });
 
       callRef.current.on('left-meeting', () => {
@@ -161,10 +165,10 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       callRef.current.on('error', (e) => {
         console.error('Daily.co error:', e);
         setError('Video connection failed. Please try again.');
-        // Don't end on server if we never joined
         destroyCall();
         conversationIdRef.current = null;
         setIsLoading(false);
+        setShowFrame(false);
       });
 
       console.log('Joining call:', data.conversation_url);
@@ -174,6 +178,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       console.error('Error starting video:', err);
       setError(err instanceof Error ? err.message : 'Connection failed');
       setIsLoading(false);
+      setShowFrame(false);
       destroyCall();
       conversationIdRef.current = null;
       
@@ -217,11 +222,11 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         <div 
           ref={containerRef} 
           className="absolute inset-0"
-          style={{ display: isLoading || isConnected ? 'block' : 'none' }}
+          style={{ display: showFrame ? 'block' : 'none' }}
         />
         
         {/* Start screen */}
-        {!isConnected && !isLoading && (
+        {!showFrame && !isLoading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-muted/50 z-10">
             <div className="p-6 rounded-full bg-primary/10 mb-6">
               <Video className="h-16 w-16 text-primary" />
