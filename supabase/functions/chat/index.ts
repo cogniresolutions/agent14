@@ -171,15 +171,22 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
   }
 }
 
-// Helper to sanitize content for speech - remove problematic characters
+// Helper to sanitize content for speech - remove problematic characters for TTS
 function sanitizeForSpeech(content: string): string {
   return content
     .replace(/\n+/g, ' ')  // Replace newlines with spaces
     .replace(/\r/g, '')     // Remove carriage returns
     .replace(/\t/g, ' ')    // Replace tabs with spaces
-    .replace(/\s+/g, ' ')   // Collapse multiple spaces
+    .replace(/- /g, ', ')   // Replace bullet points with commas for natural speech
+    .replace(/\*\*/g, '')   // Remove markdown bold
+    .replace(/\*/g, '')     // Remove markdown italic
+    .replace(/#+ /g, '')    // Remove markdown headers
+    .replace(/`/g, '')      // Remove code backticks
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // Convert markdown links to just text
     .replace(/[""]|['']/g, '"')  // Normalize quotes
     .replace(/URL_Redacted/gi, 'their website')  // Replace redacted URLs
+    .replace(/https?:\/\/[^\s]+/gi, 'their website')  // Replace any URLs
+    .replace(/\s+/g, ' ')   // Collapse multiple spaces
     .trim();
 }
 
