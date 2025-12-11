@@ -261,20 +261,36 @@ serve(async (req) => {
 
     console.log(`Salesforce message response status: ${sfResp.status}`);
     
-    let botReply = "I'm processing your request.";
+    // Default fallback message - must be conversational so persona speaks it
+    let botReply = "I appreciate your question! However, I'm specifically here to help with restaurant reservations, including booking new tables, modifying existing reservations, cancellations, or suggesting great restaurants. Is there anything I can assist you with for your dining plans today?";
     
     if (sfResp.ok) {
       const sfData = await sfResp.json();
       console.log(`Salesforce response: ${JSON.stringify(sfData)}`);
       
       // Extract the text from Salesforce response
+      let foundReply = false;
       if (sfData.messages && Array.isArray(sfData.messages)) {
         for (const msg of sfData.messages) {
-          if (msg.type === 'Inform' || msg.message) {
-            botReply = msg.message || msg.text || botReply;
+          // Check for any message content
+          if (msg.message && msg.message.trim()) {
+            botReply = msg.message;
+            foundReply = true;
+            console.log(`Found Agentforce reply: ${botReply}`);
+            break;
+          } else if (msg.text && msg.text.trim()) {
+            botReply = msg.text;
+            foundReply = true;
+            console.log(`Found Agentforce text: ${botReply}`);
             break;
           }
         }
+      }
+      
+      // If no message found in response, use friendly fallback
+      if (!foundReply) {
+        console.log(`No message found in Agentforce response, using fallback`);
+        botReply = "I'm here to help with restaurant reservations. Could you please tell me more about what you're looking for? I can help you book a table, modify an existing reservation, cancel a booking, or suggest great restaurants.";
       }
     } else {
       const errorText = await sfResp.text();
@@ -283,7 +299,9 @@ serve(async (req) => {
       // If session expired, clear it
       if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400) {
         sessions.delete(userId);
-        botReply = "Let me reconnect. Please try again.";
+        botReply = "Let me reconnect to the system. Could you please repeat your request?";
+      } else {
+        botReply = "I apologize for the technical difficulty. I'm here to help with restaurant reservations. What can I assist you with today?";
       }
     }
 
