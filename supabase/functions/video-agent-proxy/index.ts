@@ -12,9 +12,9 @@ const BASE_URL = "https://api.salesforce.com/einstein/ai-agent/v1";
 const INSTANCE_URL = "https://orgfarm-7eec8186c7.my.salesforce.com";
 
 // Store sessions in memory (for demo - in production use database)
-const sessions: Map<string, string> = new Map();
+const sessions: Map<string, { sessionId: string; sequenceId: number }> = new Map();
 
-async function getSfSession(userId: string, sfToken: string): Promise<string | null> {
+async function getSfSession(userId: string, sfToken: string): Promise<{ sessionId: string; sequenceId: number } | null> {
   if (sessions.has(userId)) {
     console.log(`Using existing session for ${userId}`);
     return sessions.get(userId)!;
@@ -46,8 +46,9 @@ async function getSfSession(userId: string, sfToken: string): Promise<string | n
       const data = await resp.json();
       const sessionId = data.sessionId;
       console.log(`Session created: ${sessionId}`);
-      sessions.set(userId, sessionId);
-      return sessionId;
+      const sessionData = { sessionId, sequenceId: 1 };
+      sessions.set(userId, sessionData);
+      return sessionData;
     } else {
       const errorText = await resp.text();
       console.error(`Error creating session: ${errorText}`);
@@ -85,9 +86,9 @@ serve(async (req) => {
 
     // Get or create Salesforce session
     const userId = data.user_id || "video_demo_user";
-    const sfSessionId = await getSfSession(userId, sfToken);
+    const sessionData = await getSfSession(userId, sfToken);
 
-    if (!sfSessionId) {
+    if (!sessionData) {
       return new Response(JSON.stringify({
         id: "chatcmpl-error",
         object: "chat.completion",
@@ -105,6 +106,8 @@ serve(async (req) => {
       });
     }
 
+    const { sessionId: sfSessionId, sequenceId } = sessionData;
+
     // Send message to Salesforce
     console.log(`Sending to Salesforce session ${sfSessionId}: ${lastUserMessage}`);
     const sfUrl = `${BASE_URL}/sessions/${sfSessionId}/messages`;
@@ -120,10 +123,14 @@ serve(async (req) => {
       body: JSON.stringify({
         message: {
           text: lastUserMessage,
-          type: "Text"
+          type: "Text",
+          sequenceId: sequenceId
         }
       }),
     });
+
+    // Increment sequenceId for next message
+    sessionData.sequenceId++;
 
     console.log(`Salesforce message response status: ${sfResp.status}`);
     
@@ -146,10 +153,10 @@ serve(async (req) => {
       const errorText = await sfResp.text();
       console.error(`Salesforce error: ${errorText}`);
       
-      // If session expired, clear it and try to get new one
-      if (sfResp.status === 401 || sfResp.status === 404) {
+      // If session expired, clear it
+      if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400) {
         sessions.delete(userId);
-        botReply = "Session expired. Please try again.";
+        botReply = "Session issue. Please try again.";
       }
     }
 
