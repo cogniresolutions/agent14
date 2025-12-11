@@ -185,51 +185,81 @@ function sanitizeForSpeech(content: string): string {
 
 // Helper to clean user message - extract the relevant query for Agentforce
 function cleanUserMessage(rawMessage: string): string {
-  // Remove Tavus video conference context tags
+  // Remove Tavus video conference context tags and system instructions
   let cleaned = rawMessage
     .replace(/<user_appearance>[\s\S]*?<\/user_appearance>/gi, '')
     .replace(/<user_emotions>[\s\S]*?<\/user_emotions>/gi, '')
     .replace(/<user_screen>[\s\S]*?<\/user_screen>/gi, '')
     .replace(/<[^>]+>/g, '') // Remove any other XML-like tags
+    // Remove common Tavus system phrases
+    .replace(/you are in a live video conference call[^.]*\./gi, '')
+    .replace(/you'll receive messages containing[^.]*\./gi, '')
+    .replace(/stay in the room[^.]*\./gi, '')
+    .replace(/you will have \d+ minutes[^.]*\./gi, '')
     .trim();
   
-  // Look for restaurant-related keywords and extract that sentence
-  const restaurantKeywords = [
+  // Extended keywords for restaurant/dining and general conversation
+  const relevantKeywords = [
+    // Restaurant & dining
     'restaurant', 'reservation', 'book', 'booking', 'table', 'dinner', 'lunch', 
-    'breakfast', 'dining', 'eat', 'food', 'cuisine', 'steakhouse', 'japanese',
-    'italian', 'chinese', 'mexican', 'indian', 'thai', 'french', 'seafood',
-    'cancel', 'modify', 'change', 'reschedule', 'party size', 'guests', 'people',
-    'yes', 'no', 'please', 'thank', 'help', 'agent', 'human', 'person'
+    'breakfast', 'brunch', 'dining', 'dine', 'eat', 'eating', 'food', 'cuisine', 
+    'steakhouse', 'japanese', 'sushi', 'ramen', 'italian', 'pizza', 'pasta',
+    'chinese', 'mexican', 'tacos', 'indian', 'curry', 'thai', 'french', 'seafood',
+    'vegetarian', 'vegan', 'halal', 'kosher', 'gluten', 'allergies',
+    // Booking details
+    'cancel', 'modify', 'change', 'reschedule', 'party', 'guests', 'people', 'persons',
+    'tonight', 'tomorrow', 'weekend', 'date', 'time', 'evening', 'afternoon', 'morning',
+    'romantic', 'casual', 'fancy', 'upscale', 'cheap', 'affordable', 'expensive',
+    'outdoor', 'patio', 'rooftop', 'private', 'view', 'ambiance', 'atmosphere',
+    // Conversational
+    'yes', 'no', 'ok', 'okay', 'sure', 'please', 'thank', 'thanks', 'help', 
+    'want', 'need', 'looking', 'find', 'search', 'recommend', 'suggest', 'show',
+    'what', 'where', 'when', 'how', 'which', 'can', 'could', 'would', 'like',
+    // Escalation
+    'agent', 'human', 'person', 'someone', 'real', 'speak', 'talk', 'transfer'
   ];
   
-  // Split into sentences and find relevant ones
-  const sentences = cleaned.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0);
+  // Split into sentences
+  const sentences = cleaned.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 3);
+  
+  // If message is short (likely a direct response), keep it as is
+  if (cleaned.length < 100 && sentences.length <= 2) {
+    console.log(`Short message, keeping as is: ${cleaned}`);
+    return cleaned.length > 0 ? cleaned : "Hello, how can I help you with restaurant reservations?";
+  }
+  
+  // For longer messages, find relevant sentences
   const relevantSentences: string[] = [];
   
   for (const sentence of sentences) {
     const lowerSentence = sentence.toLowerCase();
-    if (restaurantKeywords.some(keyword => lowerSentence.includes(keyword))) {
+    // Check if sentence contains relevant keywords
+    if (relevantKeywords.some(keyword => lowerSentence.includes(keyword))) {
       relevantSentences.push(sentence);
     }
   }
   
-  // If we found relevant sentences, use those; otherwise use the last meaningful sentence
+  // If we found relevant sentences, use those
   if (relevantSentences.length > 0) {
-    cleaned = relevantSentences.join('. ') + '.';
+    cleaned = relevantSentences.join('. ');
+    if (!cleaned.endsWith('.') && !cleaned.endsWith('?') && !cleaned.endsWith('!')) {
+      cleaned += '.';
+    }
     console.log(`Extracted relevant query: ${cleaned}`);
   } else if (sentences.length > 0) {
-    // Use the last sentence as it's likely the actual query
-    cleaned = sentences[sentences.length - 1];
-    console.log(`Using last sentence as query: ${cleaned}`);
+    // Use the last 2-3 sentences as they're likely the actual query
+    const lastSentences = sentences.slice(-3);
+    cleaned = lastSentences.join('. ');
+    console.log(`Using last sentences as query: ${cleaned}`);
   }
   
   // Final cleanup
   cleaned = cleaned
     .replace(/\s+/g, ' ')
+    .replace(/\.+/g, '.')
     .trim();
   
-  // Keep short valid responses (yes, no, ok, etc.) - don't replace them!
-  // Only replace if truly empty
+  // If empty, return greeting
   if (cleaned.length === 0) {
     return "Hello, how can I help you with restaurant reservations?";
   }
