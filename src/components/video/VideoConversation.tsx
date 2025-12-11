@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import DailyIframe, { DailyCall } from "@daily-co/daily-js";
 import { Button } from "@/components/ui/button";
 import { Video, VideoOff, Loader2 } from "lucide-react";
@@ -14,9 +14,40 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
   const callRef = useRef<DailyCall | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // End conversation on Tavus backend
+  const endTavusConversation = useCallback(async () => {
+    if (!conversationIdRef.current) return;
+    
+    const convId = conversationIdRef.current;
+    conversationIdRef.current = null; // Clear immediately to prevent duplicate calls
+    
+    try {
+      console.log('Ending Tavus conversation:', convId);
+      const { data, error } = await supabase.functions.invoke('end-video-conversation', {
+        body: { conversation_id: convId }
+      });
+      
+      if (error) {
+        console.error('Error ending conversation:', error);
+      } else {
+        console.log('Tavus conversation ended:', data);
+      }
+    } catch (err) {
+      console.error('Failed to end Tavus conversation:', err);
+    }
+  }, []);
+
+  const cleanup = useCallback(() => {
+    if (callRef.current) {
+      callRef.current.destroy();
+      callRef.current = null;
+    }
+  }, []);
 
   const startConversation = async () => {
     setIsLoading(true);
@@ -41,6 +72,9 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       }
 
       console.log('Conversation created:', data);
+      
+      // Store conversation ID for cleanup
+      conversationIdRef.current = data.conversation_id;
 
       // Create Daily.co frame
       callRef.current = DailyIframe.createFrame(containerRef.current!, {
@@ -63,6 +97,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       callRef.current.on('left-meeting', () => {
         console.log('Left video conversation');
         setIsConnected(false);
+        endTavusConversation(); // End on Tavus backend
         cleanup();
       });
 
@@ -70,6 +105,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         console.error('Daily error:', e);
         setError('Video connection error');
         setIsLoading(false);
+        endTavusConversation(); // End on error too
       });
 
       await callRef.current.join({ url: data.conversation_url });
@@ -92,18 +128,12 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
     }
   };
 
-  const cleanup = () => {
-    if (callRef.current) {
-      callRef.current.destroy();
-      callRef.current = null;
-    }
-  };
-
   useEffect(() => {
     return () => {
+      endTavusConversation(); // End conversation on unmount
       cleanup();
     };
-  }, []);
+  }, [endTavusConversation, cleanup]);
 
   return (
     <div className="w-full h-full flex flex-col">
