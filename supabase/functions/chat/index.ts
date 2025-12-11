@@ -60,6 +60,59 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
   }
 }
 
+// Helper to create SSE streaming response
+function createStreamingResponse(content: string, model: string): ReadableStream {
+  const encoder = new TextEncoder();
+  const id = `chatcmpl-${crypto.randomUUID()}`;
+  
+  return new ReadableStream({
+    start(controller) {
+      // Split content into chunks for more natural streaming
+      const words = content.split(' ');
+      let currentChunk = '';
+      
+      // Send chunks of ~3-5 words at a time
+      for (let i = 0; i < words.length; i++) {
+        currentChunk += (currentChunk ? ' ' : '') + words[i];
+        
+        if ((i + 1) % 3 === 0 || i === words.length - 1) {
+          const chunk = {
+            id,
+            object: "chat.completion.chunk",
+            created: Math.floor(Date.now() / 1000),
+            model,
+            choices: [{
+              index: 0,
+              delta: {
+                content: currentChunk + (i < words.length - 1 ? ' ' : '')
+              },
+              finish_reason: null
+            }]
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+          currentChunk = '';
+        }
+      }
+      
+      // Send final chunk with finish_reason
+      const finalChunk = {
+        id,
+        object: "chat.completion.chunk",
+        created: Math.floor(Date.now() / 1000),
+        model,
+        choices: [{
+          index: 0,
+          delta: {},
+          finish_reason: "stop"
+        }]
+      };
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify(finalChunk)}\n\n`));
+      controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+      controller.close();
+    }
+  });
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -93,6 +146,7 @@ serve(async (req) => {
     let data: any = {};
     try {
       const bodyText = await req.text();
+      console.log(`Raw request body: ${bodyText.substring(0, 500)}`);
       if (bodyText && bodyText.trim()) {
         data = JSON.parse(bodyText);
       }
@@ -101,19 +155,36 @@ serve(async (req) => {
     }
 
     const messages = data.messages || [];
+    const isStreaming = data.stream === true;
+    
+    console.log(`Stream requested: ${isStreaming}`);
     
     // If no messages, return a default response
     if (messages.length === 0) {
       console.log('No messages in request, returning greeting');
+      const greeting = "Hello! I'm your AI concierge. How can I help you with your reservation today?";
+      
+      if (isStreaming) {
+        return new Response(createStreamingResponse(greeting, "salesforce-agentforce"), {
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+          },
+        });
+      }
+      
       return new Response(JSON.stringify({
         id: `chatcmpl-${crypto.randomUUID()}`,
         object: "chat.completion",
+        model: "salesforce-agentforce",
         created: Math.floor(Date.now() / 1000),
         choices: [{
           index: 0,
           message: {
             role: "assistant",
-            content: "Hello! I'm your AI concierge. How can I help you with your reservation today?"
+            content: greeting
           },
           finish_reason: "stop"
         }]
@@ -131,15 +202,29 @@ serve(async (req) => {
     const sessionData = await getSfSession(userId, sfToken);
 
     if (!sessionData) {
+      const errorMsg = "I'm sorry, I couldn't connect to the reservation system. Please try again later.";
+      
+      if (isStreaming) {
+        return new Response(createStreamingResponse(errorMsg, "salesforce-agentforce"), {
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+          },
+        });
+      }
+      
       return new Response(JSON.stringify({
         id: "chatcmpl-error",
         object: "chat.completion",
+        model: "salesforce-agentforce",
         created: Math.floor(Date.now() / 1000),
         choices: [{
           index: 0,
           message: {
             role: "assistant",
-            content: "I'm sorry, I couldn't connect to the reservation system. Please try again later."
+            content: errorMsg
           },
           finish_reason: "stop"
         }]
@@ -202,7 +287,22 @@ serve(async (req) => {
       }
     }
 
-    // Return in OpenAI-compatible format
+    console.log(`Bot reply: ${botReply}`);
+    console.log(`Returning ${isStreaming ? 'streaming' : 'non-streaming'} response`);
+
+    // Return streaming or non-streaming based on request
+    if (isStreaming) {
+      return new Response(createStreamingResponse(botReply, "salesforce-agentforce"), {
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        },
+      });
+    }
+
+    // Return in OpenAI-compatible format (non-streaming)
     const responsePayload = {
       id: `chatcmpl-${crypto.randomUUID()}`,
       object: "chat.completion",
@@ -231,15 +331,18 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in video-agent-proxy:', error);
+    const errorMsg = "I'm having a technical issue. Please try again.";
+    
     return new Response(JSON.stringify({
       id: "chatcmpl-error",
-      object: "chat.completion", 
+      object: "chat.completion",
+      model: "salesforce-agentforce",
       created: Math.floor(Date.now() / 1000),
       choices: [{
         index: 0,
         message: {
           role: "assistant",
-          content: "I'm having a technical issue. Please try again."
+          content: errorMsg
         },
         finish_reason: "stop"
       }]
