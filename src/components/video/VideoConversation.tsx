@@ -12,19 +12,14 @@ interface VideoConversationProps {
   personaId: string;
 }
 
-// Helper to end conversation via API
+// Helper to end conversation via API - fire and forget
 const endConversationApi = async (conversationId: string) => {
   try {
     console.log('Ending Tavus conversation via API:', conversationId);
-    const { data, error } = await supabase.functions.invoke('end-video-conversation', {
+    await supabase.functions.invoke('end-video-conversation', {
       body: { conversation_id: conversationId }
     });
-    if (error) {
-      console.error('Error ending conversation:', error);
-    } else {
-      console.log('Tavus conversation ended:', data);
-    }
-    localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+    console.log('Tavus conversation ended:', conversationId);
   } catch (err) {
     console.error('Failed to end Tavus conversation:', err);
   }
@@ -34,46 +29,21 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
   const callRef = useRef<DailyCall | null>(null);
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
+  const isCleaningUp = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Clean up any stale conversation on mount
+  // Clean up stale conversation from previous session on mount (only once)
   useEffect(() => {
     const staleConversationId = localStorage.getItem(CONVERSATION_STORAGE_KEY);
-    if (staleConversationId) {
-      console.log('Found stale conversation, ending it:', staleConversationId);
+    if (staleConversationId && !conversationIdRef.current) {
+      console.log('Found stale conversation from previous session, ending it:', staleConversationId);
+      localStorage.removeItem(CONVERSATION_STORAGE_KEY);
       endConversationApi(staleConversationId);
     }
   }, []);
-
-  // Handle page unload/refresh
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (conversationId) {
-        // Use sendBeacon for reliable delivery during unload
-        const url = `${import.meta.env.VITE_SUPABASE_URL || 'https://dfvrviuppfkqjpdyevfv.supabase.co'}/functions/v1/end-video-conversation`;
-        navigator.sendBeacon(url, JSON.stringify({ conversation_id: conversationId }));
-        localStorage.removeItem(CONVERSATION_STORAGE_KEY);
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      // If page becomes hidden and we have an active conversation, end it
-      if (document.visibilityState === 'hidden' && conversationId && !isConnected) {
-        endConversationApi(conversationId);
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [conversationId, isConnected]);
 
   const cleanup = useCallback(() => {
     if (callRef.current) {
@@ -89,13 +59,42 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
     }
   }, []);
 
-  const endTavusConversation = useCallback(async () => {
-    if (!conversationId) return;
-    await endConversationApi(conversationId);
-    setConversationId(null);
-  }, [conversationId]);
+  const endCurrentConversation = useCallback(async () => {
+    if (isCleaningUp.current) return;
+    isCleaningUp.current = true;
+
+    const convId = conversationIdRef.current;
+    if (convId) {
+      conversationIdRef.current = null;
+      localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+      await endConversationApi(convId);
+    }
+    
+    cleanup();
+    setIsConnected(false);
+    setIsLoading(false);
+    isCleaningUp.current = false;
+  }, [cleanup]);
+
+  // Handle page unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const convId = conversationIdRef.current;
+      if (convId) {
+        // Use sendBeacon for reliable delivery during unload
+        const url = 'https://dfvrviuppfkqjpdyevfv.supabase.co/functions/v1/end-video-conversation';
+        navigator.sendBeacon(url, JSON.stringify({ conversation_id: convId }));
+        localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   const startConversation = async () => {
+    if (isLoading || isConnected) return;
+    
     setIsLoading(true);
     setError(null);
     cleanup();
@@ -114,21 +113,20 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       }
 
       if (!data?.conversation_url || !data?.conversation_id) {
-        throw new Error('No conversation URL returned');
+        throw new Error(data?.error || 'No conversation URL returned');
       }
 
       console.log('Conversation created:', data);
       
-      // Store conversation ID for cleanup
-      setConversationId(data.conversation_id);
+      // Store conversation ID
+      conversationIdRef.current = data.conversation_id;
       localStorage.setItem(CONVERSATION_STORAGE_KEY, data.conversation_id);
 
-      // Ensure container is ready
       if (!containerRef.current) {
         throw new Error('Video container not ready');
       }
 
-      // Create Daily.co call object (not iframe) for better control
+      // Create Daily.co frame
       callRef.current = DailyIframe.createFrame(containerRef.current, {
         iframeStyle: {
           position: 'absolute',
@@ -144,43 +142,25 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         showFullscreenButton: true,
       });
 
-      // Set up event handlers before joining
-      callRef.current.on('joining-meeting', () => {
-        console.log('Joining meeting...');
-      });
-
       callRef.current.on('joined-meeting', () => {
-        console.log('Joined video conversation successfully');
+        console.log('Successfully joined video conversation');
         setIsConnected(true);
         setIsLoading(false);
       });
 
-      callRef.current.on('left-meeting', async () => {
+      callRef.current.on('left-meeting', () => {
         console.log('Left video conversation');
-        setIsConnected(false);
-        await endTavusConversation();
-        cleanup();
+        endCurrentConversation();
       });
 
-      callRef.current.on('error', async (e) => {
-        console.error('Daily error:', e);
+      callRef.current.on('error', (e) => {
+        console.error('Daily.co error:', e);
         setError('Video connection error. Please try again.');
-        setIsLoading(false);
-        await endTavusConversation();
-        cleanup();
-      });
-
-      callRef.current.on('camera-error', (e) => {
-        console.error('Camera error:', e);
-        toast({
-          title: "Camera Error",
-          description: "Please allow camera access to use video chat.",
-          variant: "destructive",
-        });
+        endCurrentConversation();
       });
 
       // Join the call
-      console.log('Joining Daily call:', data.conversation_url);
+      console.log('Joining Daily.co call:', data.conversation_url);
       await callRef.current.join({ url: data.conversation_url });
 
     } catch (err) {
@@ -189,9 +169,12 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       setError(errorMessage);
       setIsLoading(false);
       
-      // Clean up conversation if it was created
-      if (conversationId) {
-        await endTavusConversation();
+      // Clean up if conversation was created but joining failed
+      if (conversationIdRef.current) {
+        const convId = conversationIdRef.current;
+        conversationIdRef.current = null;
+        localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+        await endConversationApi(convId);
       }
       
       toast({
@@ -202,7 +185,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
     }
   };
 
-  const endConversation = async () => {
+  const handleEndConversation = async () => {
     if (callRef.current) {
       try {
         await callRef.current.leave();
@@ -210,27 +193,27 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         console.log('Error leaving call:', e);
       }
     }
-    await endTavusConversation();
-    cleanup();
-    setIsConnected(false);
+    await endCurrentConversation();
   };
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (conversationId) {
-        endConversationApi(conversationId);
+      if (conversationIdRef.current && !isCleaningUp.current) {
+        const convId = conversationIdRef.current;
+        localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+        endConversationApi(convId);
       }
       cleanup();
     };
-  }, [conversationId, cleanup]);
+  }, [cleanup]);
 
   const showStartScreen = !isConnected && !isLoading;
 
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex-1 min-h-[500px] bg-black rounded-2xl overflow-hidden relative">
-        {/* Daily.co iframe container - always mounted */}
+        {/* Daily.co iframe container */}
         <div 
           ref={containerRef} 
           className="absolute inset-0"
@@ -277,7 +260,7 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
       {isConnected && (
         <div className="mt-4 flex justify-center">
           <Button 
-            onClick={endConversation} 
+            onClick={handleEndConversation} 
             variant="destructive"
             className="gap-2"
           >
