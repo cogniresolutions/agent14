@@ -253,21 +253,30 @@ function createStreamingResponse(content: string, model: string): ReadableStream
 }
 
 serve(async (req) => {
+  const requestId = crypto.randomUUID().substring(0, 8);
+  console.log(`[${requestId}] Incoming request: ${req.method} from ${req.headers.get('origin') || 'unknown'}`);
+  console.log(`[${requestId}] User-Agent: ${req.headers.get('user-agent')?.substring(0, 100) || 'unknown'}`);
+  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
+    console.log(`[${requestId}] CORS preflight request`);
     return new Response(null, { headers: corsHeaders });
   }
 
   // Handle GET requests (health checks)
   if (req.method === 'GET') {
+    console.log(`[${requestId}] Health check request`);
     return new Response(JSON.stringify({ 
       status: 'ok', 
       service: 'video-agent-proxy',
-      model: 'salesforce-agentforce'
+      model: 'salesforce-agentforce',
+      timestamp: new Date().toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
+  
+  console.log(`[${requestId}] Processing POST request`);
 
   try {
     // Generate fresh OAuth token for each request to avoid expiry issues
