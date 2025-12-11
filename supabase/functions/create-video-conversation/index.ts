@@ -5,10 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Agentforce proxy endpoint for Custom LLM
-const AGENTFORCE_LLM_BASE_URL = "https://dfvrviuppfkqjpdyevfv.supabase.co/functions/v1";
-const AGENTFORCE_LLM_MODEL = "video-agent-proxy";
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -39,34 +35,19 @@ serve(async (req) => {
     }
 
     console.log(`Creating conversation with replica: ${replica_id}, persona: ${persona_id}`);
-    console.log(`Using Agentforce LLM: ${AGENTFORCE_LLM_BASE_URL}/${AGENTFORCE_LLM_MODEL}`);
 
-    // Create conversation with custom LLM pointing to Agentforce
-    const conversationPayload = {
-      replica_id,
-      persona_id,
-      conversation_name: conversation_name || 'Agent14 Video Session',
-      // Override LLM to use our Agentforce proxy
-      custom_llm: {
-        model: AGENTFORCE_LLM_MODEL,
-        base_url: AGENTFORCE_LLM_BASE_URL,
-      },
-      // Conversation-level overrides for the persona
-      properties: {
-        max_call_duration: 1800, // 30 minutes
-        participant_left_timeout: 60,
-        enable_recording: false,
-        apply_greenscreen: false,
-      }
-    };
-
+    // Create conversation - Custom LLM must be configured on the Persona in the platform
     const response = await fetch('https://tavusapi.com/v2/conversations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': TAVUS_API_KEY,
       },
-      body: JSON.stringify(conversationPayload),
+      body: JSON.stringify({
+        replica_id,
+        persona_id,
+        conversation_name: conversation_name || 'Agent14 Video Session',
+      }),
     });
 
     const data = await response.json();
@@ -83,11 +64,7 @@ serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({
-      ...data,
-      agentforce_connected: true,
-      llm_endpoint: `${AGENTFORCE_LLM_BASE_URL}/${AGENTFORCE_LLM_MODEL}`
-    }), {
+    return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
