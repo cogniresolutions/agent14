@@ -162,7 +162,7 @@ serve(async (req) => {
     // If no messages, return a default response
     if (messages.length === 0) {
       console.log('No messages in request, returning greeting');
-      const greeting = "Hello! I'm your AI concierge. How can I help you with your reservation today?";
+      const greeting = "Hi! My name is Agent14. I am here to assist you with any reservation management, restaurant suggestions, or platform assistance. How can I help you?";
       
       if (isStreaming) {
         return new Response(createStreamingResponse(greeting, "salesforce-agentforce"), {
