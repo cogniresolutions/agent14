@@ -235,74 +235,111 @@ serve(async (req) => {
 
     const { sessionId: sfSessionId, sequenceId } = sessionData;
 
-    // Send message to Salesforce
+    // Send message to Salesforce with timeout handling
     console.log(`Sending to Salesforce session ${sfSessionId}: ${lastUserMessage}`);
     const sfUrl = `${BASE_URL}/sessions/${sfSessionId}/messages`;
     
-    const sfResp = await fetch(sfUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${sfToken}`,
-        'Content-Type': 'application/json',
-        'x-org-id': ORG_ID,
-        'x-client-feature-id': FEATURE_ID,
-      },
-      body: JSON.stringify({
-        message: {
-          text: lastUserMessage,
-          type: "Text",
-          sequenceId: sequenceId
-        }
-      }),
-    });
-
-    // Increment sequenceId for next message
-    sessionData.sequenceId++;
-
-    console.log(`Salesforce message response status: ${sfResp.status}`);
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
     
-    // Default fallback message - must be conversational so persona speaks it
-    let botReply = "I appreciate your question! However, I'm specifically here to help with restaurant reservations, including booking new tables, modifying existing reservations, cancellations, or suggesting great restaurants. Is there anything I can assist you with for your dining plans today?";
+    let botReply = "";
+    let needsHumanEscalation = false;
     
-    if (sfResp.ok) {
-      const sfData = await sfResp.json();
-      console.log(`Salesforce response: ${JSON.stringify(sfData)}`);
+    try {
+      const sfResp = await fetch(sfUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sfToken}`,
+          'Content-Type': 'application/json',
+          'x-org-id': ORG_ID,
+          'x-client-feature-id': FEATURE_ID,
+        },
+        body: JSON.stringify({
+          message: {
+            text: lastUserMessage,
+            type: "Text",
+            sequenceId: sequenceId
+          }
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
       
-      // Extract the text from Salesforce response
-      let foundReply = false;
-      if (sfData.messages && Array.isArray(sfData.messages)) {
-        for (const msg of sfData.messages) {
-          // Check for any message content
-          if (msg.message && msg.message.trim()) {
-            botReply = msg.message;
-            foundReply = true;
-            console.log(`Found Agentforce reply: ${botReply}`);
-            break;
-          } else if (msg.text && msg.text.trim()) {
-            botReply = msg.text;
-            foundReply = true;
-            console.log(`Found Agentforce text: ${botReply}`);
-            break;
+      // Increment sequenceId for next message
+      sessionData.sequenceId++;
+
+      console.log(`Salesforce message response status: ${sfResp.status}`);
+      
+      if (sfResp.ok) {
+        const sfData = await sfResp.json();
+        console.log(`Salesforce response: ${JSON.stringify(sfData)}`);
+        
+        // Extract the text from Salesforce response
+        let foundReply = false;
+        if (sfData.messages && Array.isArray(sfData.messages)) {
+          for (const msg of sfData.messages) {
+            // Check for escalation request
+            if (msg.type === 'Escalate') {
+              needsHumanEscalation = true;
+              botReply = msg.message || "I'll connect you with a human agent right away. One moment please while I transfer you to our support team.";
+              foundReply = true;
+              console.log(`Escalation requested`);
+              break;
+            }
+            // Check for any message content
+            if (msg.message && msg.message.trim()) {
+              botReply = msg.message;
+              foundReply = true;
+              console.log(`Found Agentforce reply: ${botReply}`);
+              break;
+            } else if (msg.text && msg.text.trim()) {
+              botReply = msg.text;
+              foundReply = true;
+              console.log(`Found Agentforce text: ${botReply}`);
+              break;
+            }
           }
         }
-      }
-      
-      // If no message found in response, use friendly fallback
-      if (!foundReply) {
-        console.log(`No message found in Agentforce response, using fallback`);
-        botReply = "I'm here to help with restaurant reservations. Could you please tell me more about what you're looking for? I can help you book a table, modify an existing reservation, cancel a booking, or suggest great restaurants.";
-      }
-    } else {
-      const errorText = await sfResp.text();
-      console.error(`Salesforce error: ${errorText}`);
-      
-      // If session expired, clear it
-      if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400) {
-        sessions.delete(userId);
-        botReply = "Let me reconnect to the system. Could you please repeat your request?";
+        
+        // If no message found in response, provide helpful fallback
+        if (!foundReply) {
+          console.log(`No message found in Agentforce response, using fallback`);
+          botReply = "Thank you for your patience! I'm searching for the best information to help you. Could you please provide a bit more detail about what you're looking for? I can help with restaurant reservations, modifications, cancellations, or recommendations.";
+        }
       } else {
-        botReply = "I apologize for the technical difficulty. I'm here to help with restaurant reservations. What can I assist you with today?";
+        const errorText = await sfResp.text();
+        console.error(`Salesforce error: ${errorText}`);
+        
+        // If session expired, clear it
+        if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400) {
+          sessions.delete(userId);
+          botReply = "I apologize for the brief interruption. Let me reconnect to our system. Could you please repeat your request? I'm here to help with your dining needs.";
+        } else {
+          needsHumanEscalation = true;
+          botReply = "I'm experiencing some difficulty retrieving that information right now. I sincerely apologize for the inconvenience. Would you like me to connect you with one of our human support agents? They would be happy to assist you personally.";
+        }
       }
+    } catch (fetchError: unknown) {
+      clearTimeout(timeoutId);
+      
+      const isAbortError = fetchError instanceof Error && fetchError.name === 'AbortError';
+      
+      if (isAbortError) {
+        console.error('Salesforce request timed out');
+        needsHumanEscalation = true;
+        botReply = "I apologize, but it's taking longer than expected to find that information. I don't want to keep you waiting. Would you like me to connect you with a human agent who can assist you right away? They'll be able to help you with your reservation needs.";
+      } else {
+        console.error(`Fetch error: ${fetchError}`);
+        needsHumanEscalation = true;
+        botReply = "I'm having some technical difficulties at the moment. I sincerely apologize for any inconvenience. I'd be happy to connect you with one of our human support agents who can assist you immediately. Would you like me to do that?";
+      }
+    }
+
+    // Log escalation status
+    if (needsHumanEscalation) {
+      console.log(`Human escalation offered to user`);
     }
 
     console.log(`Bot reply: ${botReply}`);
