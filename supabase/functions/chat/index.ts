@@ -198,7 +198,8 @@ function cleanUserMessage(rawMessage: string): string {
     'restaurant', 'reservation', 'book', 'booking', 'table', 'dinner', 'lunch', 
     'breakfast', 'dining', 'eat', 'food', 'cuisine', 'steakhouse', 'japanese',
     'italian', 'chinese', 'mexican', 'indian', 'thai', 'french', 'seafood',
-    'cancel', 'modify', 'change', 'reschedule', 'party size', 'guests', 'people'
+    'cancel', 'modify', 'change', 'reschedule', 'party size', 'guests', 'people',
+    'yes', 'no', 'please', 'thank', 'help', 'agent', 'human', 'person'
   ];
   
   // Split into sentences and find relevant ones
@@ -227,8 +228,9 @@ function cleanUserMessage(rawMessage: string): string {
     .replace(/\s+/g, ' ')
     .trim();
   
-  // If still too noisy or empty, return a prompt for clarification
-  if (cleaned.length < 3) {
+  // Keep short valid responses (yes, no, ok, etc.) - don't replace them!
+  // Only replace if truly empty
+  if (cleaned.length === 0) {
     return "Hello, how can I help you with restaurant reservations?";
   }
   
@@ -527,11 +529,65 @@ serve(async (req) => {
           }
         }
         
-        // Handle failure case - offer to retry or escalate
+        // Handle failure case - clear the corrupted session and create a new one
         if (hasFailure && !foundReply) {
-          console.log(`Salesforce action failed, offering retry or escalation`);
-          needsHumanEscalation = true;
-          botReply = "I apologize, but I encountered an issue retrieving that information. Would you like to try your request again, or shall I connect you with a human agent who can assist you directly?";
+          console.log(`Salesforce action failed, clearing session and retrying`);
+          
+          // Clear the corrupted session
+          await clearStoredSession(userId);
+          
+          // Create a new session and retry
+          const newSessionData = await getSfSession(userId, sfToken);
+          if (newSessionData) {
+            console.log(`Retrying with fresh session: ${newSessionData.sessionId}`);
+            const retryResp = await fetch(`${BASE_URL}/sessions/${newSessionData.sessionId}/messages`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${sfToken}`,
+                'Content-Type': 'application/json',
+                'x-org-id': ORG_ID,
+                'x-client-feature-id': FEATURE_ID,
+              },
+              body: JSON.stringify({
+                message: {
+                  text: lastUserMessage,
+                  type: "Text",
+                  sequenceId: newSessionData.sequenceId
+                }
+              }),
+            });
+            
+            if (retryResp.ok) {
+              const retryData = await retryResp.json();
+              console.log(`Retry with fresh session successful: ${JSON.stringify(retryData)}`);
+              await updateSequenceId(userId, newSessionData.sequenceId + 1);
+              
+              // Extract reply from retry response
+              if (retryData.messages && Array.isArray(retryData.messages)) {
+                for (const msg of retryData.messages) {
+                  if (msg.type === 'Escalate') {
+                    needsHumanEscalation = true;
+                  }
+                  if (msg.type === 'Inform' && msg.message && msg.message.trim()) {
+                    botReply = msg.message;
+                    foundReply = true;
+                    console.log(`Found retry reply: ${botReply}`);
+                    break;
+                  } else if (msg.message && msg.message.trim() && msg.type !== 'Failure') {
+                    botReply = msg.message;
+                    foundReply = true;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+          
+          // If still no reply after retry, offer escalation
+          if (!foundReply) {
+            needsHumanEscalation = true;
+            botReply = "I apologize, but I encountered an issue retrieving that information. Would you like to try your request again, or shall I connect you with a human agent who can assist you directly?";
+          }
         }
         // If no message found in response, provide helpful fallback
         else if (!foundReply) {
