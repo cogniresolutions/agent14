@@ -183,6 +183,58 @@ function sanitizeForSpeech(content: string): string {
     .trim();
 }
 
+// Helper to clean user message - extract the relevant query for Agentforce
+function cleanUserMessage(rawMessage: string): string {
+  // Remove Tavus video conference context tags
+  let cleaned = rawMessage
+    .replace(/<user_appearance>[\s\S]*?<\/user_appearance>/gi, '')
+    .replace(/<user_emotions>[\s\S]*?<\/user_emotions>/gi, '')
+    .replace(/<user_screen>[\s\S]*?<\/user_screen>/gi, '')
+    .replace(/<[^>]+>/g, '') // Remove any other XML-like tags
+    .trim();
+  
+  // Look for restaurant-related keywords and extract that sentence
+  const restaurantKeywords = [
+    'restaurant', 'reservation', 'book', 'booking', 'table', 'dinner', 'lunch', 
+    'breakfast', 'dining', 'eat', 'food', 'cuisine', 'steakhouse', 'japanese',
+    'italian', 'chinese', 'mexican', 'indian', 'thai', 'french', 'seafood',
+    'cancel', 'modify', 'change', 'reschedule', 'party size', 'guests', 'people'
+  ];
+  
+  // Split into sentences and find relevant ones
+  const sentences = cleaned.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0);
+  const relevantSentences: string[] = [];
+  
+  for (const sentence of sentences) {
+    const lowerSentence = sentence.toLowerCase();
+    if (restaurantKeywords.some(keyword => lowerSentence.includes(keyword))) {
+      relevantSentences.push(sentence);
+    }
+  }
+  
+  // If we found relevant sentences, use those; otherwise use the last meaningful sentence
+  if (relevantSentences.length > 0) {
+    cleaned = relevantSentences.join('. ') + '.';
+    console.log(`Extracted relevant query: ${cleaned}`);
+  } else if (sentences.length > 0) {
+    // Use the last sentence as it's likely the actual query
+    cleaned = sentences[sentences.length - 1];
+    console.log(`Using last sentence as query: ${cleaned}`);
+  }
+  
+  // Final cleanup
+  cleaned = cleaned
+    .replace(/\s+/g, ' ')
+    .trim();
+  
+  // If still too noisy or empty, return a prompt for clarification
+  if (cleaned.length < 3) {
+    return "Hello, how can I help you with restaurant reservations?";
+  }
+  
+  return cleaned;
+}
+
 // Helper to create SSE streaming response - OpenAI compatible format for Tavus
 function createStreamingResponse(content: string, model: string): ReadableStream {
   const encoder = new TextEncoder();
@@ -344,9 +396,11 @@ serve(async (req) => {
       });
     }
     
-    // Extract the latest user message
-    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "Hello";
-    console.log(`Received message: ${lastUserMessage}`);
+    // Extract the latest user message and clean it for Agentforce
+    const rawUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "Hello";
+    const lastUserMessage = cleanUserMessage(rawUserMessage);
+    console.log(`Raw message: ${rawUserMessage.substring(0, 100)}...`);
+    console.log(`Cleaned message: ${lastUserMessage}`);
 
     // Get or create Salesforce session
     const userId = data.user_id || "video_demo_user";
