@@ -171,107 +171,16 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
   }
 }
 
-// Helper to sanitize content for speech - remove problematic characters for TTS
+// Helper to sanitize content for speech - remove problematic characters
 function sanitizeForSpeech(content: string): string {
   return content
     .replace(/\n+/g, ' ')  // Replace newlines with spaces
     .replace(/\r/g, '')     // Remove carriage returns
     .replace(/\t/g, ' ')    // Replace tabs with spaces
-    .replace(/- /g, ', ')   // Replace bullet points with commas for natural speech
-    .replace(/\*\*/g, '')   // Remove markdown bold
-    .replace(/\*/g, '')     // Remove markdown italic
-    .replace(/#+ /g, '')    // Remove markdown headers
-    .replace(/`/g, '')      // Remove code backticks
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // Convert markdown links to just text
+    .replace(/\s+/g, ' ')   // Collapse multiple spaces
     .replace(/[""]|['']/g, '"')  // Normalize quotes
     .replace(/URL_Redacted/gi, 'their website')  // Replace redacted URLs
-    .replace(/https?:\/\/[^\s]+/gi, 'their website')  // Replace any URLs
-    .replace(/\s+/g, ' ')   // Collapse multiple spaces
     .trim();
-}
-
-// Helper to clean user message - extract the relevant query for Agentforce
-function cleanUserMessage(rawMessage: string): string {
-  // Remove Tavus video conference context tags and system instructions
-  let cleaned = rawMessage
-    .replace(/<user_appearance>[\s\S]*?<\/user_appearance>/gi, '')
-    .replace(/<user_emotions>[\s\S]*?<\/user_emotions>/gi, '')
-    .replace(/<user_screen>[\s\S]*?<\/user_screen>/gi, '')
-    .replace(/<[^>]+>/g, '') // Remove any other XML-like tags
-    // Remove common Tavus system phrases
-    .replace(/you are in a live video conference call[^.]*\./gi, '')
-    .replace(/you'll receive messages containing[^.]*\./gi, '')
-    .replace(/stay in the room[^.]*\./gi, '')
-    .replace(/you will have \d+ minutes[^.]*\./gi, '')
-    .trim();
-  
-  // Extended keywords for restaurant/dining and general conversation
-  const relevantKeywords = [
-    // Restaurant & dining
-    'restaurant', 'reservation', 'book', 'booking', 'table', 'dinner', 'lunch', 
-    'breakfast', 'brunch', 'dining', 'dine', 'eat', 'eating', 'food', 'cuisine', 
-    'steakhouse', 'japanese', 'sushi', 'ramen', 'italian', 'pizza', 'pasta',
-    'chinese', 'mexican', 'tacos', 'indian', 'curry', 'thai', 'french', 'seafood',
-    'vegetarian', 'vegan', 'halal', 'kosher', 'gluten', 'allergies',
-    // Booking details
-    'cancel', 'modify', 'change', 'reschedule', 'party', 'guests', 'people', 'persons',
-    'tonight', 'tomorrow', 'weekend', 'date', 'time', 'evening', 'afternoon', 'morning',
-    'romantic', 'casual', 'fancy', 'upscale', 'cheap', 'affordable', 'expensive',
-    'outdoor', 'patio', 'rooftop', 'private', 'view', 'ambiance', 'atmosphere',
-    // Conversational
-    'yes', 'no', 'ok', 'okay', 'sure', 'please', 'thank', 'thanks', 'help', 
-    'want', 'need', 'looking', 'find', 'search', 'recommend', 'suggest', 'show',
-    'what', 'where', 'when', 'how', 'which', 'can', 'could', 'would', 'like',
-    // Escalation
-    'agent', 'human', 'person', 'someone', 'real', 'speak', 'talk', 'transfer'
-  ];
-  
-  // Split into sentences
-  const sentences = cleaned.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 3);
-  
-  // If message is short (likely a direct response), keep it as is
-  if (cleaned.length < 100 && sentences.length <= 2) {
-    console.log(`Short message, keeping as is: ${cleaned}`);
-    return cleaned.length > 0 ? cleaned : "Hello, how can I help you with restaurant reservations?";
-  }
-  
-  // For longer messages, find relevant sentences
-  const relevantSentences: string[] = [];
-  
-  for (const sentence of sentences) {
-    const lowerSentence = sentence.toLowerCase();
-    // Check if sentence contains relevant keywords
-    if (relevantKeywords.some(keyword => lowerSentence.includes(keyword))) {
-      relevantSentences.push(sentence);
-    }
-  }
-  
-  // If we found relevant sentences, use those
-  if (relevantSentences.length > 0) {
-    cleaned = relevantSentences.join('. ');
-    if (!cleaned.endsWith('.') && !cleaned.endsWith('?') && !cleaned.endsWith('!')) {
-      cleaned += '.';
-    }
-    console.log(`Extracted relevant query: ${cleaned}`);
-  } else if (sentences.length > 0) {
-    // Use the last 2-3 sentences as they're likely the actual query
-    const lastSentences = sentences.slice(-3);
-    cleaned = lastSentences.join('. ');
-    console.log(`Using last sentences as query: ${cleaned}`);
-  }
-  
-  // Final cleanup
-  cleaned = cleaned
-    .replace(/\s+/g, ' ')
-    .replace(/\.+/g, '.')
-    .trim();
-  
-  // If empty, return greeting
-  if (cleaned.length === 0) {
-    return "Hello, how can I help you with restaurant reservations?";
-  }
-  
-  return cleaned;
 }
 
 // Helper to create SSE streaming response - OpenAI compatible format for Tavus
@@ -280,11 +189,9 @@ function createStreamingResponse(content: string, model: string): ReadableStream
   const id = `chatcmpl-${crypto.randomUUID()}`;
   const created = Math.floor(Date.now() / 1000);
   
-  // Sanitize content for speech - make it TTS-friendly
+  // Sanitize content for speech
   const sanitizedContent = sanitizeForSpeech(content);
-  console.log(`[TAVUS] Original content length: ${content.length}`);
-  console.log(`[TAVUS] Sanitized content length: ${sanitizedContent.length}`);
-  console.log(`[TAVUS] Full sanitized content: ${sanitizedContent}`);
+  console.log(`Creating streaming response with sanitized content: ${sanitizedContent.substring(0, 150)}...`);
   
   return new ReadableStream({
     start(controller) {
@@ -305,7 +212,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       const roleData = `data: ${JSON.stringify(roleChunk)}\n\n`;
       controller.enqueue(encoder.encode(roleData));
-      console.log(`[TAVUS] Sent role chunk`);
+      console.log(`Sent role chunk`);
       
       // Send the full content in one chunk for reliable delivery to Tavus
       const contentChunk = {
@@ -323,7 +230,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       const contentData = `data: ${JSON.stringify(contentChunk)}\n\n`;
       controller.enqueue(encoder.encode(contentData));
-      console.log(`[TAVUS] Sent content chunk, size: ${contentData.length} bytes`);
+      console.log(`Sent content chunk: ${contentData.substring(0, 200)}...`);
       
       // Send final chunk with finish_reason
       const finalChunk = {
@@ -339,7 +246,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       controller.enqueue(encoder.encode(`data: ${JSON.stringify(finalChunk)}\n\n`));
       controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
-      console.log(`[TAVUS] Streaming response completed - Tavus should now speak this response`);
+      console.log(`Streaming response completed for Tavus`);
       controller.close();
     }
   });
@@ -437,11 +344,9 @@ serve(async (req) => {
       });
     }
     
-    // Extract the latest user message and clean it for Agentforce
-    const rawUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "Hello";
-    const lastUserMessage = cleanUserMessage(rawUserMessage);
-    console.log(`Raw message: ${rawUserMessage.substring(0, 100)}...`);
-    console.log(`Cleaned message: ${lastUserMessage}`);
+    // Extract the latest user message
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "Hello";
+    console.log(`Received message: ${lastUserMessage}`);
 
     // Get or create Salesforce session
     const userId = data.user_id || "video_demo_user";
@@ -519,76 +424,7 @@ serve(async (req) => {
 
       console.log(`Salesforce message response status: ${sfResp.status}`);
       
-      // Handle 204 No Content - session may be stale, reset and retry
-      if (sfResp.status === 204) {
-        console.log(`Salesforce returned 204 (no content), session may be stale - resetting`);
-        await clearStoredSession(userId);
-        
-        // Create fresh session and retry
-        const newSessionData = await getSfSession(userId, sfToken);
-        if (newSessionData) {
-          console.log(`Retrying with fresh session: ${newSessionData.sessionId}`);
-          const retryResp = await fetch(`${BASE_URL}/sessions/${newSessionData.sessionId}/messages`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${sfToken}`,
-              'Content-Type': 'application/json',
-              'x-org-id': ORG_ID,
-              'x-client-feature-id': FEATURE_ID,
-            },
-            body: JSON.stringify({
-              message: {
-                text: lastUserMessage,
-                type: "Text",
-                sequenceId: newSessionData.sequenceId
-              }
-            }),
-          });
-          
-          if (retryResp.ok && retryResp.status !== 204) {
-            const retryData = await retryResp.json();
-            console.log(`Retry successful: ${JSON.stringify(retryData)}`);
-            await updateSequenceId(userId, newSessionData.sequenceId + 1);
-            
-            // Extract reply from retry response
-            if (retryData.messages && Array.isArray(retryData.messages)) {
-              for (const msg of retryData.messages) {
-                if (msg.type === 'Escalate') {
-                  needsHumanEscalation = true;
-                }
-                if (msg.type === 'Inform' && msg.message && msg.message.trim()) {
-                  botReply = msg.message;
-                  console.log(`Found retry reply: ${botReply}`);
-                  break;
-                } else if (msg.message && msg.message.trim() && msg.type !== 'Failure') {
-                  botReply = msg.message;
-                  break;
-                }
-              }
-            }
-          }
-        }
-        
-        // If still no reply, provide fallback
-        if (!botReply) {
-          botReply = "I apologize for the brief delay. Could you please repeat your request? I'm here to help with restaurant reservations and recommendations.";
-        }
-        
-        // Return response for 204 case
-        console.log(`Bot reply: ${botReply}`);
-        if (isStreaming) {
-          return new Response(createStreamingResponse(botReply, "salesforce-agentforce"), {
-            headers: { 
-              ...corsHeaders, 
-              'Content-Type': 'text/event-stream',
-              'Cache-Control': 'no-cache',
-              'Connection': 'keep-alive'
-            },
-          });
-        }
-      }
-      
-      if (sfResp.ok && sfResp.status !== 204) {
+      if (sfResp.ok) {
         const sfData = await sfResp.json();
         console.log(`Salesforce response: ${JSON.stringify(sfData)}`);
         
@@ -637,65 +473,11 @@ serve(async (req) => {
           }
         }
         
-        // Handle failure case - clear the corrupted session and create a new one
+        // Handle failure case - offer to retry or escalate
         if (hasFailure && !foundReply) {
-          console.log(`Salesforce action failed, clearing session and retrying`);
-          
-          // Clear the corrupted session
-          await clearStoredSession(userId);
-          
-          // Create a new session and retry
-          const newSessionData = await getSfSession(userId, sfToken);
-          if (newSessionData) {
-            console.log(`Retrying with fresh session: ${newSessionData.sessionId}`);
-            const retryResp = await fetch(`${BASE_URL}/sessions/${newSessionData.sessionId}/messages`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${sfToken}`,
-                'Content-Type': 'application/json',
-                'x-org-id': ORG_ID,
-                'x-client-feature-id': FEATURE_ID,
-              },
-              body: JSON.stringify({
-                message: {
-                  text: lastUserMessage,
-                  type: "Text",
-                  sequenceId: newSessionData.sequenceId
-                }
-              }),
-            });
-            
-            if (retryResp.ok) {
-              const retryData = await retryResp.json();
-              console.log(`Retry with fresh session successful: ${JSON.stringify(retryData)}`);
-              await updateSequenceId(userId, newSessionData.sequenceId + 1);
-              
-              // Extract reply from retry response
-              if (retryData.messages && Array.isArray(retryData.messages)) {
-                for (const msg of retryData.messages) {
-                  if (msg.type === 'Escalate') {
-                    needsHumanEscalation = true;
-                  }
-                  if (msg.type === 'Inform' && msg.message && msg.message.trim()) {
-                    botReply = msg.message;
-                    foundReply = true;
-                    console.log(`Found retry reply: ${botReply}`);
-                    break;
-                  } else if (msg.message && msg.message.trim() && msg.type !== 'Failure') {
-                    botReply = msg.message;
-                    foundReply = true;
-                    break;
-                  }
-                }
-              }
-            }
-          }
-          
-          // If still no reply after retry, offer escalation
-          if (!foundReply) {
-            needsHumanEscalation = true;
-            botReply = "I apologize, but I encountered an issue retrieving that information. Would you like to try your request again, or shall I connect you with a human agent who can assist you directly?";
-          }
+          console.log(`Salesforce action failed, offering retry or escalation`);
+          needsHumanEscalation = true;
+          botReply = "I apologize, but I encountered an issue retrieving that information. Would you like to try your request again, or shall I connect you with a human agent who can assist you directly?";
         }
         // If no message found in response, provide helpful fallback
         else if (!foundReply) {
