@@ -510,7 +510,76 @@ serve(async (req) => {
 
       console.log(`Salesforce message response status: ${sfResp.status}`);
       
-      if (sfResp.ok) {
+      // Handle 204 No Content - session may be stale, reset and retry
+      if (sfResp.status === 204) {
+        console.log(`Salesforce returned 204 (no content), session may be stale - resetting`);
+        await clearStoredSession(userId);
+        
+        // Create fresh session and retry
+        const newSessionData = await getSfSession(userId, sfToken);
+        if (newSessionData) {
+          console.log(`Retrying with fresh session: ${newSessionData.sessionId}`);
+          const retryResp = await fetch(`${BASE_URL}/sessions/${newSessionData.sessionId}/messages`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${sfToken}`,
+              'Content-Type': 'application/json',
+              'x-org-id': ORG_ID,
+              'x-client-feature-id': FEATURE_ID,
+            },
+            body: JSON.stringify({
+              message: {
+                text: lastUserMessage,
+                type: "Text",
+                sequenceId: newSessionData.sequenceId
+              }
+            }),
+          });
+          
+          if (retryResp.ok && retryResp.status !== 204) {
+            const retryData = await retryResp.json();
+            console.log(`Retry successful: ${JSON.stringify(retryData)}`);
+            await updateSequenceId(userId, newSessionData.sequenceId + 1);
+            
+            // Extract reply from retry response
+            if (retryData.messages && Array.isArray(retryData.messages)) {
+              for (const msg of retryData.messages) {
+                if (msg.type === 'Escalate') {
+                  needsHumanEscalation = true;
+                }
+                if (msg.type === 'Inform' && msg.message && msg.message.trim()) {
+                  botReply = msg.message;
+                  console.log(`Found retry reply: ${botReply}`);
+                  break;
+                } else if (msg.message && msg.message.trim() && msg.type !== 'Failure') {
+                  botReply = msg.message;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        
+        // If still no reply, provide fallback
+        if (!botReply) {
+          botReply = "I apologize for the brief delay. Could you please repeat your request? I'm here to help with restaurant reservations and recommendations.";
+        }
+        
+        // Return response for 204 case
+        console.log(`Bot reply: ${botReply}`);
+        if (isStreaming) {
+          return new Response(createStreamingResponse(botReply, "salesforce-agentforce"), {
+            headers: { 
+              ...corsHeaders, 
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive'
+            },
+          });
+        }
+      }
+      
+      if (sfResp.ok && sfResp.status !== 204) {
         const sfData = await sfResp.json();
         console.log(`Salesforce response: ${JSON.stringify(sfData)}`);
         
