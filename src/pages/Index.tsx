@@ -12,6 +12,7 @@ import { Footer } from '@/components/landing/Footer';
 import { SalesforceChatbot } from '@/components/chatbot/SalesforceChatbot';
 import { FloatingChatButton } from '@/components/chatbot/FloatingChatButton';
 import { SecurityTrustBadge } from '@/components/landing/SecurityTrustBadge';
+import { PremiumVideoBanner } from '@/components/landing/PremiumVideoBanner';
 
 const Index = () => {
   return (
@@ -28,6 +29,7 @@ const Index = () => {
         <main>
           <Hero />
           <TrustBadges />
+          <PremiumVideoBanner />
           <Features />
           <HowItWorks />
           <LoyaltyProgram />
