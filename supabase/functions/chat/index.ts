@@ -456,22 +456,9 @@ serve(async (req) => {
             }
           }
           
-          // Second pass: get response messages
+          // Second pass: get response messages - pass through Agentforce's exact response
           for (const msg of sfData.messages) {
-            // Check for escalation request
-            if (msg.type === 'Escalate') {
-              needsHumanEscalation = true;
-              // Clear the session so next message starts fresh - session is now in escalated state
-              console.log(`Escalation detected - clearing session to start fresh next time`);
-              await clearStoredSession(userId);
-              // Don't override existing message if we have an Inform
-              if (!foundReply) {
-                botReply = "I'll connect you with a human agent right away. One moment please while I transfer you to our support team.";
-              }
-              console.log(`Escalation requested`);
-              // Don't break - we want to capture Inform messages first
-            }
-            // Check for Inform type messages (these contain the actual response)
+            // Check for Inform type messages first (these contain the actual response from Agentforce)
             if (msg.type === 'Inform' && msg.message && msg.message.trim()) {
               botReply = msg.message;
               foundReply = true;
@@ -487,20 +474,40 @@ serve(async (req) => {
               foundReply = true;
               console.log(`Found Agentforce text: ${botReply}`);
             }
+            
+            // Check for escalation - just log it, don't override Agentforce's response
+            if (msg.type === 'Escalate') {
+              needsHumanEscalation = true;
+              // Clear the session so next message starts fresh - session is now in escalated state
+              console.log(`Escalation detected - clearing session to start fresh next time`);
+              await clearStoredSession(userId);
+              console.log(`Escalation requested by Agentforce`);
+            }
           }
         }
         
-        // Handle failure case - offer to retry or escalate and clear session
+        // Handle failure case - clear session but use Agentforce's error message if available
         if (hasFailure && !foundReply) {
-          console.log(`Salesforce action failed, clearing session and offering retry`);
+          console.log(`Salesforce action failed, clearing session`);
           await clearStoredSession(userId);
-          needsHumanEscalation = true;
-          botReply = "I apologize, but I encountered an issue retrieving that information. Would you like to try your request again, or shall I connect you with a human agent who can assist you directly?";
+          // Check if there's an error message from Agentforce to pass through
+          for (const msg of sfData.messages) {
+            if (msg.type === 'Failure' && msg.errors?.[0]) {
+              botReply = msg.errors[0];
+              foundReply = true;
+              console.log(`Using Agentforce error message: ${botReply}`);
+              break;
+            }
+          }
+          // Only use fallback if Agentforce provided no message at all
+          if (!foundReply) {
+            botReply = "I encountered an issue. Could you please try again?";
+          }
         }
-        // If no message found in response, provide helpful fallback
+        // If no message found in response, ask for clarification
         else if (!foundReply) {
-          console.log(`No message found in Agentforce response, using fallback`);
-          botReply = "Thank you for your patience! Could you please provide a bit more detail about what you're looking for? I can help with restaurant reservations, modifications, cancellations, or recommendations.";
+          console.log(`No message found in Agentforce response, asking for clarification`);
+          botReply = "Could you please provide more details about what you need help with?";
         }
       } else {
         const errorText = await sfResp.text();
