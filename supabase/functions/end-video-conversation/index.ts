@@ -22,10 +22,25 @@ serve(async (req) => {
       });
     }
 
-    const body = await req.json();
-    const { conversation_id } = body;
+    // Handle both JSON and sendBeacon (text/plain) requests
+    let conversation_id: string | undefined;
+    
+    const contentType = req.headers.get('content-type') || '';
+    const bodyText = await req.text();
+    
+    console.log('Received request, content-type:', contentType, 'body:', bodyText);
+    
+    if (bodyText) {
+      try {
+        const parsed = JSON.parse(bodyText);
+        conversation_id = parsed.conversation_id;
+      } catch (e) {
+        console.error('Failed to parse body:', e);
+      }
+    }
 
     if (!conversation_id) {
+      console.error('No conversation_id provided');
       return new Response(JSON.stringify({ 
         error: 'conversation_id is required' 
       }), {
@@ -45,13 +60,19 @@ serve(async (req) => {
       },
     });
 
-    const data = await response.json();
-    console.log('End conversation response:', JSON.stringify(data));
+    let data: any = {};
+    try {
+      data = await response.json();
+    } catch (e) {
+      console.log('No JSON response from Tavus');
+    }
+    
+    console.log('End conversation response status:', response.status, 'data:', JSON.stringify(data));
 
     if (!response.ok) {
-      console.error('Error ending conversation:', data);
       // Still return success if conversation already ended or not found
-      if (response.status === 404 || response.status === 400) {
+      if (response.status === 404 || response.status === 400 || response.status === 409) {
+        console.log('Conversation already ended or not found');
         return new Response(JSON.stringify({ 
           status: 'ended',
           message: 'Conversation already ended or not found'
@@ -59,6 +80,7 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+      console.error('Error ending conversation:', data);
       return new Response(JSON.stringify({ 
         error: data.message || data.error || 'Failed to end conversation',
         details: data
@@ -68,8 +90,10 @@ serve(async (req) => {
       });
     }
 
+    console.log('Successfully ended conversation:', conversation_id);
     return new Response(JSON.stringify({ 
       status: 'ended',
+      conversation_id,
       ...data 
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -5,62 +5,102 @@ import { Video, VideoOff, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+const CONVERSATION_STORAGE_KEY = 'agent14_active_conversation';
+
 interface VideoConversationProps {
   replicaId: string;
   personaId: string;
 }
 
+// Helper to end conversation via API
+const endConversationApi = async (conversationId: string) => {
+  try {
+    console.log('Ending Tavus conversation via API:', conversationId);
+    const { data, error } = await supabase.functions.invoke('end-video-conversation', {
+      body: { conversation_id: conversationId }
+    });
+    if (error) {
+      console.error('Error ending conversation:', error);
+    } else {
+      console.log('Tavus conversation ended:', data);
+    }
+    localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+  } catch (err) {
+    console.error('Failed to end Tavus conversation:', err);
+  }
+};
+
 export const VideoConversation = ({ replicaId, personaId }: VideoConversationProps) => {
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
   const callRef = useRef<DailyCall | null>(null);
-  const conversationIdRef = useRef<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // End conversation on Tavus backend
-  const endTavusConversation = useCallback(async () => {
-    if (!conversationIdRef.current) return;
-    
-    const convId = conversationIdRef.current;
-    conversationIdRef.current = null;
-    
-    try {
-      console.log('Ending Tavus conversation:', convId);
-      const { data, error } = await supabase.functions.invoke('end-video-conversation', {
-        body: { conversation_id: convId }
-      });
-      
-      if (error) {
-        console.error('Error ending conversation:', error);
-      } else {
-        console.log('Tavus conversation ended:', data);
-      }
-    } catch (err) {
-      console.error('Failed to end Tavus conversation:', err);
+  // Clean up any stale conversation on mount
+  useEffect(() => {
+    const staleConversationId = localStorage.getItem(CONVERSATION_STORAGE_KEY);
+    if (staleConversationId) {
+      console.log('Found stale conversation, ending it:', staleConversationId);
+      endConversationApi(staleConversationId);
     }
   }, []);
 
+  // Handle page unload/refresh
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (conversationId) {
+        // Use sendBeacon for reliable delivery during unload
+        const url = `${import.meta.env.VITE_SUPABASE_URL || 'https://dfvrviuppfkqjpdyevfv.supabase.co'}/functions/v1/end-video-conversation`;
+        navigator.sendBeacon(url, JSON.stringify({ conversation_id: conversationId }));
+        localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      // If page becomes hidden and we have an active conversation, end it
+      if (document.visibilityState === 'hidden' && conversationId && !isConnected) {
+        endConversationApi(conversationId);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [conversationId, isConnected]);
+
   const cleanup = useCallback(() => {
     if (callRef.current) {
-      callRef.current.destroy();
+      try {
+        callRef.current.destroy();
+      } catch (e) {
+        console.log('Error destroying call:', e);
+      }
       callRef.current = null;
     }
-    // Clear any iframes that might have been left behind
     if (containerRef.current) {
       containerRef.current.innerHTML = '';
     }
   }, []);
 
+  const endTavusConversation = useCallback(async () => {
+    if (!conversationId) return;
+    await endConversationApi(conversationId);
+    setConversationId(null);
+  }, [conversationId]);
+
   const startConversation = async () => {
     setIsLoading(true);
-    setIsJoining(true);
     setError(null);
+    cleanup();
 
     try {
-      // Create conversation via edge function
       const { data, error: fnError } = await supabase.functions.invoke('create-video-conversation', {
         body: { 
           replica_id: replicaId, 
@@ -73,98 +113,131 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         throw new Error(fnError.message || 'Failed to create conversation');
       }
 
-      if (!data?.conversation_url) {
+      if (!data?.conversation_url || !data?.conversation_id) {
         throw new Error('No conversation URL returned');
       }
 
       console.log('Conversation created:', data);
-      conversationIdRef.current = data.conversation_id;
+      
+      // Store conversation ID for cleanup
+      setConversationId(data.conversation_id);
+      localStorage.setItem(CONVERSATION_STORAGE_KEY, data.conversation_id);
 
-      // Clear container before creating frame
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
+      // Ensure container is ready
+      if (!containerRef.current) {
+        throw new Error('Video container not ready');
       }
 
-      // Create Daily.co frame
-      callRef.current = DailyIframe.createFrame(containerRef.current!, {
+      // Create Daily.co call object (not iframe) for better control
+      callRef.current = DailyIframe.createFrame(containerRef.current, {
         iframeStyle: {
           position: 'absolute',
           top: '0',
           left: '0',
           width: '100%',
           height: '100%',
-          border: '0',
+          border: 'none',
           borderRadius: '16px',
+          background: '#000',
         },
         showLeaveButton: true,
         showFullscreenButton: true,
       });
 
-      callRef.current.on('joined-meeting', () => {
-        console.log('Joined video conversation');
-        setIsConnected(true);
-        setIsLoading(false);
-        setIsJoining(false);
+      // Set up event handlers before joining
+      callRef.current.on('joining-meeting', () => {
+        console.log('Joining meeting...');
       });
 
-      callRef.current.on('left-meeting', () => {
+      callRef.current.on('joined-meeting', () => {
+        console.log('Joined video conversation successfully');
+        setIsConnected(true);
+        setIsLoading(false);
+      });
+
+      callRef.current.on('left-meeting', async () => {
         console.log('Left video conversation');
         setIsConnected(false);
-        setIsJoining(false);
-        endTavusConversation();
+        await endTavusConversation();
         cleanup();
       });
 
-      callRef.current.on('error', (e) => {
+      callRef.current.on('error', async (e) => {
         console.error('Daily error:', e);
-        setError('Video connection error');
+        setError('Video connection error. Please try again.');
         setIsLoading(false);
-        setIsJoining(false);
-        endTavusConversation();
+        await endTavusConversation();
+        cleanup();
+      });
+
+      callRef.current.on('camera-error', (e) => {
+        console.error('Camera error:', e);
+        toast({
+          title: "Camera Error",
+          description: "Please allow camera access to use video chat.",
+          variant: "destructive",
+        });
       });
 
       // Join the call
+      console.log('Joining Daily call:', data.conversation_url);
       await callRef.current.join({ url: data.conversation_url });
 
     } catch (err) {
       console.error('Error starting conversation:', err);
-      setError(err instanceof Error ? err.message : 'Failed to start conversation');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start conversation';
+      setError(errorMessage);
       setIsLoading(false);
-      setIsJoining(false);
+      
+      // Clean up conversation if it was created
+      if (conversationId) {
+        await endTavusConversation();
+      }
+      
       toast({
         title: "Connection Error",
-        description: err instanceof Error ? err.message : 'Failed to start video conversation',
+        description: errorMessage,
         variant: "destructive",
       });
     }
   };
 
-  const endConversation = () => {
+  const endConversation = async () => {
     if (callRef.current) {
-      callRef.current.leave();
+      try {
+        await callRef.current.leave();
+      } catch (e) {
+        console.log('Error leaving call:', e);
+      }
     }
+    await endTavusConversation();
+    cleanup();
+    setIsConnected(false);
   };
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      endTavusConversation();
+      if (conversationId) {
+        endConversationApi(conversationId);
+      }
       cleanup();
     };
-  }, [endTavusConversation, cleanup]);
+  }, [conversationId, cleanup]);
 
-  const showStartScreen = !isConnected && !isJoining;
+  const showStartScreen = !isConnected && !isLoading;
 
   return (
     <div className="w-full h-full flex flex-col">
-      {/* Video container - always present with relative positioning */}
-      <div className="flex-1 min-h-[400px] bg-muted/50 rounded-2xl overflow-hidden relative">
-        {/* Daily.co iframe container */}
+      <div className="flex-1 min-h-[500px] bg-black rounded-2xl overflow-hidden relative">
+        {/* Daily.co iframe container - always mounted */}
         <div 
           ref={containerRef} 
-          className={`absolute inset-0 ${isJoining || isConnected ? 'block' : 'hidden'}`}
+          className="absolute inset-0"
+          style={{ display: isLoading || isConnected ? 'block' : 'none' }}
         />
         
-        {/* Start screen overlay */}
+        {/* Start screen */}
         {showStartScreen && (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-muted/50 z-10">
             <div className="p-6 rounded-full bg-primary/10 mb-6">
@@ -192,10 +265,10 @@ export const VideoConversation = ({ replicaId, personaId }: VideoConversationPro
         )}
 
         {/* Loading overlay */}
-        {isLoading && isJoining && !isConnected && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 z-20">
+        {isLoading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-20">
             <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
-            <p className="text-muted-foreground">Connecting to video agent...</p>
+            <p className="text-white">Connecting to video agent...</p>
           </div>
         )}
       </div>
