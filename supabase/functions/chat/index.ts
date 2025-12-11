@@ -203,9 +203,10 @@ serve(async (req) => {
     }
 
     // Return in OpenAI-compatible format
-    return new Response(JSON.stringify({
+    const responsePayload = {
       id: `chatcmpl-${crypto.randomUUID()}`,
       object: "chat.completion",
+      model: "salesforce-agentforce",
       created: Math.floor(Date.now() / 1000),
       choices: [{
         index: 0,
@@ -214,8 +215,17 @@ serve(async (req) => {
           content: botReply
         },
         finish_reason: "stop"
-      }]
-    }), {
+      }],
+      usage: {
+        prompt_tokens: lastUserMessage.length,
+        completion_tokens: botReply.length,
+        total_tokens: lastUserMessage.length + botReply.length
+      }
+    };
+    
+    console.log(`Returning response to Tavus: ${JSON.stringify(responsePayload)}`);
+    
+    return new Response(JSON.stringify(responsePayload), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
