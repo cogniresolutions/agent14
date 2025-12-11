@@ -280,9 +280,11 @@ function createStreamingResponse(content: string, model: string): ReadableStream
   const id = `chatcmpl-${crypto.randomUUID()}`;
   const created = Math.floor(Date.now() / 1000);
   
-  // Sanitize content for speech
+  // Sanitize content for speech - make it TTS-friendly
   const sanitizedContent = sanitizeForSpeech(content);
-  console.log(`Creating streaming response with sanitized content: ${sanitizedContent.substring(0, 150)}...`);
+  console.log(`[TAVUS] Original content length: ${content.length}`);
+  console.log(`[TAVUS] Sanitized content length: ${sanitizedContent.length}`);
+  console.log(`[TAVUS] Full sanitized content: ${sanitizedContent}`);
   
   return new ReadableStream({
     start(controller) {
@@ -303,7 +305,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       const roleData = `data: ${JSON.stringify(roleChunk)}\n\n`;
       controller.enqueue(encoder.encode(roleData));
-      console.log(`Sent role chunk`);
+      console.log(`[TAVUS] Sent role chunk`);
       
       // Send the full content in one chunk for reliable delivery to Tavus
       const contentChunk = {
@@ -321,7 +323,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       const contentData = `data: ${JSON.stringify(contentChunk)}\n\n`;
       controller.enqueue(encoder.encode(contentData));
-      console.log(`Sent content chunk: ${contentData.substring(0, 200)}...`);
+      console.log(`[TAVUS] Sent content chunk, size: ${contentData.length} bytes`);
       
       // Send final chunk with finish_reason
       const finalChunk = {
@@ -337,7 +339,7 @@ function createStreamingResponse(content: string, model: string): ReadableStream
       };
       controller.enqueue(encoder.encode(`data: ${JSON.stringify(finalChunk)}\n\n`));
       controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
-      console.log(`Streaming response completed for Tavus`);
+      console.log(`[TAVUS] Streaming response completed - Tavus should now speak this response`);
       controller.close();
     }
   });
