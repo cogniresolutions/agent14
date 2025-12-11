@@ -5,8 +5,8 @@ import { VideoConversation } from "@/components/video/VideoConversation";
 import { Video, MessageSquare, Sparkles, Shield } from "lucide-react";
 
 // Hardcoded video agent configuration
-const REPLICA_ID = "rf4703150052";
-const PERSONA_ID = "p3a54ce9f235";
+const REPLICA_ID = "r6ae5b6efc9d";
+const PERSONA_ID = "pf3591e88614";
 
 const PremiumVideo = () => {
   return (
