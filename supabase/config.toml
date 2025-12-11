@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.video-agent-proxy]
 verify_jwt = false
+
+[functions.create-video-conversation]
+verify_jwt = false
