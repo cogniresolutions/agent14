@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,8 +13,10 @@ const BASE_URL = "https://api.salesforce.com/einstein/ai-agent/v1";
 const INSTANCE_URL = "https://orgfarm-7eec8186c7.my.salesforce.com";
 const OAUTH_URL = "https://orgfarm-7eec8186c7.my.salesforce.com/services/oauth2/token";
 
-// Store sessions in memory (keyed by user + token to handle token refresh)
-const sessions: Map<string, { sessionId: string; sequenceId: number }> = new Map();
+// Create Supabase client for session persistence
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Generate fresh OAuth token using client credentials
 async function getOAuthToken(): Promise<string | null> {
@@ -58,10 +61,73 @@ async function getOAuthToken(): Promise<string | null> {
   }
 }
 
+// Get session from database
+async function getStoredSession(userId: string): Promise<{ sessionId: string; sequenceId: number } | null> {
+  const { data, error } = await supabase
+    .from('sf_agent_sessions')
+    .select('session_id, sequence_id')
+    .eq('user_id', userId)
+    .single();
+  
+  if (error || !data) {
+    console.log(`No stored session found for ${userId}`);
+    return null;
+  }
+  
+  console.log(`Found stored session for ${userId}: ${data.session_id}`);
+  return { sessionId: data.session_id, sequenceId: data.sequence_id };
+}
+
+// Store session in database
+async function storeSession(userId: string, sessionId: string, sequenceId: number): Promise<void> {
+  const { error } = await supabase
+    .from('sf_agent_sessions')
+    .upsert({
+      user_id: userId,
+      session_id: sessionId,
+      sequence_id: sequenceId,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+  
+  if (error) {
+    console.error(`Error storing session: ${error.message}`);
+  } else {
+    console.log(`Session stored for ${userId}`);
+  }
+}
+
+// Update sequence ID in database
+async function updateSequenceId(userId: string, sequenceId: number): Promise<void> {
+  const { error } = await supabase
+    .from('sf_agent_sessions')
+    .update({ sequence_id: sequenceId, updated_at: new Date().toISOString() })
+    .eq('user_id', userId);
+  
+  if (error) {
+    console.error(`Error updating sequence ID: ${error.message}`);
+  }
+}
+
+// Clear stored session
+async function clearStoredSession(userId: string): Promise<void> {
+  const { error } = await supabase
+    .from('sf_agent_sessions')
+    .delete()
+    .eq('user_id', userId);
+  
+  if (error) {
+    console.error(`Error clearing session: ${error.message}`);
+  } else {
+    console.log(`Session cleared for ${userId}`);
+  }
+}
+
 async function getSfSession(userId: string, sfToken: string): Promise<{ sessionId: string; sequenceId: number } | null> {
-  if (sessions.has(userId)) {
-    console.log(`Using existing session for ${userId}`);
-    return sessions.get(userId)!;
+  // First check for existing session in database
+  const storedSession = await getStoredSession(userId);
+  if (storedSession) {
+    console.log(`Using existing session for ${userId}: ${storedSession.sessionId}`);
+    return storedSession;
   }
 
   console.log(`Creating new Salesforce session for ${userId}...`);
@@ -91,7 +157,8 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
       const sessionId = data.sessionId;
       console.log(`Session created: ${sessionId}`);
       const sessionData = { sessionId, sequenceId: 1 };
-      sessions.set(userId, sessionData);
+      // Store session in database for persistence
+      await storeSession(userId, sessionId, 1);
       return sessionData;
     } else {
       const errorText = await resp.text();
@@ -342,8 +409,9 @@ serve(async (req) => {
 
       clearTimeout(timeoutId);
       
-      // Increment sequenceId for next message
+      // Increment sequenceId for next message and persist to database
       sessionData.sequenceId++;
+      await updateSequenceId(userId, sessionData.sequenceId);
 
       console.log(`Salesforce message response status: ${sfResp.status}`);
       
@@ -387,9 +455,9 @@ serve(async (req) => {
         const errorText = await sfResp.text();
         console.error(`Salesforce error: ${errorText}`);
         
-        // If session expired, clear it
+        // If session expired, clear it from database
         if (sfResp.status === 401 || sfResp.status === 404 || sfResp.status === 400) {
-          sessions.delete(userId);
+          await clearStoredSession(userId);
           botReply = "I apologize for the brief interruption. Let me reconnect to our system. Could you please repeat your request? I'm here to help with your dining needs.";
         } else {
           needsHumanEscalation = true;
