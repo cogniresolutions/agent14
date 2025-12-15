@@ -183,6 +183,30 @@ function sanitizeForSpeech(content: string): string {
     .trim();
 }
 
+// Helper to clean user message from Tavus - convert spoken email formats and clean XML tags
+function cleanUserMessage(message: string): string {
+  let cleaned = message;
+  
+  // Remove Tavus-specific XML tags that may be in the message
+  cleaned = cleaned.replace(/<user_appearance>[\s\S]*?<\/user_appearance>/gi, '');
+  cleaned = cleaned.replace(/<user_emotions>[\s\S]*?<\/user_emotions>/gi, '');
+  cleaned = cleaned.replace(/<user_screen>[\s\S]*?<\/user_screen>/gi, '');
+  cleaned = cleaned.replace(/<[^>]*>/g, ''); // Remove any other XML/HTML tags
+  
+  // Convert spoken email formats to proper email format
+  // "john dot smith at gmail dot com" -> "john.smith@gmail.com"
+  // "john at gmail dot com" -> "john@gmail.com"  
+  // Handle various spoken patterns for email
+  cleaned = cleaned.replace(/\s+dot\s+/gi, '.');
+  cleaned = cleaned.replace(/\s+at\s+/gi, '@');
+  
+  // Clean up multiple spaces and trim
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  console.log(`Cleaned user message: ${cleaned}`);
+  return cleaned;
+}
+
 // Helper to create SSE streaming response - OpenAI compatible format for Tavus
 function createStreamingResponse(content: string, model: string): ReadableStream {
   const encoder = new TextEncoder();
@@ -358,9 +382,11 @@ serve(async (req) => {
       });
     }
     
-    // Extract the latest user message
-    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "Hello";
-    console.log(`Received message: ${lastUserMessage}`);
+    // Extract the latest user message and clean it for Salesforce
+    const rawUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || "Hello";
+    console.log(`Raw user message: ${rawUserMessage}`);
+    const lastUserMessage = cleanUserMessage(rawUserMessage);
+    console.log(`Cleaned message for Salesforce: ${lastUserMessage}`);
 
     // Get or create Salesforce session
     const userId = data.user_id || "video_demo_user";
