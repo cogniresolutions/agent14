@@ -4,32 +4,38 @@ import { useEffect } from 'react';
 let chatReadyPromise: Promise<void> | null = null;
 let chatReadyResolve: (() => void) | null = null;
 let scriptLoaded = false;
+let chatIsReady = false;
 
 // Initialize the promise immediately
 chatReadyPromise = new Promise((resolve) => {
   chatReadyResolve = resolve;
 });
 
-export const launchChat = () => {
+// Check if chat is ready to launch immediately
+export const isChatReady = (): boolean => {
+  return chatIsReady && !!(window as any).embeddedservice_bootstrap?.utilAPI?.launchChat;
+};
+
+// Launch chat - returns a promise that resolves when chat is launched
+export const launchChat = async (): Promise<void> => {
   console.log('[Agent14] launchChat called');
   const esb = (window as any).embeddedservice_bootstrap;
-  console.log('[Agent14] embeddedservice_bootstrap:', esb);
-  console.log('[Agent14] utilAPI:', esb?.utilAPI);
   
   if (esb?.utilAPI?.launchChat) {
     console.log('[Agent14] Launching chat directly');
     esb.utilAPI.launchChat();
+    return;
+  }
+  
+  console.log('[Agent14] Chat not ready, waiting for promise...');
+  await chatReadyPromise;
+  
+  const esbReady = (window as any).embeddedservice_bootstrap;
+  console.log('[Agent14] Promise resolved, launching chat');
+  if (esbReady?.utilAPI?.launchChat) {
+    esbReady.utilAPI.launchChat();
   } else {
-    console.log('[Agent14] Chat not ready, waiting for promise...');
-    chatReadyPromise?.then(() => {
-      const esb = (window as any).embeddedservice_bootstrap;
-      console.log('[Agent14] Promise resolved, launching chat');
-      if (esb?.utilAPI?.launchChat) {
-        esb.utilAPI.launchChat();
-      } else {
-        console.error('[Agent14] utilAPI still not available after promise resolved');
-      }
-    });
+    console.error('[Agent14] utilAPI still not available after promise resolved');
   }
 };
 
@@ -83,6 +89,7 @@ export const SalesforceChatbot = () => {
           if (currentEsb?.utilAPI?.launchChat) {
             console.log('[Agent14] utilAPI.launchChat is now available');
             clearInterval(checkReady);
+            chatIsReady = true;
             if (chatReadyResolve) {
               chatReadyResolve();
             }
