@@ -7,6 +7,16 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    
+    <!-- Preconnect to Salesforce domains for faster chat initialization -->
+    <link rel="preconnect" href="https://orgfarm-7eec8186c7.my.site.com" crossorigin />
+    <link rel="preconnect" href="https://orgfarm-7eec8186c7.my.salesforce-scrt.com" crossorigin />
+    <link rel="dns-prefetch" href="https://orgfarm-7eec8186c7.my.site.com" />
+    <link rel="dns-prefetch" href="https://orgfarm-7eec8186c7.my.salesforce-scrt.com" />
+    
+    <!-- Preload Salesforce chat script -->
+    <link rel="preload" href="https://orgfarm-7eec8186c7.my.site.com/ESWAgt14MessagingChanne1764980162743/assets/js/bootstrap.min.js" as="script" crossorigin />
+    
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     <title>Agent14 | AI-Powered Restaurant Reservations</title>
