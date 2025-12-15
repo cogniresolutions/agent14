@@ -61,11 +61,19 @@ async function getOAuthToken(): Promise<string | null> {
   }
 }
 
-// Get session from database
-async function getStoredSession(userId: string): Promise<{ sessionId: string; sequenceId: number } | null> {
+// Interface for pending confirmation details
+interface PendingDetails {
+  email?: string;
+  reservationId?: string;
+  awaitingConfirmation: boolean;
+  originalMessage: string;
+}
+
+// Get session from database including pending details
+async function getStoredSession(userId: string): Promise<{ sessionId: string; sequenceId: number; pendingDetails?: PendingDetails } | null> {
   const { data, error } = await supabase
     .from('sf_agent_sessions')
-    .select('session_id, sequence_id')
+    .select('session_id, sequence_id, pending_details')
     .eq('user_id', userId)
     .single();
   
@@ -75,7 +83,11 @@ async function getStoredSession(userId: string): Promise<{ sessionId: string; se
   }
   
   console.log(`Found stored session for ${userId}: ${data.session_id}`);
-  return { sessionId: data.session_id, sequenceId: data.sequence_id };
+  return { 
+    sessionId: data.session_id, 
+    sequenceId: data.sequence_id,
+    pendingDetails: data.pending_details as PendingDetails | undefined
+  };
 }
 
 // Store session in database
@@ -86,6 +98,7 @@ async function storeSession(userId: string, sessionId: string, sequenceId: numbe
       user_id: userId,
       session_id: sessionId,
       sequence_id: sequenceId,
+      pending_details: null,
       updated_at: new Date().toISOString()
     }, { onConflict: 'user_id' });
   
@@ -108,6 +121,40 @@ async function updateSequenceId(userId: string, sequenceId: number): Promise<voi
   }
 }
 
+// Store pending details for confirmation
+async function storePendingDetails(userId: string, details: PendingDetails): Promise<void> {
+  const { error } = await supabase
+    .from('sf_agent_sessions')
+    .update({ 
+      pending_details: details,
+      updated_at: new Date().toISOString()
+    })
+    .eq('user_id', userId);
+  
+  if (error) {
+    console.error(`Error storing pending details: ${error.message}`);
+  } else {
+    console.log(`Pending details stored for ${userId}: ${JSON.stringify(details)}`);
+  }
+}
+
+// Clear pending details after confirmation or rejection
+async function clearPendingDetails(userId: string): Promise<void> {
+  const { error } = await supabase
+    .from('sf_agent_sessions')
+    .update({ 
+      pending_details: null,
+      updated_at: new Date().toISOString()
+    })
+    .eq('user_id', userId);
+  
+  if (error) {
+    console.error(`Error clearing pending details: ${error.message}`);
+  } else {
+    console.log(`Pending details cleared for ${userId}`);
+  }
+}
+
 // Clear stored session
 async function clearStoredSession(userId: string): Promise<void> {
   const { error } = await supabase
@@ -122,7 +169,84 @@ async function clearStoredSession(userId: string): Promise<void> {
   }
 }
 
-async function getSfSession(userId: string, sfToken: string): Promise<{ sessionId: string; sequenceId: number } | null> {
+// Extract reservation details from message
+function extractReservationDetails(message: string): { email?: string; reservationId?: string } {
+  const details: { email?: string; reservationId?: string } = {};
+  
+  // Extract email - look for email patterns
+  const emailMatch = message.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
+  if (emailMatch) {
+    details.email = emailMatch[1].toLowerCase();
+    console.log(`Extracted email: ${details.email}`);
+  }
+  
+  // Extract reservation ID - look for patterns like OP-12345, RES-12345, or standalone IDs
+  const reservationPatterns = [
+    /(?:reservation\s*(?:id|number)?[:\s]*)?([A-Z]{2,3}-\d{4,6})/i,
+    /(?:booking\s*(?:id|number)?[:\s]*)?([A-Z]{2,3}-\d{4,6})/i,
+    /\b([A-Z]{2,3}-\d{4,6})\b/i
+  ];
+  
+  for (const pattern of reservationPatterns) {
+    const match = message.match(pattern);
+    if (match) {
+      details.reservationId = match[1].toUpperCase();
+      console.log(`Extracted reservation ID: ${details.reservationId}`);
+      break;
+    }
+  }
+  
+  return details;
+}
+
+// Spell out text letter by letter for clear pronunciation
+function spellOutText(text: string): string {
+  const spelled: string[] = [];
+  
+  for (const char of text) {
+    if (char === '@') {
+      spelled.push('at sign');
+    } else if (char === '.') {
+      spelled.push('dot');
+    } else if (char === '-') {
+      spelled.push('dash');
+    } else if (char === '_') {
+      spelled.push('underscore');
+    } else if (/[a-zA-Z]/.test(char)) {
+      // Use phonetic alphabet for clarity
+      spelled.push(char.toUpperCase());
+    } else if (/[0-9]/.test(char)) {
+      spelled.push(char);
+    }
+  }
+  
+  return spelled.join(', ');
+}
+
+// Check if user message is a confirmation
+function isConfirmation(message: string): boolean {
+  const confirmPatterns = [
+    /\b(yes|yeah|yep|yup|correct|right|confirm|confirmed|that's right|that is right|that's correct|that is correct|affirmative|exactly|perfect|looks good|sounds good)\b/i
+  ];
+  return confirmPatterns.some(pattern => pattern.test(message));
+}
+
+// Check if user message is a rejection/correction request
+function isRejection(message: string): boolean {
+  const rejectPatterns = [
+    /\b(no|nope|wrong|incorrect|not right|not correct|change|fix|update|different|again|retry|re-enter|reenter)\b/i
+  ];
+  return rejectPatterns.some(pattern => pattern.test(message));
+}
+
+// Check if message contains reservation details that need confirmation
+function needsConfirmation(message: string): boolean {
+  const details = extractReservationDetails(message);
+  // Need confirmation if we have both email and reservation ID
+  return !!(details.email && details.reservationId);
+}
+
+async function getSfSession(userId: string, sfToken: string): Promise<{ sessionId: string; sequenceId: number; pendingDetails?: PendingDetails } | null> {
   // First check for existing session in database
   const storedSession = await getStoredSession(userId);
   if (storedSession) {
@@ -156,7 +280,7 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
       const data = await resp.json();
       const sessionId = data.sessionId;
       console.log(`Session created: ${sessionId}`);
-      const sessionData = { sessionId, sequenceId: 1 };
+      const sessionData = { sessionId, sequenceId: 1, pendingDetails: undefined };
       // Store session in database for persistence
       await storeSession(userId, sessionId, 1);
       return sessionData;
@@ -169,6 +293,93 @@ async function getSfSession(userId: string, sfToken: string): Promise<{ sessionI
     console.error(`Connection error: ${e}`);
     return null;
   }
+}
+
+// Helper function to send message to Agentforce and return response
+async function sendToAgentforce(
+  sfSessionId: string, 
+  sequenceId: number, 
+  message: string, 
+  userId: string, 
+  sfToken: string, 
+  isStreaming: boolean
+): Promise<Response> {
+  console.log(`sendToAgentforce: Sending to session ${sfSessionId}: ${message}`);
+  const sfUrl = `${BASE_URL}/sessions/${sfSessionId}/messages`;
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  
+  let botReply = "";
+  let needsHumanEscalation = false;
+  
+  try {
+    const sfResp = await fetch(sfUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${sfToken}`,
+        'Content-Type': 'application/json',
+        'x-org-id': ORG_ID,
+        'x-client-feature-id': FEATURE_ID,
+      },
+      body: JSON.stringify({
+        message: { text: message, type: "Text", sequenceId }
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    await updateSequenceId(userId, sequenceId + 1);
+
+    if (sfResp.ok) {
+      const sfData = await sfResp.json();
+      console.log(`Agentforce response: ${JSON.stringify(sfData)}`);
+      
+      if (sfData.messages && Array.isArray(sfData.messages)) {
+        for (const msg of sfData.messages) {
+          if (msg.type === 'Inform' && msg.message?.trim()) {
+            botReply = msg.message;
+            break;
+          } else if (msg.message?.trim() && msg.type !== 'Failure') {
+            botReply = msg.message;
+            break;
+          }
+          if (msg.type === 'Escalate') {
+            needsHumanEscalation = true;
+            await clearStoredSession(userId);
+          }
+        }
+      }
+      
+      if (!botReply) {
+        botReply = "Could you please provide more details?";
+      }
+    } else {
+      await clearStoredSession(userId);
+      botReply = "I encountered an issue. Please try again.";
+    }
+  } catch (err) {
+    clearTimeout(timeoutId);
+    botReply = "I'm having technical difficulties. Please try again.";
+  }
+
+  console.log(`sendToAgentforce reply: ${botReply}`);
+  
+  if (isStreaming) {
+    return new Response(createStreamingResponse(botReply, "salesforce-agentforce"), {
+      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive' },
+    });
+  }
+  
+  return new Response(JSON.stringify({
+    id: `chatcmpl-${crypto.randomUUID()}`,
+    object: "chat.completion",
+    model: "salesforce-agentforce",
+    created: Math.floor(Date.now() / 1000),
+    choices: [{ index: 0, message: { role: "assistant", content: botReply }, finish_reason: "stop" }]
+  }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
 }
 
 // Helper to sanitize content for speech - remove problematic characters
@@ -423,6 +634,145 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Check for pending confirmation flow
+    const pendingDetails = sessionData.pendingDetails;
+    
+    if (pendingDetails?.awaitingConfirmation) {
+      console.log(`Pending confirmation found: ${JSON.stringify(pendingDetails)}`);
+      
+      // Check if user is confirming the details
+      if (isConfirmation(lastUserMessage)) {
+        console.log('User confirmed the details, proceeding to Agentforce');
+        // Clear pending details and proceed with the original message
+        await clearPendingDetails(userId);
+        // The original message with details will be sent to Agentforce below
+        // We'll use the stored original message
+        const confirmedMessage = pendingDetails.originalMessage;
+        console.log(`Sending confirmed message to Agentforce: ${confirmedMessage}`);
+        
+        // Continue with normal Agentforce flow using the confirmed message
+        // Update lastUserMessage to use the original stored message
+        // We need to send this to Agentforce
+        const { sessionId: sfSessionId, sequenceId } = sessionData;
+        return await sendToAgentforce(sfSessionId, sequenceId, confirmedMessage, userId, sfToken, isStreaming);
+      }
+      
+      // Check if user is rejecting/correcting
+      if (isRejection(lastUserMessage)) {
+        console.log('User rejected the details, asking for new information');
+        await clearPendingDetails(userId);
+        
+        const retryMsg = "No problem! Please provide your reservation ID and email address again, and I will spell them back for you to confirm.";
+        
+        if (isStreaming) {
+          return new Response(createStreamingResponse(retryMsg, "salesforce-agentforce"), {
+            headers: { 
+              ...corsHeaders, 
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive'
+            },
+          });
+        }
+        
+        return new Response(JSON.stringify({
+          id: `chatcmpl-${crypto.randomUUID()}`,
+          object: "chat.completion",
+          model: "salesforce-agentforce",
+          created: Math.floor(Date.now() / 1000),
+          choices: [{
+            index: 0,
+            message: { role: "assistant", content: retryMsg },
+            finish_reason: "stop"
+          }]
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      // User gave an unclear response, ask again
+      console.log('Unclear confirmation response, asking again');
+      const spelledEmail = pendingDetails.email ? spellOutText(pendingDetails.email) : 'not provided';
+      const spelledId = pendingDetails.reservationId ? spellOutText(pendingDetails.reservationId) : 'not provided';
+      
+      const clarifyMsg = `I need you to confirm. Your email is: ${spelledEmail}. Your reservation ID is: ${spelledId}. Please say yes to confirm, or no to provide new details.`;
+      
+      if (isStreaming) {
+        return new Response(createStreamingResponse(clarifyMsg, "salesforce-agentforce"), {
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+          },
+        });
+      }
+      
+      return new Response(JSON.stringify({
+        id: `chatcmpl-${crypto.randomUUID()}`,
+        object: "chat.completion",
+        model: "salesforce-agentforce",
+        created: Math.floor(Date.now() / 1000),
+        choices: [{
+          index: 0,
+          message: { role: "assistant", content: clarifyMsg },
+          finish_reason: "stop"
+        }]
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Check if message contains reservation details that need confirmation
+    const extractedDetails = extractReservationDetails(lastUserMessage);
+    if (extractedDetails.email && extractedDetails.reservationId) {
+      console.log(`Found reservation details requiring confirmation: ${JSON.stringify(extractedDetails)}`);
+      
+      // Store pending details
+      const pendingToStore: PendingDetails = {
+        email: extractedDetails.email,
+        reservationId: extractedDetails.reservationId,
+        awaitingConfirmation: true,
+        originalMessage: lastUserMessage
+      };
+      await storePendingDetails(userId, pendingToStore);
+      
+      // Spell out the details for user confirmation
+      const spelledEmail = spellOutText(extractedDetails.email);
+      const spelledId = spellOutText(extractedDetails.reservationId);
+      
+      const confirmationRequest = `Let me confirm your details. Your email is: ${spelledEmail}. Your reservation ID is: ${spelledId}. Is this correct? Please say yes to confirm, or no if you need to correct anything.`;
+      
+      console.log(`Asking for confirmation: ${confirmationRequest}`);
+      
+      if (isStreaming) {
+        return new Response(createStreamingResponse(confirmationRequest, "salesforce-agentforce"), {
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+          },
+        });
+      }
+      
+      return new Response(JSON.stringify({
+        id: `chatcmpl-${crypto.randomUUID()}`,
+        object: "chat.completion",
+        model: "salesforce-agentforce",
+        created: Math.floor(Date.now() / 1000),
+        choices: [{
+          index: 0,
+          message: { role: "assistant", content: confirmationRequest },
+          finish_reason: "stop"
+        }]
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // No pending confirmation and no new details to confirm - proceed normally to Agentforce
 
     const { sessionId: sfSessionId, sequenceId } = sessionData;
 
